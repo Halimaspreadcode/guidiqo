@@ -16,6 +16,8 @@ export const stackServerApp = new StackServerApp({
     afterSignIn: "/dashboard",
     signUp: "/handler/signup",
     afterSignUp: "/dashboard",
+    passwordReset: "/handler/password-reset",
+    afterPasswordReset: "/auth/signin",
   },
 });
 

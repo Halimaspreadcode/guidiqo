@@ -12,6 +12,12 @@ enum UserRole {
   ADMIN
 }
 
+enum DeletionStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
 model User {
   id           String   @id @default(cuid())
   stackId      String   @unique
@@ -22,7 +28,28 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   
-  brands       Brand[]
+  brands                Brand[]
+  accountDeletionRequest AccountDeletionRequest?
+}
+
+model AccountDeletionRequest {
+  id           String         @id @default(cuid())
+  userId       String         @unique
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  reason       String?
+  status       DeletionStatus @default(PENDING)
+  
+  requestedAt  DateTime       @default(now())
+  scheduledFor DateTime
+  completedAt  DateTime?
+  cancelledAt  DateTime?
+  
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  
+  @@index([status])
+  @@index([scheduledFor])
 }
 
 model Brand {

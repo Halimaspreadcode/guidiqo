@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "./providers";
+import DeletionBanner from "@/components/DeletionBanner";
 
 export const metadata: Metadata = {
   title: "Guidiqo - Créez votre branding IA | Brand Guidelines Professionnels",
@@ -62,7 +63,10 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          <DeletionBanner />
+          {children}
+        </Providers>
       </body>
     </html>
   );

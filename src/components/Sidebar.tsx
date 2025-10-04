@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import { Home, Palette, BookOpen, Settings, LogOut, Crown, User } from 'lucide-react'
 import { useUser } from '@stackframe/stack'
 import { useEffect, useState } from 'react'
+import { useUserProfile } from '@/hooks/useUserProfile'
 
 interface SidebarProps {
   isOpen?: boolean
@@ -16,6 +17,7 @@ export default function Sidebar({ isOpen = false, onClose, isMobile = false }: S
   const router = useRouter()
   const pathname = usePathname()
   const user = useUser({ or: 'return-null' })
+  const { profile } = useUserProfile()
   const [isAdmin, setIsAdmin] = useState(false)
 
   // Vérifier si l'utilisateur est admin
@@ -136,7 +138,7 @@ export default function Sidebar({ isOpen = false, onClose, isMobile = false }: S
           animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
           transition={{ duration: 4, repeat: Infinity }}
         />
-        <h1 className="relative z-10 text-2xl font-bold text-black text-left tracking-tight">Mushroom</h1>
+        <h1 className="relative z-10 text-2xl font-bold text-black text-left tracking-tight">Guidiqo</h1>
       </motion.div>
 
       {/* Navigation */}
@@ -207,10 +209,20 @@ export default function Sidebar({ isOpen = false, onClose, isMobile = false }: S
           />
           <div className="relative z-10 flex items-center gap-3">
             <motion.div
-              className="w-12 h-12 rounded-full bg-gradient-to-br from-red-900 to-red-950 text-white font-bold flex items-center justify-center border-2 border-white/30 shadow-lg"
+              className="w-12 h-12 rounded-full overflow-hidden border-2 border-white/30 shadow-lg flex items-center justify-center"
               whileHover={{ scale: 1.1, rotate: 5 }}
             >
-              {getInitials()}
+              {profile?.profileImage || user?.profileImageUrl ? (
+                <img
+                  src={profile?.profileImage || user?.profileImageUrl || ''}
+                  alt="Avatar"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-red-900 to-red-950 text-white font-bold flex items-center justify-center">
+                  {getInitials()}
+                </div>
+              )}
             </motion.div>
             <div className="flex-1 min-w-0">
               <p className="font-bold text-black truncate text-sm">

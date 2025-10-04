@@ -15,6 +15,9 @@ export default function ProfilPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [deleteReason, setDeleteReason] = useState('')
+  const [deletionRequested, setDeletionRequested] = useState(false)
+  const [deletionDate, setDeletionDate] = useState<string | null>(null)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [saving, setSaving] = useState(false)
@@ -57,27 +60,25 @@ export default function ProfilPage() {
 
     setDeleting(true)
     try {
-      // Supprimer tous les brandings de l'utilisateur d'abord
-      const brandsResponse = await fetch('/api/brands')
-      if (brandsResponse.ok) {
-        const brands = await brandsResponse.json()
-        for (const brand of brands) {
-          await fetch(`/api/brands/${brand.id}`, { method: 'DELETE' })
-        }
+      const response = await fetch('/api/account/delete-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason: deleteReason }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setDeletionRequested(true)
+        setDeletionDate(data.deletionDate)
+        setShowDeleteModal(false)
+      } else {
+        alert(data.error || 'Erreur lors de la demande de suppression')
       }
-
-      // Supprimer le compte Stack Auth
-      await user.delete()
-
-      // Nettoyer le storage
-      localStorage.clear()
-      sessionStorage.clear()
-
-      // Rediriger vers la page d'accueil
-      window.location.href = '/'
     } catch (error) {
-      console.error('Error deleting account:', error)
-      alert('Erreur lors de la suppression du compte')
+      console.error('Erreur suppression:', error)
+      alert('Erreur lors de la demande de suppression')
+    } finally {
       setDeleting(false)
     }
   }
@@ -249,6 +250,36 @@ export default function ProfilPage() {
             </LiquidButton>
           </motion.div>
 
+          {/* Confirmation Banner */}
+          {deletionRequested && deletionDate && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-orange-50 border border-orange-200 rounded-3xl p-6 sm:p-8 mb-6"
+            >
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
+                  <AlertTriangle className="w-5 h-5 text-orange-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-orange-900 mb-2">
+                    Demande de suppression enregistrée
+                  </h3>
+                  <p className="text-orange-700 text-sm leading-relaxed mb-4">
+                    Votre compte sera supprimé le <strong>{deletionDate}</strong>. 
+                    Un email de confirmation vous a été envoyé.
+                  </p>
+                  <button
+                    onClick={() => router.push('/profil/cancel-deletion')}
+                    className="px-6 py-2 bg-orange-600 text-white rounded-full font-semibold hover:bg-orange-700 transition-colors text-sm"
+                  >
+                    Annuler la suppression
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
           {/* Danger Zone */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -320,20 +351,36 @@ export default function ProfilPage() {
 
                   {/* Title */}
                   <h3 className="text-2xl font-bold text-black mb-3">
-                    Supprimer votre compte ?
+                    Demande de suppression de compte
                   </h3>
 
                   {/* Description */}
-                  <p className="text-gray-600 mb-8 leading-relaxed">
-                    Cette action est <span className="font-bold text-red-600">irréversible</span>. 
-                    Tous vos brandings et données personnelles seront définitivement supprimés. 
-                    Êtes-vous absolument sûr(e) ?
-                  </p>
+                  <div className="text-left mb-6">
+                    <p className="text-gray-600 mb-4 leading-relaxed">
+                      Votre compte sera supprimé dans <span className="font-bold text-red-600">7 jours ouvrés</span>. 
+                      Vous recevrez un email de confirmation avec un lien pour annuler si vous changez d'avis.
+                    </p>
+
+                    {/* Raison (optionnelle) */}
+                    <label className="block text-sm font-medium text-gray-900 mb-2">
+                      Pourquoi quittez-vous Guidiqo ? (optionnel)
+                    </label>
+                    <textarea
+                      value={deleteReason}
+                      onChange={(e) => setDeleteReason(e.target.value)}
+                      placeholder="Cela nous aide à améliorer notre service..."
+                      rows={4}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
+                    />
+                  </div>
 
                   {/* Actions */}
                   <div className="flex flex-col sm:flex-row gap-3">
                     <motion.button
-                      onClick={() => setShowDeleteModal(false)}
+                      onClick={() => {
+                        setShowDeleteModal(false)
+                        setDeleteReason('')
+                      }}
                       disabled={deleting}
                       className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-full font-semibold hover:bg-gray-200 transition-colors disabled:opacity-50"
                       whileHover={{ scale: deleting ? 1 : 1.02 }}
@@ -352,10 +399,10 @@ export default function ProfilPage() {
                       {deleting ? (
                         <span className="flex items-center justify-center gap-2">
                           <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                          Suppression...
+                          Envoi...
                         </span>
                       ) : (
-                        'Oui, supprimer'
+                        'Confirmer la demande'
                       )}
                     </motion.button>
                   </div>
