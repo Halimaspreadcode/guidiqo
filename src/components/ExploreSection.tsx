@@ -112,8 +112,8 @@ export default function ExploreSection () {
                       <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-black/60" />
                     )}
 
-                    {/* Bandes de couleurs horizontales sur le côté gauche */}
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-10">
+                    {/* Bandes de couleurs horizontales - cachées par défaut, visibles au hover */}
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       {[
                         { color: brand.primaryColor, label: 'P' },
                         { color: brand.secondaryColor, label: 'S' },
