@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { Edit, Trash2, ChevronRight } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 
 interface Brand {
   id: string
@@ -13,6 +14,7 @@ interface Brand {
   accentColor: string | null
   brandPersonality: string | null
   targetAudience: string | null
+  coverImage: string | null
   isCompleted: boolean
   currentStep: number
   createdAt: string
@@ -36,6 +38,28 @@ export default function BrandCard({ brand, index, onDelete }: BrandCardProps) {
       onClick={() => router.push(`/brand/${brand.id}`)}
       className="group bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-gray-900 transition-all duration-300 cursor-pointer"
     >
+      {/* Image de couverture */}
+      {brand.coverImage && (
+        <div className="relative w-full aspect-video">
+          <Image
+            src={brand.coverImage}
+            alt={brand.name}
+            fill
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+          
+          {/* Status badge sur l'image */}
+          <span className={`absolute top-3 right-3 text-xs font-medium px-2.5 py-1 rounded-md backdrop-blur-sm ${
+            brand.isCompleted 
+              ? 'bg-black/80 text-white' 
+              : 'bg-white/90 text-gray-900'
+          }`}>
+            {brand.isCompleted ? 'Terminé' : `${brand.currentStep}/4`}
+          </span>
+        </div>
+      )}
+
       {/* Header simple avec couleurs */}
       <div className="p-4 md:p-6 border-b border-gray-100">
         <div className="flex items-start justify-between gap-3 mb-3">
@@ -50,14 +74,16 @@ export default function BrandCard({ brand, index, onDelete }: BrandCardProps) {
             )}
           </div>
           
-          {/* Status badge minimaliste */}
-          <span className={`shrink-0 text-[10px] md:text-xs font-medium px-2 md:px-2.5 py-1 rounded-md ${
-            brand.isCompleted 
-              ? 'bg-gray-900 text-white' 
-              : 'bg-gray-100 text-gray-600'
-          }`}>
-            {brand.isCompleted ? 'Terminé' : `${brand.currentStep}/4`}
-          </span>
+          {/* Status badge minimaliste - seulement si pas d'image */}
+          {!brand.coverImage && (
+            <span className={`shrink-0 text-[10px] md:text-xs font-medium px-2 md:px-2.5 py-1 rounded-md ${
+              brand.isCompleted 
+                ? 'bg-gray-900 text-white' 
+                : 'bg-gray-100 text-gray-600'
+            }`}>
+              {brand.isCompleted ? 'Terminé' : `${brand.currentStep}/4`}
+            </span>
+          )}
         </div>
 
         {/* Palette de couleurs */}

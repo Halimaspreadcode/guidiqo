@@ -512,7 +512,7 @@ export default function SuperAdminPage() {
                     )}
 
                     <div className="border-t border-gray-200 pt-4">
-                      <p className="text-xs text-gray-600 mb-2">Projets de l'utilisateur :</p>
+                      <p className="text-xs text-gray-600 mb-2">Projets de l&apos;utilisateur :</p>
                       {request.user.brands.length === 0 ? (
                         <p className="text-sm text-gray-500">Aucun projet</p>
                       ) : (

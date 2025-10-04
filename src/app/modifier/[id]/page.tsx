@@ -360,7 +360,7 @@ export default function ModifierPage() {
                   />
                       {!aiInput.trim() && (
                         <p className="text-xs text-gray-500 mt-2">
-                          Décrivez ce que vous souhaitez pour obtenir une suggestion de l'IA
+                          Décrivez ce que vous souhaitez pour obtenir une suggestion de l&apos;IA
                         </p>
                       )}
                     </div>
@@ -447,7 +447,7 @@ export default function ModifierPage() {
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Couleur d'Accent
+                            Couleur d&apos;Accent
                           </label>
                           <div className="flex gap-3">
                             <input
@@ -592,12 +592,12 @@ export default function ModifierPage() {
                     )}
 
                     <div className="flex justify-center mt-6">
-                      <LiquidButton
-                        onClick={handleApplySuggestion}
+                    <LiquidButton
+                      onClick={handleApplySuggestion}
                         className="px-8 py-3 bg-black text-white rounded-full font-semibold hover:bg-gray-800 transition-colors"
-                      >
-                        Appliquer cette suggestion
-                      </LiquidButton>
+                    >
+                      Appliquer cette suggestion
+                    </LiquidButton>
                     </div>
                   </motion.div>
                 )}

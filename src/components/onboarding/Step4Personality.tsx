@@ -3,10 +3,16 @@
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Footer from '@/components/Footer'
+import { useState, useEffect } from 'react'
+import { Loader2, RefreshCw } from 'lucide-react'
 
 interface BrandData {
   brandPersonality?: string
   targetAudience?: string
+  coverImage?: string
+  name?: string
+  description?: string
+  prompt?: string
 }
 
 interface Step4Props {
@@ -37,6 +43,75 @@ const audiences = [
 ]
 
 export default function Step4Personality({ brandData, updateBrandData, currentStep, totalSteps, onNext, onPrevious }: Step4Props) {
+  const [suggestedImages, setSuggestedImages] = useState<string[]>([])
+  const [loadingImages, setLoadingImages] = useState(false)
+  const [imageGeneration, setImageGeneration] = useState(0)
+
+  // Générer les images suggérées quand brandPersonality et targetAudience sont sélectionnés
+  useEffect(() => {
+    if (brandData.brandPersonality && brandData.targetAudience && !brandData.coverImage) {
+      generateImageSuggestions()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [brandData.brandPersonality, brandData.targetAudience, brandData.coverImage])
+
+  const generateImageSuggestions = async () => {
+    setLoadingImages(true)
+    try {
+      const searchTerms = [
+        brandData.description || brandData.name || brandData.prompt,
+        brandData.brandPersonality,
+        brandData.targetAudience
+      ].filter(Boolean).join(' ')
+
+      const queries = [
+        `${searchTerms} business brand professional`,
+        `${searchTerms} ${brandData.brandPersonality} modern`,
+        `${searchTerms} workspace design studio`
+      ]
+
+      const imagePromises = queries.map(async (query, index) => {
+        try {
+          const response = await fetch('/api/get-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              query,
+              seed: `${Date.now()}-${index}-${imageGeneration}`,
+              provider: 'pexels',
+              perPage: 15,
+              page: Math.floor(Math.random() * 3) + 1
+            })
+          })
+
+          if (response.ok) {
+            const data = await response.json()
+            return data.image?.url || data.imageUrl || null
+          }
+        } catch (error) {
+          console.error(`Erreur lors de la récupération de l'image ${index + 1}:`, error)
+        }
+        return null
+      })
+
+      const images = await Promise.all(imagePromises)
+      setSuggestedImages(images.filter(Boolean) as string[])
+    } catch (error) {
+      console.error('Erreur lors de la génération des suggestions d\'images:', error)
+    } finally {
+      setLoadingImages(false)
+    }
+  }
+
+  const handleRefreshImages = () => {
+    setImageGeneration(prev => prev + 1)
+    generateImageSuggestions()
+  }
+
+  const handleSelectImage = (imageUrl: string) => {
+    updateBrandData({ coverImage: imageUrl })
+  }
+
   return (
     <div className="fixed inset-0 flex flex-col md:flex-row">
       {/* Image gauche - 1/4 */}
@@ -92,7 +167,7 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
                       onClick={() => updateBrandData({ brandPersonality: personality.value })}
                       className={`p-5 rounded-2xl border transition-all text-left ${
                         brandData.brandPersonality === personality.value
-                          ? 'border-black'
+                          ? 'border-black bg-gray-50'
                           : 'border-gray-200 hover:border-gray-300'
                       }`}
                       whileHover={{ scale: 1.02 }}
@@ -122,7 +197,7 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
                       onClick={() => updateBrandData({ targetAudience: audience.value })}
                       className={`p-5 rounded-2xl border transition-all ${
                         brandData.targetAudience === audience.value
-                          ? 'border-black'
+                          ? 'border-black bg-gray-50'
                           : 'border-gray-200 hover:border-gray-300'
                       }`}
                       whileHover={{ scale: 1.02 }}
@@ -138,9 +213,79 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
                   ))}
                 </div>
               </div>
+
+              {/* Sélection de l'image de couverture */}
+              {brandData.brandPersonality && brandData.targetAudience && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-sm font-medium text-gray-900">
+                      Image de couverture
+                    </h3>
+                    {suggestedImages.length > 0 && (
+                      <motion.button
+                        onClick={handleRefreshImages}
+                        disabled={loadingImages}
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-full hover:bg-gray-50 disabled:opacity-50"
+                        whileHover={{ scale: loadingImages ? 1 : 1.05 }}
+                        whileTap={{ scale: loadingImages ? 1 : 0.95 }}
+                      >
+                        <RefreshCw className={`w-4 h-4 ${loadingImages ? 'animate-spin' : ''}`} />
+                        Proposer d&apos;autres
+                      </motion.button>
+                    )}
+                  </div>
+
+                  {loadingImages ? (
+                    <div className="flex items-center justify-center py-12 border border-gray-200 rounded-2xl bg-gray-50">
+                      <div className="text-center">
+                        <Loader2 className="w-8 h-8 text-gray-400 animate-spin mx-auto mb-3" />
+                        <p className="text-sm text-gray-600">Génération des suggestions...</p>
+                      </div>
+                    </div>
+                  ) : suggestedImages.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {suggestedImages.map((imageUrl, index) => (
+                        <motion.button
+                          key={`${imageUrl}-${index}`}
+                          onClick={() => handleSelectImage(imageUrl)}
+                          className={`relative aspect-video rounded-2xl overflow-hidden border-4 transition-all ${
+                            brandData.coverImage === imageUrl
+                              ? 'border-black shadow-lg scale-[1.02]'
+                              : 'border-gray-200 hover:border-gray-400'
+                          }`}
+                          whileHover={{ scale: brandData.coverImage === imageUrl ? 1.02 : 1.05 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <Image
+                            src={imageUrl}
+                            alt={`Suggestion ${index + 1}`}
+                            fill
+                            className="object-cover"
+                          />
+                          {brandData.coverImage === imageUrl && (
+                            <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                              <div className="bg-white rounded-full p-2">
+                                <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center">
+                                  <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                  </svg>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </motion.button>
+                      ))}
+                    </div>
+                  ) : null}
+                </motion.div>
+              )}
             </div>
 
-            {brandData.brandPersonality && brandData.targetAudience && (
+            {brandData.brandPersonality && brandData.targetAudience && brandData.coverImage && (
               <div className="mt-12 relative rounded-2xl p-8 overflow-hidden border border-gray-200 bg-gray-50">
                 <div className="absolute inset-0 bg-white/40" />
                 <motion.div
@@ -162,6 +307,10 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
                       <span className="text-lg text-black">
                         {audiences.find(a => a.value === brandData.targetAudience)?.label}
                       </span>
+                    </div>
+                    <div className="flex items-baseline gap-3">
+                      <span className="text-sm font-medium text-gray-900 min-w-[100px]">Couverture</span>
+                      <span className="text-sm text-green-600 font-medium">Sélectionnée</span>
                     </div>
                   </div>
                 </div>
@@ -187,9 +336,10 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
 
               <motion.button
                 onClick={onNext}
-                className="relative overflow-hidden px-8 py-3 rounded-full bg-black text-white hover:bg-gray-800 transition-colors"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                disabled={!brandData.brandPersonality || !brandData.targetAudience || !brandData.coverImage}
+                className="relative overflow-hidden px-8 py-3 rounded-full bg-black text-white hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                whileHover={{ scale: brandData.brandPersonality && brandData.targetAudience && brandData.coverImage ? 1.02 : 1 }}
+                whileTap={{ scale: brandData.brandPersonality && brandData.targetAudience && brandData.coverImage ? 0.98 : 1 }}
               >
                 <div className="absolute inset-0 bg-white/10" />
                 <motion.div

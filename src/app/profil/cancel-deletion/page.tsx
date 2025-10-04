@@ -78,7 +78,7 @@ export default function CancelDeletionPage() {
             Annuler la suppression
           </h2>
           <p className="text-gray-600">
-            Vous êtes sur le point d'annuler la suppression de votre compte.
+            Vous êtes sur le point d&apos;annuler la suppression de votre compte.
           </p>
         </div>
 

@@ -54,8 +54,15 @@ export default function BibliothequePage() {
   const generateImagesForBrands = async (brands: LibraryBrand[]) => {
     const newImages: {[key: string]: string} = {}
 
+    // Variétés de mots-clés pour ajouter de la diversité
+    const varietyKeywords = [
+      'workspace', 'design studio', 'creative office', 'modern business',
+      'professional team', 'startup', 'innovation', 'technology',
+      'branding', 'marketing', 'contemporary', 'elegant office'
+    ]
+
     await Promise.all(
-      brands.map(async (brand) => {
+      brands.map(async (brand, index) => {
         try {
           const searchTerms = [
             brand.description || brand.name,
@@ -63,13 +70,23 @@ export default function BibliothequePage() {
             brand.targetAudience
           ].filter(Boolean).join(' ')
 
-          // Ajouter un seed unique basé sur l'ID pour éviter les doublons
+          // Ajouter un mot-clé de variété basé sur l'index pour garantir la diversité
+          const varietyKeyword = varietyKeywords[index % varietyKeywords.length]
+
+          // Utiliser perPage et page pour obtenir différentes images à chaque fois
+          const perPage = 15  // Maximum d'images par requête
+          const randomPage = Math.floor(Math.random() * 3) + 1  // Page aléatoire entre 1 et 3
+          
+          // Ajouter un seed unique basé sur l'ID, l'index ET un élément aléatoire
           const response = await fetch('/api/get-image', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
-              query: `${searchTerms} business brand`,
-              seed: brand.id  // Seed unique pour chaque brand
+              query: `${searchTerms} ${varietyKeyword} black professional`,
+              seed: `${brand.id}-${index}-${Date.now()}`,  // Seed avec timestamp pour éviter le cache
+              provider: 'pexels',  // Forcer l'utilisation de Pexels
+              perPage: perPage,
+              page: randomPage
             })
           })
 
@@ -79,8 +96,15 @@ export default function BibliothequePage() {
           }
         } catch (error) {
           console.error(`Error fetching image for brand ${brand.id}:`, error)
-          // Fallback vers une image par défaut
-          newImages[brand.id] = 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&h=900&fit=crop'
+          // Fallback vers des images par défaut différentes basées sur l'index
+          const fallbackImages = [
+            'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&h=900&fit=crop',
+            'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=1600&h=900&fit=crop',
+            'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1600&h=900&fit=crop',
+            'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1600&h=900&fit=crop',
+            'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=1600&h=900&fit=crop'
+          ]
+          newImages[brand.id] = fallbackImages[index % fallbackImages.length]
         }
       })
     )

@@ -18,6 +18,7 @@ interface Brand {
   accentColor: string | null
   brandPersonality: string | null
   targetAudience: string | null
+  coverImage: string | null
   isCompleted: boolean
   currentStep: number
   createdAt: string

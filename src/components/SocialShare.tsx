@@ -15,6 +15,7 @@ interface SocialShareProps {
 export default function SocialShare({ brandId, brandName, brandDescription, brandUrl, className = '' }: SocialShareProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [hasTracked, setHasTracked] = useState(false)  // Pour ne compter qu'une seule fois
 
   const shareText = `Découvrez le branding de ${brandName} créé avec Guidiqo ! ${brandDescription || 'Un design professionnel généré par IA.'}`
   const encodedUrl = encodeURIComponent(brandUrl)
@@ -27,12 +28,27 @@ export default function SocialShare({ brandId, brandName, brandDescription, bran
   }
 
   const trackShare = async () => {
+    // Ne tracker qu'une seule fois par session
+    if (hasTracked) return
+    
     try {
       await fetch(`/api/brands/${brandId}/share`, {
         method: 'POST',
       })
+      setHasTracked(true)
+      console.log('✅ Partage comptabilisé')
     } catch (error) {
       console.error('Erreur lors du tracking du partage:', error)
+    }
+  }
+
+  const handleToggleMenu = () => {
+    const newIsOpen = !isOpen
+    setIsOpen(newIsOpen)
+    
+    // Comptabiliser le partage dès l'ouverture du menu
+    if (newIsOpen) {
+      trackShare()
     }
   }
 
@@ -41,7 +57,6 @@ export default function SocialShare({ brandId, brandName, brandDescription, bran
       await navigator.clipboard.writeText(brandUrl)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
-      await trackShare()
     } catch (error) {
       console.error('Erreur lors de la copie:', error)
     }
@@ -51,7 +66,6 @@ export default function SocialShare({ brandId, brandName, brandDescription, bran
     const url = shareLinks[platform as keyof typeof shareLinks]
     if (url) {
       window.open(url, '_blank', 'width=600,height=400')
-      await trackShare()
     }
   }
 
@@ -59,7 +73,7 @@ export default function SocialShare({ brandId, brandName, brandDescription, bran
     <div className={`relative ${className}`}>
       {/* Bouton principal - style circulaire comme les autres boutons */}
       <motion.button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleToggleMenu}
         className="p-4 bg-white border border-black/10 rounded-full hover:bg-black hover:text-white transition-colors"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}

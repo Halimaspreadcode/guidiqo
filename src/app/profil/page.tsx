@@ -166,7 +166,7 @@ export default function ProfilPage() {
             {/* Avatar & Basic Info */}
             <div className="flex items-center gap-6 mb-8 pb-8 border-b border-gray-200">
               <AvatarUpload
-                currentImage={user?.profileImage || undefined}
+                currentImage={user?.profileImageUrl || undefined}
                 onImageChange={(imageUrl) => {
                   // L'image sera automatiquement mise à jour via Stack Auth
                   console.log('Image de profil mise à jour:', imageUrl)
@@ -358,7 +358,7 @@ export default function ProfilPage() {
                   <div className="text-left mb-6">
                     <p className="text-gray-600 mb-4 leading-relaxed">
                       Votre compte sera supprimé dans <span className="font-bold text-red-600">7 jours ouvrés</span>. 
-                      Vous recevrez un email de confirmation avec un lien pour annuler si vous changez d'avis.
+                      Vous recevrez un email de confirmation avec un lien pour annuler si vous changez d&apos;avis.
                     </p>
 
                     {/* Raison (optionnelle) */}

@@ -67,7 +67,7 @@ export default function DeletionBanner() {
                 Votre compte sera supprimé le {deletionInfo.scheduledFor}
               </p>
               <p className="text-xs sm:text-sm text-red-100 mt-1">
-                Toutes vos données seront définitivement perdues. Vous avez encore le temps d'annuler.
+                Toutes vos données seront définitivement perdues. Vous avez encore le temps d&apos;annuler.
               </p>
             </div>
           </div>

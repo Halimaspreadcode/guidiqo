@@ -121,7 +121,8 @@ export default function PreviewPage() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
               query,
-              seed: `${data.id}-${key}` // Seed unique pour chaque image
+              seed: `${data.id}-${key}`,  // Seed unique pour chaque image
+              provider: 'pexels'  // Forcer l'utilisation de Pexels
             })
           })
 

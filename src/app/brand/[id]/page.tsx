@@ -49,12 +49,21 @@ export default function BrandPage() {
     try {
       await generateModernBrandPDF(brand, images)
       
-      // Incrémenter le compteur de téléchargements
-      await fetch(`/api/brands/${brand.id}/download`, {
-        method: 'POST',
-      })
+      // Incrémenter le compteur de téléchargements APRÈS la génération réussie
+      // On attend un petit délai pour s'assurer que le téléchargement est bien initié
+      setTimeout(async () => {
+        try {
+          await fetch(`/api/brands/${brand.id}/download`, {
+            method: 'POST',
+          })
+          console.log('✅ Téléchargement comptabilisé')
+        } catch (error) {
+          console.error('Erreur lors du comptage:', error)
+        }
+      }, 500)
     } catch (error) {
       console.error('Error generating PDF:', error)
+      // Ne pas compter si erreur
     } finally {
       setDownloadingPDF(false)
       setShowPreviewModal(false)
@@ -94,7 +103,8 @@ export default function BrandPage() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
               query,
-              seed: `${brandData.id}-${key}` // Seed unique pour chaque image
+              seed: `${brandData.id}-${key}`,  // Seed unique pour chaque image
+              provider: 'pexels'  // Forcer l'utilisation de Pexels
             })
           })
 

@@ -47,6 +47,7 @@ export async function POST(request: Request) {
       secondaryFont,
       brandPersonality,
       targetAudience,
+      coverImage,
       isCompleted,
       currentStep
     } = body
@@ -79,6 +80,7 @@ export async function POST(request: Request) {
         secondaryFont: secondaryFont || null,
         brandPersonality: brandPersonality || null,
         targetAudience: targetAudience || null,
+        coverImage: coverImage || null,
         isCompleted: isCompleted || false,
         currentStep: currentStep || 1
       }

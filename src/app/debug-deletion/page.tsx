@@ -42,7 +42,7 @@ export default function DebugDeletionPage() {
         </h2>
         
         <p className="text-gray-600 mb-6">
-          Si vous avez une erreur "Cette demande ne peut plus être annulée", 
+          Si vous avez une erreur &quot;Cette demande ne peut plus être annulée&quot;, 
           cliquez sur le bouton ci-dessous pour réinitialiser votre demande de suppression.
         </p>
 
