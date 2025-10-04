@@ -1,0 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Style personnalisé pour Stack Auth */
+.stack-auth-custom {
+  /* Styles des inputs Stack Auth */
+  & input[type="email"],
+  & input[type="password"],
+  & input[type="text"] {
+    @apply w-full px-6 py-5 bg-white border-2 border-gray-200 rounded-3xl !important;
+    @apply focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent !important;
+    @apply text-black text-base placeholder-gray-400 transition-all !important;
+    font-size: 16px !important;
+    height: 60px !important;
+  }
+
+  /* Styles des boutons Stack Auth */
+  & button[type="submit"] {
+    @apply w-full py-5 bg-black text-white rounded-3xl font-semibold text-base !important;
+    @apply hover:bg-gray-800 transition-colors !important;
+    height: 60px !important;
+  }
+
+  /* Styles des labels */
+  & label {
+    @apply block text-sm font-medium text-gray-900 mb-3 !important;
+  }
+
+  /* Groupes de champs */
+  & > div {
+    @apply mb-6 !important;
+  }
+
+  /* Messages d'erreur */
+  & [role="alert"] {
+    @apply p-4 bg-red-50 border-2 border-red-200 rounded-3xl text-red-600 text-sm mb-4 !important;
+  }
+
+  /* Liens */
+  & a {
+    @apply text-black font-semibold hover:underline !important;
+  }
+
+  /* Cacher les spinners de loading */
+  & button svg.animate-spin,
+  & svg[class*="spin"],
+  & div[class*="spinner"],
+  & [role="status"] {
+    display: none !important;
+  }
+
+  /* Style des séparateurs */
+  & hr {
+    @apply border-gray-200 my-6 !important;
+  }
+
+  /* Espacement des formulaires */
+  & form {
+    @apply space-y-6 !important;
+  }
+
+  /* Style pour les checkbox et radio */
+  & input[type="checkbox"],
+  & input[type="radio"] {
+    @apply w-5 h-5 border-2 border-gray-300 rounded !important;
+  }
+
+  /* Boutons secondaires */
+  & button:not([type="submit"]) {
+    @apply text-gray-600 hover:text-black transition-colors !important;
+  }
+
+  /* Désactiver les transitions de loading */
+  & button[disabled] {
+    @apply opacity-100 cursor-wait !important;
+  }
+
+  /* Forcer la visibilité du texte des boutons */
+  & button span {
+    @apply inline-block !important;
+  }
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Raleway', sans-serif;
+  background-color: #ffffff;
+  color: #1a1a1a;
+  overflow-x: hidden;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+

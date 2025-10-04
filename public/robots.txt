@@ -1,0 +1,19 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /onboarding/
+Disallow: /superadmin/
+Disallow: /profil/
+Disallow: /modifier/
+Disallow: /auth/
+Disallow: /handler/
+
+# Allow specific pages
+Allow: /
+Allow: /bibliotheque
+
+# Sitemap
+Sitemap: ${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/sitemap.xml
+
