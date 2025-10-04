@@ -138,8 +138,7 @@ export default function ContactPage() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.4 }}
                 >
-                  Passionnée par le design et l&apos;innovation, je suis convaincue que par le digital on peut changer le monde.
-                </motion.p>
+J&apos;utilise le design et l&apos;innovation comme clés pour que le digital serve à changer les choses.                </motion.p>
 
                 <motion.a
                   href="#book-call"

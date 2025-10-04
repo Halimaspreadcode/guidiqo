@@ -183,7 +183,7 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
 
             {/* AI Explanation */}
             {aiSuggestion?.explanation && (
-              <LiquidButton
+              <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="mb-8 p-4 bg-purple-50 border border-purple-200 rounded-xl"
@@ -192,7 +192,7 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
                   <span className="font-semibold">Suggestion IA : </span>
                   {aiSuggestion.explanation}
                 </p>
-              </LiquidButton>
+              </motion.div>
             )}
 
             {/* Manual Font Input */}

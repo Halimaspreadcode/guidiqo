@@ -91,7 +91,7 @@ export default function HeroSection() {
             src="https://images.unsplash.com/photo-1758551015352-fa735f167422?q=80&w=2600&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             alt="Music studio background"
             fill
-            className="object-cover opacity-80"
+            className="object-cover opacity-90"
             priority
           />
           {/* Overlay gradient pour améliorer la lisibilité sur mobile */}
