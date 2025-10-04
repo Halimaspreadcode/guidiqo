@@ -1,236 +1,279 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { Target, Lightbulb, Users, Rocket, Heart, Zap } from 'lucide-react'
+import { motion, useScroll, useTransform } from 'framer-motion'
+import Image from 'next/image'
+import { Target, Compass, Zap, ArrowRight, Check } from 'lucide-react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
 export default function AboutPage() {
-  const values = [
-    {
-      icon: <Lightbulb className="w-8 h-8" />,
-      title: "Innovation",
-      description: "Nous repoussons les limites de l'IA pour simplifier la création de branding."
-    },
-    {
-      icon: <Users className="w-8 h-8" />,
-      title: "Accessibilité",
-      description: "Un outil puissant accessible à tous, des entrepreneurs aux grandes entreprises."
-    },
-    {
-      icon: <Heart className="w-8 h-8" />,
-      title: "Passion",
-      description: "Une équipe passionnée par le design et l'expérience utilisateur exceptionnelle."
-    },
-    {
-      icon: <Zap className="w-8 h-8" />,
-      title: "Rapidité",
-      description: "Créez votre branding en quelques minutes, pas en plusieurs jours."
-    }
-  ]
+  const { scrollYProgress } = useScroll()
+  const heroScale = useTransform(scrollYProgress, [0, 0.2], [1, 0.95])
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0.5])
 
   return (
     <div className="min-h-screen bg-white">
       <Header />
       
-      <main className="pt-32 pb-20">
-        {/* Hero Section */}
-        <section className="px-4 md:px-8 mb-20">
-          <div className="max-w-6xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="text-center mb-16"
-            >
-              <h1 className="text-5xl md:text-7xl font-light text-black mb-6" style={{ fontFamily: "'Raleway', sans-serif" }}>
-                À propos de Guidiqo
-              </h1>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto font-light leading-relaxed">
-                Nous transformons la manière dont les entrepreneurs et les créateurs 
-                développent leur identité de marque grâce à l&apos;intelligence artificielle.
-              </p>
-            </motion.div>
+      <main className="pt-20 md:pt-24">
+        {/* Hero Section - Ultra minimal */}
+        <section className="px-4 md:px-8 mb-32 md:mb-48">
+          <motion.div 
+            className="relative min-h-[85vh] flex items-center justify-center overflow-hidden rounded-3xl bg-black"
+            style={{ scale: heroScale, opacity: heroOpacity }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1 }}
+          >
+            <Image
+              src="https://images.unsplash.com/photo-1758551015352-fa735f167422?q=80&w=2600&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="About"
+              fill
+              className="object-cover opacity-90"
+              priority
+            />
 
-            {/* Mission Statement */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-3xl p-8 md:p-12 mb-16"
-            >
-              <div className="flex items-start gap-6">
-                <div className="p-4 bg-black rounded-2xl">
-                  <Target className="w-10 h-10 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-3xl font-light text-black mb-4">Notre Mission</h2>
-                  <p className="text-lg text-gray-600 leading-relaxed">
-                    Démocratiser le branding professionnel en le rendant accessible, rapide et abordable. 
-                    Guidiqo permet à chacun de créer une identité visuelle cohérente et impactante, 
-                    sans avoir besoin de compétences en design ou d&apos;un budget conséquent.
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          </div>
+            <div className="relative z-10 text-center px-6 max-w-6xl">
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              >
+                <h1 className="text-7xl sm:text-8xl md:text-9xl lg:text-[12rem] font-bold tracking-tighter text-white mb-8">
+                  Guidiqo
+                </h1>
+                
+              </motion.div>
+            </div>
+          </motion.div>
         </section>
 
-        {/* Story Section */}
-        <section className="px-4 md:px-8 mb-20 bg-gray-50 py-20">
-          <div className="max-w-6xl mx-auto">
+        {/* Concept - Minimal split */}
+        <section className="px-4 md:px-8 mb-32 md:mb-48">
+          <div className="max-w-7xl mx-auto">
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 60 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, margin: "-150px" }}
               transition={{ duration: 0.8 }}
-              className="grid md:grid-cols-2 gap-12 items-center"
+              className="grid md:grid-cols-2 gap-12 md:gap-16"
             >
               <div>
-                <h2 className="text-4xl font-light text-black mb-6">
-                  Comment tout a commencé
-                </h2>
-                <div className="space-y-4 text-gray-600 leading-relaxed">
-                  <p>
-                    Guidiqo est né d&apos;une frustration simple : créer une identité de marque professionnelle 
-                    prend trop de temps et coûte trop cher.
-                  </p>
-                  <p>
-                    En tant qu&apos;entrepreneurs et designers, nous avons vécu cette difficulté. 
-                    Nous avons donc décidé de créer un outil qui combine l&apos;intelligence artificielle 
-                    et les principes du design pour générer des brand guidelines complets en quelques minutes.
-                  </p>
-                  <p>
-                    Aujourd&apos;hui, des milliers de créateurs utilisent Guidiqo pour donner vie à leurs projets, 
-                    qu&apos;il s&apos;agisse de startups tech, de restaurants, de boutiques e-commerce ou d&apos;agences créatives.
-                  </p>
-                </div>
+                <motion.h2 
+                  className="text-5xl md:text-7xl font-bold text-black mb-8"
+                  initial={{ opacity: 0, x: -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                >
+                  Guide + IQ
+                </motion.h2>
+                <motion.p 
+                  className="text-xl md:text-2xl text-gray-500 leading-relaxed"
+                  initial={{ opacity: 0, x: -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                >
+                  Un système intelligent qui t&apos;accompagne pour créer une identité de marque professionnelle en quelques minutes. Guidiqo c'est ton assistant créatif.
+                </motion.p>
               </div>
 
-              <motion.div
-                className="relative h-96 bg-gradient-to-br from-black to-gray-800 rounded-3xl overflow-hidden"
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Rocket className="w-32 h-32 text-white/20" />
-                </div>
-                <div className="absolute bottom-8 left-8 right-8 text-white">
-                  <p className="text-6xl font-bold mb-2">2024</p>
-                  <p className="text-lg opacity-90">L&apos;année de lancement</p>
-                </div>
-              </motion.div>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* Values Section */}
-        <section className="px-4 md:px-8 mb-20">
-          <div className="max-w-6xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="text-center mb-16"
-            >
-              <h2 className="text-4xl font-light text-black mb-6">
-                Nos Valeurs
-              </h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Les principes qui guident chaque décision et chaque ligne de code que nous écrivons.
-              </p>
-            </motion.div>
-
-            <div className="grid md:grid-cols-2 gap-6">
-              {values.map((value, index) => (
+              <div className="space-y-8">
                 <motion.div
-                  key={value.title}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="p-8 bg-white border border-gray-200 rounded-3xl hover:shadow-lg transition-shadow"
-                  whileHover={{ y: -5 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="group"
                 >
-                  <div className="p-3 bg-gray-100 rounded-2xl inline-block mb-4">
-                    {value.icon}
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="w-12 h-12  rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Compass className="w-6 h-6 text-black" strokeWidth={2} />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold text-black mb-2">
+                        Structure
+                      </h3>
+                      <p className="text-gray-600 text-lg">
+                        Processus clair, étape par étape
+                      </p>
+                    </div>
                   </div>
-                  <h3 className="text-2xl font-semibold text-black mb-3">
-                    {value.title}
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    {value.description}
-                  </p>
+                  <motion.div 
+                    className="h-px bg-gray-200"
+                    initial={{ width: 0 }}
+                    whileInView={{ width: '100%' }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: 0.4 }}
+                  />
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                  className="group"
+                >
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="w-12 h-12  rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Zap className="w-6 h-6 text-black" strokeWidth={2} />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold text-black mb-2">
+                        Intelligence
+                      </h3>
+                      <p className="text-gray-600 text-lg">
+                        Décisions guidées par des règles de design
+                      </p>
+                    </div>
+                  </div>
+                  <motion.div 
+                    className="h-px bg-gray-200"
+                    initial={{ width: 0 }}
+                    whileInView={{ width: '100%' }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: 0.6 }}
+                  />
+                </motion.div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Mission - Full width statement */}
+        <section className="px-4 md:px-8 mb-32 md:mb-48">
+          <motion.div
+            initial={{ opacity: 0, y: 60 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-150px" }}
+            transition={{ duration: 0.8 }}
+            className="max-w-5xl mx-auto text-center"
+          >
+           
+
+            <motion.h2 
+              className="text-5xl md:text-7xl font-bold text-black mb-8"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
+              Un branding pro,
+              <br />
+              en quelques minutes
+            </motion.h2>
+
+            <motion.p 
+              className="text-xl md:text-2xl text-gray-600 mb-6 max-w-3xl mx-auto"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+            >
+              Les fondateurs perdent des semaines pour un kit basique. Beaucoup finissent avec un joli visuel… mais pas utilisable.
+            </motion.p>
+
+            <motion.p 
+              className="text-xl md:text-2xl text-black font-medium max-w-3xl mx-auto"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+            >
+              Guidiqo génère un système de marque complet, cohérent et prêt à être publier. Aider de l'IA pour créer un branding unique et professionnel, les possibilités deviennent infinis.
+            </motion.p>
+          </motion.div>
+        </section>
+
+        {/* Features Grid - Minimal */}
+        <section className="px-4 md:px-8 mb-32 md:mb-48">
+          <div className="max-w-6xl mx-auto">
+            <motion.h2 
+              className="text-4xl md:text-6xl font-bold text-black mb-16 md:mb-24"
+              initial={{ opacity: 0, y: 60 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-150px" }}
+              transition={{ duration: 0.8 }}
+            >
+              Ce que tu obtiens
+            </motion.h2>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[
+                "Palette couleurs validée",
+                "Typographie & échelle",
+                "Guidelines PDF",
+                "Assets exportables",
+                "Historique & versions",
+                "Admin équipes"
+              ].map((feature, index) => (
+                <motion.div
+                  key={feature}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="group relative"
+                >
+                  <motion.div
+                    className="p-8 border border-gray-200 rounded-2xl bg-white"
+                    whileHover={{ y: -4, borderColor: '#000', transition: { duration: 0.2 } }}
+                  >
+                    <div className="flex items-start gap-3">
+                      <motion.div
+                        className="w-6 h-6 border-2 border-gray-300 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5"
+                        whileHover={{ borderColor: '#000' }}
+                      >
+                        <Check className="w-4 h-4 text-black opacity-0 group-hover:opacity-100 transition-opacity" strokeWidth={3} />
+                      </motion.div>
+                      <p className="text-lg md:text-xl text-black font-medium">
+                        {feature}
+                      </p>
+                    </div>
+                  </motion.div>
                 </motion.div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Tech Stack Section */}
-        <section className="px-4 md:px-8 mb-20 bg-gray-50 py-20">
-          <div className="max-w-6xl mx-auto text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-            >
-              <h2 className="text-4xl font-light text-black mb-6">
-                Propulsé par les meilleures technologies
-              </h2>
-              <p className="text-lg text-gray-600 mb-12 max-w-2xl mx-auto">
-                Nous utilisons des technologies de pointe pour vous offrir 
-                une expérience rapide, sécurisée et intuitive.
-              </p>
+        {/* CTA - Minimal black section */}
+        <section className="px-4 md:px-8 mb-20">
+          <motion.div
+            initial={{ opacity: 0, y: 60 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-150px" }}
+            transition={{ duration: 0.8 }}
+            className="relative overflow-hidden rounded-3xl bg-black p-16 md:p-32 text-center"
+          >
+            <div className="relative z-10 max-w-4xl mx-auto">
+              <motion.h2 
+                className="text-6xl md:text-8xl font-bold text-white mb-8"
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              >
+                Et si tout commençait ici ?
+              </motion.h2>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {['Next.js', 'TypeScript', 'AI / Groq', 'PostgreSQL'].map((tech, index) => (
-                  <motion.div
-                    key={tech}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
-                    className="p-6 bg-white rounded-2xl border border-gray-200"
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    <p className="font-semibold text-black">{tech}</p>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* CTA Section */}
-        <section className="px-4 md:px-8">
-          <div className="max-w-4xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="bg-gradient-to-br from-black to-gray-800 rounded-3xl p-12 md:p-16 text-center text-white"
-            >
-              <h2 className="text-4xl md:text-5xl font-light mb-6">
-                Prêt à créer votre branding ?
-              </h2>
-              <p className="text-xl opacity-90 mb-8 max-w-2xl mx-auto">
-                Rejoignez les milliers de créateurs qui font confiance à Guidiqo 
-                pour développer leur identité de marque.
-              </p>
               <motion.button
                 onClick={() => window.location.href = '/'}
-                className="px-10 py-4 bg-white text-black rounded-full font-semibold hover:bg-gray-100 transition-colors"
+                className="group px-12 py-5 bg-white text-black rounded-full font-semibold text-lg inline-flex items-center gap-3"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.4 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Commencer gratuitement
+                C'est parti !
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" strokeWidth={2} />
               </motion.button>
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
         </section>
       </main>
 
@@ -238,4 +281,3 @@ export default function AboutPage() {
     </div>
   )
 }
-

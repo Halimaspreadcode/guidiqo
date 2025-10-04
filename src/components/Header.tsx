@@ -6,6 +6,7 @@ import { useUser } from '@stackframe/stack';
 import { LiquidButton } from './LiquidGlassButton';
 import { LogOut, User, Menu, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 export default function Header() {
   const router = useRouter();
@@ -90,6 +91,7 @@ export default function Header() {
         >
           {/* Logo */}
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push('/')}>
+           
             <span className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-black">Guidiqo</span>
           </div>
           

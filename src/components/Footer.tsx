@@ -24,20 +24,17 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold mb-3 sm:mb-4 text-black text-sm sm:text-base">Produit</h4>
             <ul className="space-y-2 text-gray-600 text-sm">
-              <li><a href="#" className="hover:text-black transition-colors duration-200">Fonctionnalités</a></li>
-              <li><a href="#" className="hover:text-black transition-colors duration-200">Tarifs</a></li>
-              <li><a href="#" className="hover:text-black transition-colors duration-200">API</a></li>
-              <li><a href="#" className="hover:text-black transition-colors duration-200">Applications</a></li>
+              <li><a href="/" className="hover:text-black transition-colors duration-200">Accueil</a></li>
+              <li><a href="/bibliotheque" className="hover:text-black transition-colors duration-200">Bibliothèque</a></li>
+              <li><a href="/dashboard" className="hover:text-black transition-colors duration-200">Dashboard</a></li>
             </ul>
           </div>
           
           <div>
             <h4 className="font-semibold mb-3 sm:mb-4 text-black text-sm sm:text-base">Entreprise</h4>
             <ul className="space-y-2 text-gray-600 text-sm">
-              <li><a href="#" className="hover:text-black transition-colors duration-200">À propos</a></li>
-              <li><a href="#" className="hover:text-black transition-colors duration-200">Blog</a></li>
-              <li><a href="#" className="hover:text-black transition-colors duration-200">Carrières</a></li>
-              <li><a href="#" className="hover:text-black transition-colors duration-200">Contact</a></li>
+              <li><a href="/a-propos" className="hover:text-black transition-colors duration-200">À propos</a></li>
+              <li><a href="/contact" className="hover:text-black transition-colors duration-200">Contact</a></li>
             </ul>
           </div>
           
