@@ -200,28 +200,64 @@ export default function BibliothequePage() {
                     onClick={() => router.push(`/brand/${brand.id}`)}
                     whileHover={{ y: -5 }}
                   >
-                    {/* Image avec gradient et overlay */}
-                    <div 
-                      className="relative w-full h-64 sm:h-72 md:h-80 rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200"
-                      style={{ background: gradient }}
-                    >
-                      {/* Utiliser UNIQUEMENT l'image de couverture fournie par l'utilisateur */}
-                      {brand.coverImage ? (
-                        <img
-                          src={brand.coverImage}
-                          alt={brand.name}
-                          className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-700"
-                          onError={(e) => {
-                            // Fallback vers gradient si l'image ne charge pas
-                            (e.target as HTMLImageElement).style.display = 'none'
-                          }}
-                        />
-                      ) : (
-                        <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-black/60" />
-                      )}
+                    {/* Card divisée : 1/3 couleurs en haut + 2/3 contenu en bas */}
+                    <div className="relative w-full h-64 sm:h-72 md:h-80 rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200 flex flex-col">
                       
-                      {/* Overlay avec informations */}
-                      <div className="absolute inset-0 flex flex-col justify-between p-4 sm:p-6">
+                      {/* 1/3 HAUT : Bandes de couleurs horizontales */}
+                      <div className="h-1/3 flex">
+                        {[
+                          { color: brand.primaryColor, label: 'Principale' },
+                          { color: brand.secondaryColor, label: 'Secondaire' },
+                          { color: brand.accentColor, label: 'Accent' }
+                        ]
+                          .filter(item => item.color)
+                          .map((item, idx, arr) => (
+                            <motion.div
+                              key={idx}
+                              className="relative flex-1 cursor-pointer overflow-hidden group/color"
+                              style={{ backgroundColor: item.color! }}
+                              onClick={(e) => e.stopPropagation()}
+                              whileHover={{ flexGrow: 1.5 }}
+                              transition={{ duration: 0.3 }}
+                            >
+                              {/* Contenu visible au hover */}
+                              <div className="absolute inset-0 flex flex-col items-center justify-center p-2 opacity-0 group-hover/color:opacity-100 transition-opacity bg-black/20">
+                                <p className="text-[10px] font-bold text-white uppercase tracking-wider mb-1 whitespace-nowrap drop-shadow-md">
+                                  {item.label}
+                                </p>
+                                <p className="text-xs font-mono text-white/95 whitespace-nowrap drop-shadow-md">
+                                  {item.color}
+                                </p>
+                              </div>
+                              {/* Bordure de séparation */}
+                              {idx < arr.length - 1 && (
+                                <div className="absolute right-0 top-0 bottom-0 w-px bg-white/30" />
+                              )}
+                            </motion.div>
+                          ))}
+                      </div>
+
+                      {/* 2/3 BAS : Image et contenu */}
+                      <div 
+                        className="relative h-2/3 overflow-hidden"
+                        style={{ background: gradient }}
+                      >
+                        {/* Image de fond si disponible */}
+                        {brand.coverImage ? (
+                          <img
+                            src={brand.coverImage}
+                            alt={brand.name}
+                            className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-700"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.display = 'none'
+                            }}
+                          />
+                        ) : (
+                          <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-black/60" />
+                        )}
+                        
+                        {/* Overlay avec informations */}
+                        <div className="absolute inset-0 flex flex-col justify-between p-4 sm:p-6">
                         {/* Header avec author */}
                         <div className="flex items-start justify-between">
                           <LiquidButton className="flex items-center gap-2 px-3 py-2 rounded-full  backdrop-blur-xl">
@@ -247,48 +283,8 @@ export default function BibliothequePage() {
                           </motion.h3>
                         </div>
 
-                        {/* Footer avec bandes de couleurs verticales */}
-                        <div className="flex items-end justify-between">
-                          {/* Bandes de couleurs verticales qui s'ouvrent au hover */}
-                          <div className="flex gap-0 h-16 sm:h-20">
-                            {[
-                              { color: brand.primaryColor, label: 'Principale' },
-                              { color: brand.secondaryColor, label: 'Secondaire' },
-                              { color: brand.accentColor, label: 'Accent' }
-                            ]
-                              .filter(item => item.color)
-                              .map((item, idx) => (
-                                <motion.div
-                                  key={idx}
-                                  className="relative h-full cursor-pointer overflow-hidden rounded-l-lg first:rounded-l-xl"
-                                  initial={{ width: '16px' }}
-                                  whileHover={{ width: '140px' }}
-                                  transition={{ duration: 0.3, ease: 'easeOut' }}
-                                  style={{ backgroundColor: item.color! }}
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  {/* Contenu visible au hover */}
-                                  <motion.div 
-                                    className="absolute inset-0 flex flex-col items-center justify-center p-2"
-                                    initial={{ opacity: 0 }}
-                                    whileHover={{ opacity: 1 }}
-                                    transition={{ duration: 0.2 }}
-                                  >
-                                    <p className="text-[10px] font-bold text-white uppercase tracking-wider mb-1 whitespace-nowrap drop-shadow-md">
-                                      {item.label}
-                                    </p>
-                                    <p className="text-xs font-mono text-white/95 whitespace-nowrap drop-shadow-md">
-                                      {item.color}
-                                    </p>
-                                  </motion.div>
-                                  {/* Bordure de séparation */}
-                                  {idx < 2 && (
-                                    <div className="absolute right-0 top-0 bottom-0 w-px bg-white/30" />
-                                  )}
-                                </motion.div>
-                              ))}
-                          </div>
-
+                        {/* Footer avec bouton */}
+                        <div className="flex items-end justify-end">
                           {/* Bouton Voir - Caché par défaut, visible au hover */}
                           <motion.button
                             onClick={(e) => {
@@ -303,6 +299,7 @@ export default function BibliothequePage() {
                             <ArrowRight className="w-4 h-4" />
                           </motion.button>
                         </div>
+                      </div>
                       </div>
                     </div>
                   </motion.div>
