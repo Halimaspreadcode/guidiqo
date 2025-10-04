@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { User, Mail, Calendar, Trash2, Menu, X, AlertTriangle, Check } from 'lucide-react'
 import { LiquidButton } from '@/components/LiquidGlassButton'
 import Sidebar from '@/components/Sidebar'
+import AvatarUpload from '@/components/AvatarUpload'
 
 export default function ProfilPage() {
   const user = useUser({ or: 'return-null' })
@@ -163,12 +164,13 @@ export default function ProfilPage() {
           >
             {/* Avatar & Basic Info */}
             <div className="flex items-center gap-6 mb-8 pb-8 border-b border-gray-200">
-              <motion.div
-                className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-r from-stone-900 to-gray-800 text-white font-bold text-2xl sm:text-3xl flex items-center justify-center"
-                whileHover={{ scale: 1.05 }}
-              >
-                {getInitials()}
-              </motion.div>
+              <AvatarUpload
+                currentImage={user?.profileImage || undefined}
+                onImageChange={(imageUrl) => {
+                  // L'image sera automatiquement mise à jour via Stack Auth
+                  console.log('Image de profil mise à jour:', imageUrl)
+                }}
+              />
               <div>
                 <h2 className="text-2xl sm:text-3xl font-bold text-black mb-2">
                   {user.displayName || 'Utilisateur'}
@@ -177,7 +179,9 @@ export default function ProfilPage() {
                   <Mail className="w-4 h-4" />
                   {user.primaryEmail}
                 </p>
-                
+                <p className="text-sm text-gray-500 mt-1">
+                  Cliquez sur votre photo pour la modifier
+                </p>
               </div>
             </div>
 

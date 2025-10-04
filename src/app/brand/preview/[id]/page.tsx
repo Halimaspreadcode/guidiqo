@@ -8,6 +8,7 @@ import { useUser } from '@stackframe/stack'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { LiquidButton } from '@/components/LiquidGlassButton'
+import SocialShare from '@/components/SocialShare'
 import Link from 'next/link'
 
 interface BrandData {
@@ -100,13 +101,13 @@ export default function PreviewPage() {
       data.targetAudience
     ].filter(Boolean).join(' ')
 
-    // Définir les requêtes pour chaque catégorie
+    // Définir les requêtes pour chaque catégorie avec diversité
     const queries = {
-      hero: `${searchTerms} business brand`,
-      typography: 'typography design text',
-      personality: `${data.brandPersonality || 'modern'} lifestyle`,
-      accent: `abstract ${data.brandPersonality || 'modern'} pattern`,
-      application: `${searchTerms} office workspace`
+      hero: `${searchTerms} business brand black professional`,
+      typography: 'typography design text black professional',
+      personality: `${data.brandPersonality || 'modern'} lifestyle black professional`,
+      accent: `abstract ${data.brandPersonality || 'modern'} pattern black`,
+      application: `${searchTerms} office workspace black professional`
     }
 
     const newImages: {[key: string]: string} = {}
@@ -680,15 +681,16 @@ export default function PreviewPage() {
             Téléchargez votre guide complet ou continuez à créer dans notre studio
           </motion.p>
 
-          {/* Bouton Studio uniquement si connecté - sinon le modal s'affiche */}
-          {user && (
-            <motion.div
-              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-            >
+          {/* Boutons d'action */}
+          <motion.div
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            {/* Bouton Studio si connecté */}
+            {user && (
               <motion.button
                 onClick={handleDownload}
                 disabled={saving}
@@ -707,8 +709,16 @@ export default function PreviewPage() {
                   )}
                 </span>
               </motion.button>
-            </motion.div>
-          )}
+            )}
+
+            {/* Bouton de partage */}
+            <SocialShare
+              brandName={brandData.name}
+              brandDescription={brandData.description}
+              brandUrl={typeof window !== 'undefined' ? window.location.href : ''}
+              className="w-full sm:w-auto"
+            />
+          </motion.div>
         </div>
       </motion.section>
 

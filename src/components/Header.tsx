@@ -7,10 +7,12 @@ import { LiquidButton } from './LiquidGlassButton';
 import { LogOut, User, Menu, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { useUserProfile } from '@/hooks/useUserProfile';
 
 export default function Header() {
   const router = useRouter();
   const user = useUser({ or: 'return-null' });
+  const { profile } = useUserProfile();
   const [isAdmin, setIsAdmin] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -119,12 +121,22 @@ export default function Header() {
               <div className="flex items-center gap-2">
                 <motion.button
                   onClick={() => router.push('/dashboard')}
-                  className="w-10 h-10 rounded-full bg-gradient-to-r from-stone-900 to-gray-800 text-white font-semibold flex items-center justify-center hover:from-red-900 hover:to-red-600 transition-all duration-200"
+                  className="w-10 h-10 rounded-full overflow-hidden hover:from-red-900 hover:to-red-600 transition-all duration-200"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                   title={user.displayName || user.primaryEmail || 'Mon compte'}
                 >
-                  {getInitials()}
+                  {profile?.profileImage ? (
+                    <img
+                      src={profile.profileImage}
+                      alt="Avatar"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-r from-stone-900 to-gray-800 text-white font-semibold flex items-center justify-center">
+                      {getInitials()}
+                    </div>
+                  )}
                 </motion.button>
               </div>
             ) : (
@@ -141,12 +153,22 @@ export default function Header() {
           {user && (
             <motion.button
               onClick={() => router.push('/dashboard')}
-              className="sm:hidden w-10 h-10 rounded-full bg-gradient-to-r from-stone-900 to-gray-800 text-white font-semibold flex items-center justify-center hover:from-red-900 hover:to-red-600 transition-all duration-200"
+              className="sm:hidden w-10 h-10 rounded-full overflow-hidden hover:from-red-900 hover:to-red-600 transition-all duration-200"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
               title={user.displayName || user.primaryEmail || 'Mon compte'}
             >
-              {getInitials()}
+              {profile?.profileImage ? (
+                <img
+                  src={profile.profileImage}
+                  alt="Avatar"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-r from-stone-900 to-gray-800 text-white font-semibold flex items-center justify-center">
+                  {getInitials()}
+                </div>
+              )}
             </motion.button>
           )}
         </motion.div>

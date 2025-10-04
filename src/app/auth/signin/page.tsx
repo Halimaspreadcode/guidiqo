@@ -67,8 +67,8 @@ export default function SignInPage() {
         }
       })
 
-      // Traduire les boutons
-      document.querySelectorAll('.stack-auth-custom button').forEach((button) => {
+      // Traduire les boutons (sauf les boutons d'icône comme le bouton eye)
+      document.querySelectorAll('.stack-auth-custom button[type="submit"]').forEach((button) => {
         const text = button.textContent?.trim()
         if (text && translations[text]) {
           button.textContent = translations[text]

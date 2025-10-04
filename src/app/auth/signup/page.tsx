@@ -61,8 +61,8 @@ export default function SignUpPage() {
         }
       })
 
-      // Traduire les boutons
-      document.querySelectorAll('.stack-auth-custom button').forEach((button) => {
+      // Traduire les boutons (sauf les boutons d'icône comme le bouton eye)
+      document.querySelectorAll('.stack-auth-custom button[type="submit"]').forEach((button) => {
         const text = button.textContent?.trim()
         if (text && translations[text]) {
           button.textContent = translations[text]
@@ -128,10 +128,10 @@ export default function SignUpPage() {
             transition={{ duration: 0.8, delay: 0.3 }}
           >
             <h2 className="text-4xl font-bold text-white mb-4">
-              Rejoignez la communauté
+              Premiers venu,<br /> premiers servis !
             </h2>
             <p className="text-white/80 text-lg">
-              Créez votre compte gratuitement et commencez à concevoir
+              Créez votre compte gratuitement et commencez à concevoir.<br /> Notre outil est gratuit pour nos early adopters.
             </p>
           </motion.div>
         </div>

@@ -319,36 +319,22 @@ const createColorsPage = (brand: Brand, styleVariant: number) => {
         ">01</span>
       </div>
       
-      <!-- Watermark "Made with Guidiqo" - Top Right (Pill style) -->
+      <!-- Watermark "Made with Guidiqo" - Top Right (Text only) -->
       <div style="
         position: absolute;
-        top: 60px;
+        top: 30px;
         right: 120px;
         display: flex;
         align-items: center;
         gap: 6px;
-        background: #DC2626;
+        background: white;
         padding: 8px 16px;
         border-radius: 50px;
+        border: 1px solid #e5e7eb;
       ">
-        <div style="
-          width: 20px;
-          height: 20px;
-          background: white;
-          border-radius: 4px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        ">
-          <span style="
-            color: #DC2626;
-            font-size: 12px;
-            font-weight: bold;
-          ">G</span>
-        </div>
         <span style="
           font-size: 13px;
-          color: white;
+          color: black;
           font-weight: 600;
           letter-spacing: 0.3px;
         ">Made with Guidiqo</span>
@@ -557,36 +543,22 @@ const createTypographyPage = (brand: Brand, styleVariant: number) => {
         ">02</span>
       </div>
       
-      <!-- Watermark "Made with Guidiqo" - Top Right (Pill style) -->
+      <!-- Watermark "Made with Guidiqo" - Top Right (Text only) -->
       <div style="
         position: absolute;
-        top: 60px;
+        top: 30px;
         right: 120px;
         display: flex;
         align-items: center;
         gap: 6px;
-        background: #DC2626;
+        background: white;
         padding: 8px 16px;
         border-radius: 50px;
+        border: 1px solid #e5e7eb;
       ">
-        <div style="
-          width: 20px;
-          height: 20px;
-          background: white;
-          border-radius: 4px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        ">
-          <span style="
-            color: #DC2626;
-            font-size: 12px;
-            font-weight: bold;
-          ">G</span>
-        </div>
         <span style="
           font-size: 13px;
-          color: white;
+          color: black;
           font-weight: 600;
           letter-spacing: 0.3px;
         ">Made with Guidiqo</span>
@@ -606,17 +578,6 @@ const createPersonalityPage = (brand: Brand, styleVariant: number) => {
       font-family: 'Raleway', -apple-system, sans-serif;
       overflow: hidden;
     ">
-      <!-- Grand bloc de couleur diagonale -->
-      <div style="
-        position: absolute;
-        top: -200px;
-        right: -200px;
-        width: 1000px;
-        height: 1000px;
-        background: ${brand.primaryColor || '#000'};
-        transform: rotate(25deg);
-        opacity: 0.95;
-      "></div>
       
       <div style="
         padding: 100px 120px;
@@ -740,50 +701,28 @@ const createPersonalityPage = (brand: Brand, styleVariant: number) => {
         ">03</span>
       </div>
       
-      <!-- Watermark "Made with Guidiqo" - Top Right -->
+      <!-- Watermark "Made with Guidiqo" - Top Right (Text only) -->
       <div style="
         position: absolute;
-        top: 60px;
+        top: 50%;
         right: 120px;
+        transform: translateY(-50%);
         display: flex;
         align-items: center;
-        gap: 8px;
-        opacity: 0.5;
+        justify-content: center;
+        gap: 6px;
+        background: white;
+        padding: 8px 16px;
+        border-radius: 50px;
+        border: 1px solid #e5e7eb;
         z-index: 1;
       ">
         <span style="
           font-size: 13px;
-          color: #999;
-          font-weight: 300;
-          letter-spacing: 0.5px;
-        ">Made with</span>
-        <div style="
-          display: flex;
-          align-items: center;
-          gap: 6px;
-        ">
-          <div style="
-            width: 20px;
-            height: 20px;
-            background: #000;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-          ">
-            <span style="
-              color: white;
-              font-size: 12px;
-              font-weight: bold;
-            ">G</span>
-          </div>
-          <span style="
-            font-size: 14px;
-            color: #000;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-          ">Guidiqo</span>
-        </div>
+          color: black;
+          font-weight: 600;
+          letter-spacing: 0.3px;
+        ">Made with Guidiqo</span>
       </div>
     </div>
   `
@@ -966,36 +905,22 @@ const createApplicationPage = (brand: Brand, styleVariant: number) => {
         ">04</span>
       </div>
       
-      <!-- Watermark "Made with Guidiqo" - Top Right (Pill style) -->
+      <!-- Watermark "Made with Guidiqo" - Top Right (Text only) -->
       <div style="
         position: absolute;
-        top: 60px;
+        top: 30px;
         right: 120px;
         display: flex;
         align-items: center;
         gap: 6px;
-        background: #DC2626;
+        background: white;
         padding: 8px 16px;
         border-radius: 50px;
+        border: 1px solid #e5e7eb;
       ">
-        <div style="
-          width: 20px;
-          height: 20px;
-          background: white;
-          border-radius: 4px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        ">
-          <span style="
-            color: #DC2626;
-            font-size: 12px;
-            font-weight: bold;
-          ">G</span>
-        </div>
         <span style="
           font-size: 13px;
-          color: white;
+          color: black;
           font-weight: 600;
           letter-spacing: 0.3px;
         ">Made with Guidiqo</span>

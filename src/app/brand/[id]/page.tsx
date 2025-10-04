@@ -7,6 +7,7 @@ import { ArrowLeft, Edit, Download, X, Eye } from 'lucide-react'
 import { useUser } from '@stackframe/stack'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import SocialShare from '@/components/SocialShare'
 import { generateModernBrandPDF } from '@/utils/generatePDF'
 
 interface Brand {
@@ -68,13 +69,13 @@ export default function BrandPage() {
       brandData.targetAudience
     ].filter(Boolean).join(' ')
 
-    // Définir les requêtes pour chaque catégorie
+    // Définir les requêtes pour chaque catégorie avec diversité
     const queries = {
-      hero: `${searchTerms} business brand`,
-      typography: 'typography design text',
-      personality: `${brandData.brandPersonality || 'modern'} lifestyle`,
-      accent: `abstract ${brandData.brandPersonality || 'modern'} pattern`,
-      application: `${searchTerms} office workspace`
+      hero: `${searchTerms} business brand black professional`,
+      typography: 'typography design text black professional',
+      personality: `${brandData.brandPersonality || 'modern'} lifestyle black professional`,
+      accent: `abstract ${brandData.brandPersonality || 'modern'} pattern black`,
+      application: `${searchTerms} office workspace black professional`
     }
 
     const newImages: {[key: string]: string} = {}
@@ -204,29 +205,39 @@ export default function BrandPage() {
               )}
             </div>
 
-            {/* Actions - uniquement si propriétaire */}
-            {isOwner && (
-              <div className="flex gap-3">
-                <motion.button
-                  onClick={() => router.push(`/modifier/${brand.id}`)}
-                  className="p-4 bg-white border border-black/10 rounded-full hover:bg-black hover:text-white transition-colors"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  title="Modifier le branding"
-                >
-                  <Edit className="w-5 h-5" />
-                </motion.button>
-                <motion.button
-                  onClick={() => setShowPreviewModal(true)}
-                  className="p-4 bg-black text-white rounded-full hover:bg-gray-800 transition-colors"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  title="Télécharger en PDF"
-                >
-                  <Download className="w-5 h-5" />
-                </motion.button>
-              </div>
-            )}
+            {/* Actions */}
+            <div className="flex gap-3">
+              {/* Bouton de partage - visible pour tous */}
+              <SocialShare
+                brandName={brand.name}
+                brandDescription={brand.description || undefined}
+                brandUrl={typeof window !== 'undefined' ? window.location.href : ''}
+              />
+              
+              {/* Actions propriétaire */}
+              {isOwner && (
+                <>
+                  <motion.button
+                    onClick={() => router.push(`/modifier/${brand.id}`)}
+                    className="p-4 bg-white border border-black/10 rounded-full hover:bg-black hover:text-white transition-colors"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    title="Modifier le branding"
+                  >
+                    <Edit className="w-5 h-5" />
+                  </motion.button>
+                  <motion.button
+                    onClick={() => setShowPreviewModal(true)}
+                    className="p-4 bg-black text-white rounded-full hover:bg-gray-800 transition-colors"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    title="Télécharger en PDF"
+                  >
+                    <Download className="w-5 h-5" />
+                  </motion.button>
+                </>
+              )}
+            </div>
           </motion.div>
 
           {/* Le même Bento Grid que dans preview */}
