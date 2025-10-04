@@ -319,49 +319,39 @@ const createColorsPage = (brand: Brand, styleVariant: number) => {
         ">01</span>
       </div>
       
-      <!-- Watermark "Made with Guidiqo" - Top Right -->
+      <!-- Watermark "Made with Guidiqo" - Top Right (Pill style) -->
       <div style="
         position: absolute;
         top: 60px;
         right: 120px;
         display: flex;
         align-items: center;
-        gap: 8px;
-        opacity: 0.5;
+        gap: 6px;
+        background: #DC2626;
+        padding: 8px 16px;
+        border-radius: 50px;
       ">
-        <span style="
-          font-size: 13px;
-          color: #999;
-          font-weight: 300;
-          letter-spacing: 0.5px;
-        ">Made with</span>
         <div style="
+          width: 20px;
+          height: 20px;
+          background: white;
+          border-radius: 4px;
           display: flex;
           align-items: center;
-          gap: 6px;
+          justify-content: center;
         ">
-          <div style="
-            width: 20px;
-            height: 20px;
-            background: #000;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-          ">
-            <span style="
-              color: white;
-              font-size: 12px;
-              font-weight: bold;
-            ">G</span>
-          </div>
           <span style="
-            font-size: 14px;
-            color: #000;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-          ">Guidiqo</span>
+            color: #DC2626;
+            font-size: 12px;
+            font-weight: bold;
+          ">G</span>
         </div>
+        <span style="
+          font-size: 13px;
+          color: white;
+          font-weight: 600;
+          letter-spacing: 0.3px;
+        ">Made with Guidiqo</span>
       </div>
     </div>
   `
@@ -567,49 +557,39 @@ const createTypographyPage = (brand: Brand, styleVariant: number) => {
         ">02</span>
       </div>
       
-      <!-- Watermark "Made with Guidiqo" - Top Right -->
+      <!-- Watermark "Made with Guidiqo" - Top Right (Pill style) -->
       <div style="
         position: absolute;
         top: 60px;
         right: 120px;
         display: flex;
         align-items: center;
-        gap: 8px;
-        opacity: 0.5;
+        gap: 6px;
+        background: #DC2626;
+        padding: 8px 16px;
+        border-radius: 50px;
       ">
-        <span style="
-          font-size: 13px;
-          color: #999;
-          font-weight: 300;
-          letter-spacing: 0.5px;
-        ">Made with</span>
         <div style="
+          width: 20px;
+          height: 20px;
+          background: white;
+          border-radius: 4px;
           display: flex;
           align-items: center;
-          gap: 6px;
+          justify-content: center;
         ">
-          <div style="
-            width: 20px;
-            height: 20px;
-            background: #000;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-          ">
-            <span style="
-              color: white;
-              font-size: 12px;
-              font-weight: bold;
-            ">G</span>
-          </div>
           <span style="
-            font-size: 14px;
-            color: #000;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-          ">Guidiqo</span>
+            color: #DC2626;
+            font-size: 12px;
+            font-weight: bold;
+          ">G</span>
         </div>
+        <span style="
+          font-size: 13px;
+          color: white;
+          font-weight: 600;
+          letter-spacing: 0.3px;
+        ">Made with Guidiqo</span>
       </div>
     </div>
   `
@@ -986,49 +966,39 @@ const createApplicationPage = (brand: Brand, styleVariant: number) => {
         ">04</span>
       </div>
       
-      <!-- Watermark "Made with Guidiqo" - Top Right -->
+      <!-- Watermark "Made with Guidiqo" - Top Right (Pill style) -->
       <div style="
         position: absolute;
         top: 60px;
         right: 120px;
         display: flex;
         align-items: center;
-        gap: 8px;
-        opacity: 0.5;
+        gap: 6px;
+        background: #DC2626;
+        padding: 8px 16px;
+        border-radius: 50px;
       ">
-        <span style="
-          font-size: 13px;
-          color: #999;
-          font-weight: 300;
-          letter-spacing: 0.5px;
-        ">Made with</span>
         <div style="
+          width: 20px;
+          height: 20px;
+          background: white;
+          border-radius: 4px;
           display: flex;
           align-items: center;
-          gap: 6px;
+          justify-content: center;
         ">
-          <div style="
-            width: 20px;
-            height: 20px;
-            background: #000;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-          ">
-            <span style="
-              color: white;
-              font-size: 12px;
-              font-weight: bold;
-            ">G</span>
-          </div>
           <span style="
-            font-size: 14px;
-            color: #000;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-          ">Guidiqo</span>
+            color: #DC2626;
+            font-size: 12px;
+            font-weight: bold;
+          ">G</span>
         </div>
+        <span style="
+          font-size: 13px;
+          color: white;
+          font-weight: 600;
+          letter-spacing: 0.3px;
+        ">Made with Guidiqo</span>
       </div>
     </div>
   `

@@ -63,15 +63,19 @@ export default function BibliothequePage() {
             brand.targetAudience
           ].filter(Boolean).join(' ')
 
+          // Ajouter un seed unique basé sur l'ID pour éviter les doublons
           const response = await fetch('/api/get-image', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ query: `${searchTerms} business brand` })
+            body: JSON.stringify({ 
+              query: `${searchTerms} business brand`,
+              seed: brand.id  // Seed unique pour chaque brand
+            })
           })
 
           if (response.ok) {
             const data = await response.json()
-            newImages[brand.id] = data.imageUrl
+            newImages[brand.id] = data.image?.url || data.imageUrl || 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&h=900&fit=crop'
           }
         } catch (error) {
           console.error(`Error fetching image for brand ${brand.id}:`, error)

@@ -111,19 +111,22 @@ export default function PreviewPage() {
 
     const newImages: {[key: string]: string} = {}
 
-    // Récupérer les images en parallèle
+    // Récupérer les images en parallèle avec un seed unique pour chaque
     await Promise.all(
       Object.entries(queries).map(async ([key, query]) => {
         try {
           const response = await fetch('/api/get-image', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ query })
+            body: JSON.stringify({ 
+              query,
+              seed: `${data.id}-${key}` // Seed unique pour chaque image
+            })
           })
 
           if (response.ok) {
             const result = await response.json()
-            newImages[key] = result.imageUrl
+            newImages[key] = result.image?.url || result.imageUrl || 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&h=900&fit=crop'
           }
         } catch (error) {
           console.error(`Error fetching ${key} image:`, error)
