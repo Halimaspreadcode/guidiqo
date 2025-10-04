@@ -184,7 +184,7 @@ export default function BrandCard({ brand, index, onDelete }: BrandCardProps) {
         <div className="mb-4">
           <button
             onClick={handleTogglePublic}
-            className={`w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all ${
+            className={`w-full flex items-center justify-between p-3 rounded-lg  transition-all ${
               brand.isPublic
                 ? 'bg-blue-50 '
                 : 'bg-orange-50 '
