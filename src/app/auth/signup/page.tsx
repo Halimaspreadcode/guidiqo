@@ -29,71 +29,96 @@ export default function SignUpPage() {
 
   // Traduire les labels en français
   useEffect(() => {
+    let isTranslating = false // Flag pour éviter les boucles infinies
+    
     const translateLabels = () => {
-      const translations: Record<string, string> = {
-        'Email': 'Email',
-        'Password': 'Mot de passe',
-        'Repeat Password': 'Confirmer le mot de passe',
-        'Confirm Password': 'Confirmer le mot de passe',
-        'Sign Up': "S'inscrire",
-        'Sign up': "S'inscrire",
-        'Enter your email': 'Entrez votre email',
-        'Enter your password': 'Entrez votre mot de passe',
-        'Repeat your password': 'Confirmez votre mot de passe',
-        'Already have an account?': 'Vous avez déjà un compte ?',
-        'Sign in': 'Se connecter',
-        'Sign In': 'Se connecter',
+      // Éviter les boucles infinies
+      if (isTranslating) return
+      isTranslating = true
+
+      try {
+        const translations: Record<string, string> = {
+          'Email': 'Email',
+          'Password': 'Mot de passe',
+          'Repeat Password': 'Confirmer le mot de passe',
+          'Confirm Password': 'Confirmer le mot de passe',
+          'Sign Up': "S'inscrire",
+          'Sign up': "S'inscrire",
+          'Enter your email': 'Entrez votre email',
+          'Enter your password': 'Entrez votre mot de passe',
+          'Repeat your password': 'Confirmez votre mot de passe',
+          'Already have an account?': 'Vous avez déjà un compte ?',
+          'Sign in': 'Se connecter',
+          'Sign In': 'Se connecter',
+        }
+
+        // Traduire les labels
+        document.querySelectorAll('.stack-auth-custom label').forEach((label) => {
+          const text = label.textContent?.trim()
+          if (text && translations[text] && label.textContent !== translations[text]) {
+            label.textContent = translations[text]
+          }
+        })
+
+        // Traduire les placeholders
+        document.querySelectorAll('.stack-auth-custom input').forEach((input) => {
+          const placeholder = input.getAttribute('placeholder')
+          if (placeholder && translations[placeholder]) {
+            input.setAttribute('placeholder', translations[placeholder])
+          }
+        })
+
+        // Traduire UNIQUEMENT les boutons submit (pas les boutons icon/eye)
+        document.querySelectorAll('.stack-auth-custom button[type="submit"]').forEach((button) => {
+          const text = button.textContent?.trim()
+          if (text && translations[text] && button.textContent !== translations[text]) {
+            button.textContent = translations[text]
+          }
+        })
+
+        // Traduire les liens
+        document.querySelectorAll('.stack-auth-custom a').forEach((link) => {
+          const text = link.textContent?.trim()
+          if (text && translations[text] && link.textContent !== translations[text]) {
+            link.textContent = translations[text]
+          }
+        })
+      } catch (error) {
+        console.error('Erreur traduction:', error)
+      } finally {
+        // Réinitialiser le flag après un court délai
+        setTimeout(() => {
+          isTranslating = false
+        }, 100)
       }
-
-      // Traduire les labels
-      document.querySelectorAll('.stack-auth-custom label').forEach((label) => {
-        const text = label.textContent?.trim()
-        if (text && translations[text]) {
-          label.textContent = translations[text]
-        }
-      })
-
-      // Traduire les placeholders
-      document.querySelectorAll('.stack-auth-custom input').forEach((input) => {
-        const placeholder = input.getAttribute('placeholder')
-        if (placeholder && translations[placeholder]) {
-          input.setAttribute('placeholder', translations[placeholder])
-        }
-      })
-
-      // Traduire les boutons (sauf les boutons d'icône comme le bouton eye)
-      document.querySelectorAll('.stack-auth-custom button[type="submit"]').forEach((button) => {
-        const text = button.textContent?.trim()
-        if (text && translations[text]) {
-          button.textContent = translations[text]
-        }
-      })
-
-      // Traduire les liens
-      document.querySelectorAll('.stack-auth-custom a').forEach((link) => {
-        const text = link.textContent?.trim()
-        if (text && translations[text]) {
-          link.textContent = translations[text]
-        }
-      })
     }
 
-    // Exécuter immédiatement
-    translateLabels()
+    // Exécuter avec un délai initial
+    const initialTimeout = setTimeout(translateLabels, 100)
 
-    // Observer les changements du DOM
-    const observer = new MutationObserver(translateLabels)
+    // Observer les changements du DOM avec des options plus restrictives
+    const observer = new MutationObserver((mutations) => {
+      // Ne réagir qu'aux ajouts de nœuds (pas aux modifications)
+      const hasAddedNodes = mutations.some(mutation => mutation.addedNodes.length > 0)
+      if (hasAddedNodes) {
+        translateLabels()
+      }
+    })
+    
     const authContainer = document.querySelector('.stack-auth-custom')
     
     if (authContainer) {
       observer.observe(authContainer, {
         childList: true,
         subtree: true,
-        characterData: true,
+        // Retirer characterData pour éviter les boucles
       })
     }
 
-    return () => observer.disconnect()
+    return () => {
+      clearTimeout(initialTimeout)
+      observer.disconnect()
+    }
   }, [])
 
   return (
