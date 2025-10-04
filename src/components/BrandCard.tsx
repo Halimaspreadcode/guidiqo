@@ -16,6 +16,7 @@ interface Brand {
   targetAudience: string | null
   coverImage: string | null
   isCompleted: boolean
+  isPublic: boolean
   currentStep: number
   createdAt: string
   updatedAt: string
@@ -29,6 +30,30 @@ interface BrandCardProps {
 
 export default function BrandCard({ brand, index, onDelete }: BrandCardProps) {
   const router = useRouter()
+
+  const handleTogglePublic = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    
+    try {
+      const newPublicState = !brand.isPublic
+      const response = await fetch(`/api/brands/${brand.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          isPublic: newPublicState,
+          // Si on rend public, mettre automatiquement en bibliothèque
+          isInLibrary: newPublicState ? true : undefined
+        })
+      })
+      
+      if (response.ok) {
+        // Rafraîchir la page
+        window.location.reload()
+      }
+    } catch (error) {
+      console.error('Erreur lors du changement de statut:', error)
+    }
+  }
 
   return (
     <motion.div
@@ -154,6 +179,41 @@ export default function BrandCard({ brand, index, onDelete }: BrandCardProps) {
             )}
           </div>
         )}
+
+        {/* Toggle Public/Privé */}
+        <div className="mb-4">
+          <button
+            onClick={handleTogglePublic}
+            className={`w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all ${
+              brand.isPublic
+                ? 'bg-blue-50 '
+                : 'bg-orange-50 '
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-lg">
+                {brand.isPublic ? '' : ''}
+              </span>
+              <div className="text-left">
+                <p className={`text-sm font-semibold ${
+                  brand.isPublic ? 'text-blue-700' : 'text-orange-700'
+                }`}>
+                  {brand.isPublic ? 'Public' : 'Privé'}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {brand.isPublic ? 'Visible dans la bibliothèque' : 'Visible uniquement par vous'}
+                </p>
+              </div>
+            </div>
+            <div className={`w-12 h-6 rounded-full transition-all ${
+              brand.isPublic ? 'bg-blue-500' : 'bg-gray-300'
+            }`}>
+              <div className={`w-5 h-5 bg-white rounded-full shadow-md transition-all transform ${
+                brand.isPublic ? 'translate-x-6' : 'translate-x-1'
+              } mt-0.5`} />
+            </div>
+          </button>
+        </div>
 
         {/* Footer avec actions */}
         <div className="flex items-center justify-between gap-2">

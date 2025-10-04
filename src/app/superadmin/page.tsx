@@ -32,6 +32,7 @@ interface Brand {
   targetAudience: string | null
   isCompleted: boolean
   isInLibrary: boolean
+  isPublic: boolean
   pdfDownloads: number
   shareCount: number
   createdAt: string
@@ -403,23 +404,37 @@ export default function SuperAdminPage() {
                   </div>
 
                   <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <motion.button
-                        onClick={() => toggleBrandLibrary(brand.id, brand.isInLibrary)}
-                        className={`p-2 rounded-lg transition-all ${
-                          brand.isInLibrary
-                            ? 'bg-green-100 text-green-600'
-                            : 'bg-gray-100 text-gray-600 hover:bg-green-100 hover:text-green-600'
-                        }`}
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        title={brand.isInLibrary ? 'Retirer de la bibliothèque' : 'Ajouter à la bibliothèque'}
-                      >
-                        {brand.isInLibrary ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
-                      </motion.button>
-                      <span className="text-xs text-gray-500">
-                        {brand.isInLibrary ? 'En bibliothèque' : 'Non publié'}
-                      </span>
+                    <div className="flex flex-col gap-2">
+                      {/* Statut Bibliothèque */}
+                      <div className="flex items-center gap-2">
+                        <motion.button
+                          onClick={() => toggleBrandLibrary(brand.id, brand.isInLibrary)}
+                          className={`p-2 rounded-lg transition-all ${
+                            brand.isInLibrary
+                              ? 'bg-green-100 text-green-600'
+                              : 'bg-gray-100 text-gray-600 hover:bg-green-100 hover:text-green-600'
+                          }`}
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          title={brand.isInLibrary ? 'Retirer de la bibliothèque' : 'Ajouter à la bibliothèque'}
+                        >
+                          {brand.isInLibrary ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
+                        </motion.button>
+                        <span className="text-xs text-gray-500">
+                          {brand.isInLibrary ? 'En bibliothèque' : 'Non publié'}
+                        </span>
+                      </div>
+                      
+                      {/* Statut Public/Privé */}
+                      <div className="flex items-center gap-2">
+                        <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          brand.isPublic
+                            ? 'bg-blue-100 text-blue-700'
+                            : 'bg-orange-100 text-orange-700'
+                        }`}>
+                          {brand.isPublic ? ' Public' : ' Privé'}
+                        </div>
+                      </div>
                     </div>
                     
                     <motion.button

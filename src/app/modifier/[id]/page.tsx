@@ -27,8 +27,9 @@ const modificationOptions = [
     id: 'cover',
     title: 'Image de couverture',
     description: 'Modifier l\'image de bannière',
-    question: 'Collez l\'URL de votre image ou laissez vide pour supprimer',
-    step: 4
+    question: 'Collez l\'URL de votre image',
+    step: 4,
+    aiDisabled: true // Pas d'IA pour l'image de couverture
   },
   {
     id: 'colors',
@@ -323,32 +324,34 @@ export default function ModifierPage() {
                   </p>
                 </div>
 
-                {/* Sélecteur de mode */}
-                <div className="flex gap-2 bg-gray-100 rounded-full p-1">
-                  <button
-                    onClick={() => setEditMode('ai')}
-                    className={`flex-1 px-6 py-3 rounded-full font-semibold transition-all ${
-                      editMode === 'ai'
-                        ? 'bg-black text-white'
-                        : 'text-gray-600 hover:text-black'
-                    }`}
-                  >
-                    Générer avec IA
-                  </button>
-                  <button
-                    onClick={() => setEditMode('manual')}
-                    className={`flex-1 px-6 py-3 rounded-full font-semibold transition-all ${
-                      editMode === 'manual'
-                        ? 'bg-black text-white'
-                        : 'text-gray-600 hover:text-black'
-                    }`}
-                  >
-                    Saisie manuelle
-                  </button>
-                </div>
+                {/* Sélecteur de mode - masqué pour l'image de couverture */}
+                {selectedOption !== 'cover' && (
+                  <div className="flex gap-2 bg-gray-100 rounded-full p-1">
+                    <button
+                      onClick={() => setEditMode('ai')}
+                      className={`flex-1 px-6 py-3 rounded-full font-semibold transition-all ${
+                        editMode === 'ai'
+                          ? 'bg-black text-white'
+                          : 'text-gray-600 hover:text-black'
+                      }`}
+                    >
+                      Générer avec IA
+                    </button>
+                    <button
+                      onClick={() => setEditMode('manual')}
+                      className={`flex-1 px-6 py-3 rounded-full font-semibold transition-all ${
+                        editMode === 'manual'
+                          ? 'bg-black text-white'
+                          : 'text-gray-600 hover:text-black'
+                      }`}
+                    >
+                      Saisie manuelle
+                    </button>
+                  </div>
+                )}
 
                 {/* Contenu en fonction du mode */}
-                {editMode === 'ai' ? (
+                {editMode === 'ai' && selectedOption !== 'cover' ? (
                 <div className="space-y-4">
                     <div>
                   <textarea

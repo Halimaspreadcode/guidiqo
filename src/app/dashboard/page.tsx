@@ -20,6 +20,7 @@ interface Brand {
   targetAudience: string | null
   coverImage: string | null
   isCompleted: boolean
+  isPublic: boolean
   currentStep: number
   createdAt: string
   updatedAt: string

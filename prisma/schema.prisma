@@ -78,6 +78,7 @@ model Brand {
   isCompleted Boolean @default(false)
   currentStep Int     @default(1)
   isInLibrary Boolean @default(false)
+  isPublic    Boolean @default(true)
   
   // Analytics
   pdfDownloads Int     @default(0)

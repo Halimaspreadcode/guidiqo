@@ -18,7 +18,10 @@ interface LibraryBrand {
   primaryFont: string | null
   brandPersonality: string | null
   targetAudience: string | null
+  coverImage: string | null
+  isCompleted: boolean
   createdAt: string
+  updatedAt: string
   user: {
     name: string | null
     email: string
@@ -41,8 +44,7 @@ export default function BibliothequePage() {
       if (response.ok) {
         const data = await response.json()
         setBrands(data)
-        // Générer les images pour chaque brand
-        generateImagesForBrands(data)
+        // Ne plus générer d'images automatiquement - utiliser seulement les images fournies
       }
     } catch (error) {
       console.error('Error fetching library brands:', error)
@@ -203,16 +205,20 @@ export default function BibliothequePage() {
                       className="relative w-full h-64 sm:h-72 md:h-80 rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200"
                       style={{ background: gradient }}
                     >
-                      {/* Utiliser l'image de couverture si disponible, sinon image générée */}
-                      <img
-                        src={brand.coverImage || brandImages[brand.id] || 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&h=900&fit=crop'}
-                        alt={brand.name}
-                        className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-700"
-                        onError={(e) => {
-                          // Fallback vers une image par défaut si l'image ne charge pas
-                          (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?q=80&w=2400&auto=format&fit=crop'
-                        }}
-                      />
+                      {/* Utiliser UNIQUEMENT l'image de couverture fournie par l'utilisateur */}
+                      {brand.coverImage ? (
+                        <img
+                          src={brand.coverImage}
+                          alt={brand.name}
+                          className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-700"
+                          onError={(e) => {
+                            // Fallback vers gradient si l'image ne charge pas
+                            (e.target as HTMLImageElement).style.display = 'none'
+                          }}
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-black/60" />
+                      )}
                       
                       {/* Overlay avec informations */}
                       <div className="absolute inset-0 flex flex-col justify-between p-4 sm:p-6">
@@ -241,20 +247,45 @@ export default function BibliothequePage() {
                           </motion.h3>
                         </div>
 
-                        {/* Footer avec couleurs et bouton */}
+                        {/* Footer avec bandes de couleurs verticales */}
                         <div className="flex items-end justify-between">
-                          {/* Color Swatches */}
-                          <div className="flex gap-2">
-                            {[brand.primaryColor, brand.secondaryColor, brand.accentColor]
-                              .filter(Boolean)
-                              .slice(0, 3)
-                              .map((color, idx) => (
+                          {/* Bandes de couleurs verticales qui s'ouvrent au hover */}
+                          <div className="flex gap-0 h-16 sm:h-20">
+                            {[
+                              { color: brand.primaryColor, label: 'Principale' },
+                              { color: brand.secondaryColor, label: 'Secondaire' },
+                              { color: brand.accentColor, label: 'Accent' }
+                            ]
+                              .filter(item => item.color)
+                              .map((item, idx) => (
                                 <motion.div
                                   key={idx}
-                                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl shadow-md"
-                                  style={{ backgroundColor: color! }}
-                                  whileHover={{ scale: 1.15, rotate: 5 }}
-                                />
+                                  className="relative h-full cursor-pointer overflow-hidden rounded-l-lg first:rounded-l-xl"
+                                  initial={{ width: '16px' }}
+                                  whileHover={{ width: '140px' }}
+                                  transition={{ duration: 0.3, ease: 'easeOut' }}
+                                  style={{ backgroundColor: item.color! }}
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  {/* Contenu visible au hover */}
+                                  <motion.div 
+                                    className="absolute inset-0 flex flex-col items-center justify-center p-2"
+                                    initial={{ opacity: 0 }}
+                                    whileHover={{ opacity: 1 }}
+                                    transition={{ duration: 0.2 }}
+                                  >
+                                    <p className="text-[10px] font-bold text-white uppercase tracking-wider mb-1 whitespace-nowrap drop-shadow-md">
+                                      {item.label}
+                                    </p>
+                                    <p className="text-xs font-mono text-white/95 whitespace-nowrap drop-shadow-md">
+                                      {item.color}
+                                    </p>
+                                  </motion.div>
+                                  {/* Bordure de séparation */}
+                                  {idx < 2 && (
+                                    <div className="absolute right-0 top-0 bottom-0 w-px bg-white/30" />
+                                  )}
+                                </motion.div>
                               ))}
                           </div>
 
