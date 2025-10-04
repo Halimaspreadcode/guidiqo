@@ -200,9 +200,9 @@ export default function BibliothequePage() {
                     onClick={() => router.push(`/brand/${brand.id}`)}
                     whileHover={{ y: -5 }}
                   >
-                    {/* Card avec bandes de couleurs horizontales sur le côté gauche */}
+                    {/* Card responsive avec bandes de couleurs */}
                     <div 
-                      className="relative w-full h-64 sm:h-72 md:h-80 rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200"
+                      className="relative w-full h-80 sm:h-72 md:h-80 rounded-2xl overflow-hidden border border-gray-200"
                       style={{ background: gradient }}
                     >
                       {/* Image de fond si disponible */}
@@ -219,39 +219,41 @@ export default function BibliothequePage() {
                         <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-black/60" />
                       )}
 
-                      {/* Bandes de couleurs horizontales sur le côté gauche */}
-                      <div className="absolute left-0 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-10">
+                      {/* Bandes de couleurs - En haut sur mobile, sur le côté gauche sur desktop */}
+                      <div className="absolute top-0 left-0 right-0 md:right-auto md:top-1/2 md:-translate-y-1/2 flex md:flex-col gap-0 md:gap-2 z-10">
                         {[
-                          { color: brand.primaryColor, label: 'Principale' },
-                          { color: brand.secondaryColor, label: 'Secondaire' },
-                          { color: brand.accentColor, label: 'Accent' }
+                          { color: brand.primaryColor, label: 'P' },
+                          { color: brand.secondaryColor, label: 'S' },
+                          { color: brand.accentColor, label: 'A' }
                         ]
                           .filter(item => item.color)
-                          .map((item, idx) => (
-                            <motion.div
+                          .map((item, idx, arr) => (
+                            <div
                               key={idx}
-                              className="relative h-12 cursor-pointer overflow-hidden group/color rounded-r-lg"
-                              initial={{ width: '20px' }}
-                              whileHover={{ width: '180px' }}
-                              transition={{ duration: 0.3, ease: 'easeOut' }}
+                              className="relative group/color cursor-pointer overflow-hidden
+                                       flex-1 h-3 md:h-12 md:w-5 md:flex-none
+                                       md:rounded-r-lg md:hover:w-44
+                                       transition-all duration-300 ease-out"
                               style={{ backgroundColor: item.color! }}
                               onClick={(e) => e.stopPropagation()}
                             >
-                              {/* Contenu visible au hover */}
-                              <motion.div 
-                                className="absolute inset-0 flex flex-col items-center justify-center px-3"
-                                initial={{ opacity: 0 }}
-                                whileHover={{ opacity: 1 }}
-                                transition={{ duration: 0.2 }}
-                              >
-                                <p className="text-[10px] font-bold text-white uppercase tracking-wider mb-0.5 whitespace-nowrap drop-shadow-md">
+                              {/* Label court visible sur mobile */}
+                              <div className="md:hidden absolute inset-0 flex items-center justify-center">
+                                <span className="text-[8px] font-bold text-white/70">
                                   {item.label}
+                                </span>
+                              </div>
+                              
+                              {/* Contenu complet visible au hover sur desktop */}
+                              <div className="hidden md:flex absolute inset-0 flex-col items-center justify-center px-3 opacity-0 group-hover/color:opacity-100 transition-opacity">
+                                <p className="text-[10px] font-bold text-white uppercase tracking-wider mb-0.5 whitespace-nowrap drop-shadow-md">
+                                  {item.label === 'P' ? 'Principale' : item.label === 'S' ? 'Secondaire' : 'Accent'}
                                 </p>
                                 <p className="text-xs font-mono text-white/95 whitespace-nowrap drop-shadow-md">
                                   {item.color}
                                 </p>
-                              </motion.div>
-                            </motion.div>
+                              </div>
+                            </div>
                           ))}
                       </div>
                       
