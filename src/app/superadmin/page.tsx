@@ -30,9 +30,11 @@ interface Brand {
   secondaryFont: string | null
   brandPersonality: string | null
   targetAudience: string | null
+  coverImage: string | null
   isCompleted: boolean
   isInLibrary: boolean
   isPublic: boolean
+  isSpotlighted: boolean
   pdfDownloads: number
   shareCount: number
   createdAt: string
@@ -66,7 +68,7 @@ export default function SuperAdminPage() {
   const [brands, setBrands] = useState<Brand[]>([])
   const [deletionRequests, setDeletionRequests] = useState<DeletionRequest[]>([])
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'users' | 'brands' | 'deletions'>('users')
+  const [activeTab, setActiveTab] = useState<'users' | 'brands' | 'deletions' | 'spotlighted'>('users')
   const [isAdmin, setIsAdmin] = useState(false)
   const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null)
   const [showBrandModal, setShowBrandModal] = useState(false)
@@ -175,6 +177,26 @@ export default function SuperAdminPage() {
     }
   }
 
+  const toggleBrandSpotlight = async (brandId: string, currentStatus: boolean) => {
+    try {
+      const response = await fetch(`/api/superadmin/brands/${brandId}/spotlight`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isSpotlighted: !currentStatus })
+      })
+
+      if (response.ok) {
+        setBrands(brands.map(brand => 
+          brand.id === brandId 
+            ? { ...brand, isSpotlighted: !currentStatus }
+            : brand
+        ))
+      }
+    } catch (error) {
+      console.error('Error updating brand spotlight status:', error)
+    }
+  }
+
   if (!user || !isAdmin) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -277,6 +299,19 @@ export default function SuperAdminPage() {
                 whileTap={{ scale: 0.95 }}
               >
                 Créations
+              </motion.button>
+              <motion.button
+                onClick={() => setActiveTab('spotlighted')}
+                className={`px-6 py-3 rounded-full font-semibold transition-all flex items-center gap-2 ${
+                  activeTab === 'spotlighted'
+                    ? 'bg-yellow-500 text-white'
+                    : 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100'
+                }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Crown className="w-4 h-4" />
+                Mis en avant ({brands.filter(b => b.isSpotlighted).length}/5)
               </motion.button>
               <motion.button
                 onClick={() => setActiveTab('deletions')}
@@ -449,6 +484,90 @@ export default function SuperAdminPage() {
                   </div>
                 </motion.div>
               ))}
+            </div>
+          )}
+
+          {activeTab === 'spotlighted' && (
+            <div className="space-y-6">
+              <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-6 mb-6">
+                <p className="text-sm text-yellow-800">
+                  <Crown className="w-5 h-5 inline mr-2" />
+                  Sélectionnez jusqu'à 5 brands à mettre en avant sur la page d'accueil. 
+                  Ces brands seront affichés dans la section "Explorez et inspirez-vous".
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {brands
+                  .filter(b => b.isCompleted)
+                  .map((brand, index) => {
+                    const gradient = `linear-gradient(135deg, ${brand.primaryColor || '#000'}, ${brand.secondaryColor || '#333'})`
+                    
+                    return (
+                      <motion.div
+                        key={brand.id}
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: index * 0.05 }}
+                        className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all"
+                      >
+                        {/* Image de couverture ou gradient */}
+                        <div 
+                          className="h-48 relative"
+                          style={{ background: brand.coverImage ? 'transparent' : gradient }}
+                        >
+                          {brand.coverImage ? (
+                            <img
+                              src={brand.coverImage}
+                              alt={brand.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="absolute inset-0" style={{ background: gradient }} />
+                          )}
+                          
+                          {/* Badge spotlight */}
+                          {brand.isSpotlighted && (
+                            <div className="absolute top-3 right-3 bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                              <Crown className="w-3 h-3" />
+                              En avant
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="p-6">
+                          <h3 className="font-bold text-xl mb-2">{brand.name}</h3>
+                          <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                            {brand.description || 'Pas de description'}
+                          </p>
+
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: brand.primaryColor || '#000' }} />
+                              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: brand.secondaryColor || '#333' }} />
+                              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: brand.accentColor || '#666' }} />
+                            </div>
+
+                            <button
+                              onClick={() => toggleBrandSpotlight(brand.id, brand.isSpotlighted)}
+                              disabled={!brand.isSpotlighted && brands.filter(b => b.isSpotlighted).length >= 5}
+                              className={`p-2 rounded-lg transition-all ${
+                                brand.isSpotlighted
+                                  ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200'
+                                  : brands.filter(b => b.isSpotlighted).length >= 5
+                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                              }`}
+                              title={brand.isSpotlighted ? 'Retirer de la mise en avant' : 'Mettre en avant'}
+                            >
+                              <Crown className={`w-5 h-5 ${brand.isSpotlighted ? 'fill-current' : ''}`} />
+                            </button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )
+                  })}
+              </div>
             </div>
           )}
 

@@ -1,43 +1,45 @@
 'use client'
 
-import Image from 'next/image'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { LiquidButton } from './LiquidGlassButton'
 
-const inspirations = [
-  {
-    id: 1,
-    image:
-      'https://images.unsplash.com/photo-1755134148390-4bf1c1b2da03?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    label: 'Premium Branding'
-  },
-  {
-    id: 2,
-    image:
-      'https://images.unsplash.com/photo-1754634026421-fa4237aaaf17?q=80&w=1364&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    label: 'Fashion Branding'
-  },
-  {
-    id: 3,
-    image:
-      'https://images.unsplash.com/photo-1750841896872-e09747c58c15?q=80&w=1760&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    label: 'Rock Band Branding'
-  },
-  {
-    id: 4,
-    image:
-      'https://images.unsplash.com/photo-1751716534721-335ad5522e3c?q=80&w=2532&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    label: 'Ambient Music Branding'
-  },
-  {
-    id: 5,
-    image:
-      'https://images.unsplash.com/photo-1753362770775-2f9b5c95a263?q=80&w=2532&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    label: 'Jazz Band Branding'
+interface SpotlightedBrand {
+  id: string
+  name: string
+  coverImage: string | null
+  primaryColor: string | null
+  secondaryColor: string | null
+  accentColor: string | null
+  user: {
+    name: string | null
+    email: string
   }
-]
+}
 
 export default function ExploreSection () {
+  const router = useRouter()
+  const [brands, setBrands] = useState<SpotlightedBrand[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchSpotlightedBrands = async () => {
+      try {
+        const response = await fetch('/api/spotlighted')
+        if (response.ok) {
+          const data = await response.json()
+          setBrands(data)
+        }
+      } catch (error) {
+        console.error('Error fetching spotlighted brands:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchSpotlightedBrands()
+  }, [])
   return (
     <section className='py-12 sm:py-16 md:py-20 px-3 sm:px-4 md:px-6 bg-white'>
       <div className='max-w-7xl mx-auto'>
@@ -57,52 +59,71 @@ export default function ExploreSection () {
           </p>
         </motion.div>
 
-        <div className='grid grid-cols-12 gap-3 sm:gap-4 md:gap-6'>
-          {inspirations.map((item, index) => {
-            // Définir les proportions pour chaque ligne
-            const getColumnSpan = (index: number) => {
-              if (index === 0) return 'col-span-9' // Ligne 1: gauche 3/4, droite 1/4
-              if (index === 1) return 'col-span-3'
-              if (index === 2) return 'col-span-6' // Ligne 2: gauche 1/2, droite 1/2
-              if (index === 3) return 'col-span-6'
-              if (index === 4) return 'col-span-8' // Ligne 3: gauche 2/3, droite 1/3
-              return 'col-span-4'
-            }
+        {loading ? (
+          <div className="text-center py-20">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
+          </div>
+        ) : brands.length === 0 ? (
+          <div className="text-center py-20 text-gray-500">
+            Aucun brand mis en avant pour le moment
+          </div>
+        ) : (
+          <div className='grid grid-cols-12 gap-3 sm:gap-4 md:gap-6'>
+            {brands.map((brand, index) => {
+              // Définir les proportions pour chaque ligne
+              const getColumnSpan = (index: number) => {
+                if (index === 0) return 'col-span-9' // Ligne 1: gauche 3/4, droite 1/4
+                if (index === 1) return 'col-span-3'
+                if (index === 2) return 'col-span-6' // Ligne 2: gauche 1/2, droite 1/2
+                if (index === 3) return 'col-span-6'
+                if (index === 4) return 'col-span-8' // Ligne 3: gauche 2/3, droite 1/3
+                return 'col-span-4'
+              }
 
-            return (
-              <motion.div
-                key={item.id}
-                className={`group cursor-pointer ${getColumnSpan(index)}`}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.6,
-                  delay: index * 0.1,
-                  ease: 'easeOut'
-                }}
-                viewport={{ once: true }}
-                whileHover={{ y: -5 }}
-              >
-                <div className='relative w-full h-64 sm:h-72 md:h-80 bg-gray-100 rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200'>
-                  <Image
-                    src={item.image}
-                    alt={item.label}
-                    fill
-                    className='object-cover opacity-100 group-hover:opacity-100 transition-opacity duration-300'
-                  />
-                   <div className='absolute inset-0 flex items-end p-3 sm:p-4 md:p-6'>
-                     
-                     <LiquidButton className='opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
-                     {item.label}
-                     </LiquidButton>
-                   </div>
-                   
-                   
-                </div>
-              </motion.div>
-            )
-          })}
-        </div>
+              const gradient = `linear-gradient(135deg, ${brand.primaryColor || '#000'}, ${brand.secondaryColor || '#333'})`
+
+              return (
+                <motion.div
+                  key={brand.id}
+                  className={`group cursor-pointer ${getColumnSpan(index)}`}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.6,
+                    delay: index * 0.1,
+                    ease: 'easeOut'
+                  }}
+                  viewport={{ once: true }}
+                  whileHover={{ y: -5 }}
+                  onClick={() => router.push(`/brand/${brand.id}`)}
+                >
+                  <div 
+                    className='relative w-full h-64 sm:h-72 md:h-80 rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200'
+                    style={{ background: brand.coverImage ? 'transparent' : gradient }}
+                  >
+                    {brand.coverImage ? (
+                      <img
+                        src={brand.coverImage}
+                        alt={brand.name}
+                        className='absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700'
+                      />
+                    ) : (
+                      <div className="absolute inset-0" style={{ background: gradient }} />
+                    )}
+                    
+                    <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent' />
+                    
+                    <div className='absolute inset-0 flex items-end p-3 sm:p-4 md:p-6'>
+                      <LiquidButton className='opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
+                        {brand.name}
+                      </LiquidButton>
+                    </div>
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
+        )}
       </div>
     </section>
   )

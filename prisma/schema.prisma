@@ -75,10 +75,11 @@ model Brand {
   coverImage      String?
   
   // Status
-  isCompleted Boolean @default(false)
-  currentStep Int     @default(1)
-  isInLibrary Boolean @default(false)
-  isPublic    Boolean @default(true)
+  isCompleted   Boolean @default(false)
+  currentStep   Int     @default(1)
+  isInLibrary   Boolean @default(false)
+  isPublic      Boolean @default(true)
+  isSpotlighted Boolean @default(false)
   
   // Analytics
   pdfDownloads Int     @default(0)
