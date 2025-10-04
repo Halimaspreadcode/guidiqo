@@ -18,10 +18,18 @@ interface Brand {
   secondaryFont: string | null
   brandPersonality: string | null
   targetAudience: string | null
+  coverImage: string | null
   currentStep: number
 }
 
 const modificationOptions = [
+  {
+    id: 'cover',
+    title: 'Image de couverture',
+    description: 'Modifier l\'image de bannière',
+    question: 'Collez l\'URL de votre image ou laissez vide pour supprimer',
+    step: 4
+  },
   {
     id: 'colors',
     title: 'Couleurs',
@@ -75,6 +83,8 @@ export default function ModifierPage() {
       // Initialiser les valeurs manuelles avec les valeurs actuelles
       if (selectedOption === 'name') {
         setManualInput({ name: brand.name || '' })
+      } else if (selectedOption === 'cover') {
+        setManualInput({ coverImage: brand.coverImage || '' })
       } else if (selectedOption === 'colors') {
         setManualInput({
           primaryColor: brand.primaryColor || '',
@@ -494,6 +504,39 @@ export default function ModifierPage() {
                             placeholder="Ex: Georgia, Merriweather"
                           />
                         </div>
+                      </div>
+                    )}
+
+                    {selectedOption === 'cover' && (
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            URL de l&apos;image de couverture
+                          </label>
+                          <input
+                            type="url"
+                            value={manualInput.coverImage || ''}
+                            onChange={(e) => setManualInput({ ...manualInput, coverImage: e.target.value })}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-stone-900 focus:border-transparent"
+                            placeholder="https://exemple.com/image.jpg"
+                          />
+                          <p className="text-xs text-gray-500 mt-2">
+                            Collez l&apos;URL d&apos;une image ou laissez vide pour utiliser un design généré
+                          </p>
+                        </div>
+                        {/* Prévisualisation */}
+                        {manualInput.coverImage && (
+                          <div className="relative aspect-video rounded-xl overflow-hidden border border-gray-200">
+                            <img 
+                              src={manualInput.coverImage} 
+                              alt="Prévisualisation" 
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.currentTarget.src = 'https://images.unsplash.com/photo-1557683316-973673baf926?w=800'
+                              }}
+                            />
+                          </div>
+                        )}
                       </div>
                     )}
 

@@ -58,46 +58,119 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
   const generateImageSuggestions = async () => {
     setLoadingImages(true)
     try {
-      const searchTerms = [
-        brandData.description || brandData.name || brandData.prompt,
-        brandData.brandPersonality,
-        brandData.targetAudience
-      ].filter(Boolean).join(' ')
+      // Utiliser la DESCRIPTION COMPLÈTE comme base principale
+      const projectDescription = brandData.description || brandData.name || brandData.prompt || ''
+      const projectName = brandData.name || ''
+      
+      console.log('🎨 Génération d\'images pour:', projectDescription)
 
+      // Mapping subtil des personnalités (termes minimalistes)
+      const personalityVisuals: {[key: string]: string} = {
+        'professionnel': 'professional',
+        'moderne': 'modern',
+        'amical': 'friendly',
+        'luxe': 'luxury elegant',
+        'dynamique': 'dynamic',
+        'minimaliste': 'minimal clean'
+      }
+
+      const personalityTerm = personalityVisuals[brandData.brandPersonality || ''] || ''
+
+      // LES 3 REQUÊTES SE CONCENTRENT SUR LE PROJET LUI-MÊME
       const queries = [
-        `${searchTerms} business brand professional`,
-        `${searchTerms} ${brandData.brandPersonality} modern`,
-        `${searchTerms} workspace design studio`
+        // Requête 1 : Description COMPLÈTE + personnalité
+        `${projectDescription} ${personalityTerm}`.trim(),
+        // Requête 2 : Nom du projet + description abrégée
+        `${projectName} ${projectDescription.split(' ').slice(0, 5).join(' ')}`.trim(),
+        // Requête 3 : Termes principaux du projet
+        `${projectDescription.split(' ').slice(0, 4).join(' ')} ${personalityTerm}`.trim()
       ]
 
+      console.log('📸 Requêtes d\'images:', queries)
+
       const imagePromises = queries.map(async (query, index) => {
+        // Ne pas faire de requête vide
+        if (!query || query.length < 3) {
+          console.warn(`⚠️ Requête ${index + 1} trop courte, ignorée`)
+          return null
+        }
+
         try {
           const response = await fetch('/api/get-image', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
               query,
-              seed: `${Date.now()}-${index}-${imageGeneration}`,
+              seed: `${Date.now()}-${index}-${imageGeneration}-${Math.random()}`,
               provider: 'pexels',
-              perPage: 15,
-              page: Math.floor(Math.random() * 3) + 1
+              perPage: 25,
+              page: Math.floor(Math.random() * 4) + 1
             })
           })
 
           if (response.ok) {
             const data = await response.json()
-            return data.image?.url || data.imageUrl || null
+            const imageUrl = data.image?.url || data.imageUrl
+            console.log(`✅ Image ${index + 1} trouvée:`, imageUrl ? 'OK' : 'FAIL')
+            return imageUrl || null
           }
         } catch (error) {
-          console.error(`Erreur lors de la récupération de l'image ${index + 1}:`, error)
+          console.error(`❌ Erreur image ${index + 1}:`, error)
         }
         return null
       })
 
       const images = await Promise.all(imagePromises)
-      setSuggestedImages(images.filter(Boolean) as string[])
+      const validImages = images.filter(Boolean) as string[]
+      
+      console.log(`📊 Images valides trouvées: ${validImages.length}/3`)
+      
+      // S'assurer qu'on a au moins 3 images
+      if (validImages.length < 3) {
+        console.warn('⚙️ Recherche d\'images complémentaires...')
+        
+        const additionalQueries = [
+          // Encore plus centré sur le projet
+          projectDescription,
+          `${projectName} brand`,
+          projectDescription.split(' ').slice(0, 3).join(' ')
+        ]
+        
+        for (let i = validImages.length; i < 3; i++) {
+          const query = additionalQueries[i] || projectDescription
+          if (!query || query.length < 3) continue
+
+          try {
+            const response = await fetch('/api/get-image', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ 
+                query,
+                seed: `additional-${Date.now()}-${i}-${Math.random()}`,
+                provider: 'pexels',
+                perPage: 20,
+                page: Math.floor(Math.random() * 3) + 1
+              })
+            })
+            
+            if (response.ok) {
+              const data = await response.json()
+              const imageUrl = data.image?.url || data.imageUrl
+              if (imageUrl && !validImages.includes(imageUrl)) {
+                validImages.push(imageUrl)
+                console.log(`✅ Image complémentaire ${i + 1} ajoutée`)
+              }
+            }
+          } catch (error) {
+            console.error('❌ Erreur image complémentaire:', error)
+          }
+        }
+      }
+      
+      console.log(`🎉 Total final: ${validImages.length} images`)
+      setSuggestedImages(validImages)
     } catch (error) {
-      console.error('Erreur lors de la génération des suggestions d\'images:', error)
+      console.error('❌ Erreur génération:', error)
     } finally {
       setLoadingImages(false)
     }
@@ -222,62 +295,80 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
                   transition={{ duration: 0.5 }}
                 >
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium text-gray-900">
-                      Image de couverture
-                    </h3>
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-900">
+                        Image de couverture <span className="text-gray-400 font-normal">(optionnel)</span>
+                      </h3>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Choisissez une image ou laissez vide pour un design généré
+                      </p>
+                    </div>
                     {suggestedImages.length > 0 && (
                       <motion.button
                         onClick={handleRefreshImages}
                         disabled={loadingImages}
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-full hover:bg-gray-50 disabled:opacity-50"
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-full hover:bg-gray-50 disabled:opacity-50 transition-all"
                         whileHover={{ scale: loadingImages ? 1 : 1.05 }}
                         whileTap={{ scale: loadingImages ? 1 : 0.95 }}
                       >
                         <RefreshCw className={`w-4 h-4 ${loadingImages ? 'animate-spin' : ''}`} />
-                        Proposer d&apos;autres
+                        Autres suggestions
                       </motion.button>
                     )}
                   </div>
 
                   {loadingImages ? (
-                    <div className="flex items-center justify-center py-12 border border-gray-200 rounded-2xl bg-gray-50">
+                    <div className="flex items-center justify-center py-16 border border-gray-200 rounded-2xl bg-gradient-to-br from-gray-50 to-white">
                       <div className="text-center">
-                        <Loader2 className="w-8 h-8 text-gray-400 animate-spin mx-auto mb-3" />
-                        <p className="text-sm text-gray-600">Génération des suggestions...</p>
+                        <Loader2 className="w-10 h-10 text-gray-400 animate-spin mx-auto mb-4" />
+                        <p className="text-sm font-medium text-gray-700">Recherche d&apos;images de qualité...</p>
+                        <p className="text-xs text-gray-500 mt-1">Personnalisées pour votre projet</p>
                       </div>
                     </div>
                   ) : suggestedImages.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {suggestedImages.map((imageUrl, index) => (
-                        <motion.button
+                        <motion.div
                           key={`${imageUrl}-${index}`}
-                          onClick={() => handleSelectImage(imageUrl)}
-                          className={`relative aspect-video rounded-2xl overflow-hidden border-4 transition-all ${
-                            brandData.coverImage === imageUrl
-                              ? 'border-black shadow-lg scale-[1.02]'
-                              : 'border-gray-200 hover:border-gray-400'
-                          }`}
-                          whileHover={{ scale: brandData.coverImage === imageUrl ? 1.02 : 1.05 }}
-                          whileTap={{ scale: 0.98 }}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: index * 0.1 }}
                         >
-                          <Image
-                            src={imageUrl}
-                            alt={`Suggestion ${index + 1}`}
-                            fill
-                            className="object-cover"
-                          />
-                          {brandData.coverImage === imageUrl && (
-                            <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                              <div className="bg-white rounded-full p-2">
-                                <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center">
-                                  <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                  </svg>
+                          <motion.button
+                            onClick={() => handleSelectImage(imageUrl)}
+                            className={`relative aspect-video rounded-2xl overflow-hidden border-4 transition-all w-full ${
+                              brandData.coverImage === imageUrl
+                                ? 'border-black shadow-xl ring-2 ring-black ring-offset-2'
+                                : 'border-gray-200 hover:border-gray-400 hover:shadow-lg'
+                            }`}
+                            whileHover={{ scale: brandData.coverImage === imageUrl ? 1.02 : 1.03 }}
+                            whileTap={{ scale: 0.98 }}
+                          >
+                            <Image
+                              src={imageUrl}
+                              alt={`Suggestion ${index + 1}`}
+                              fill
+                              className="object-cover"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+                            
+                            {brandData.coverImage === imageUrl ? (
+                              <div className="absolute inset-0 bg-black/20 flex items-center justify-center backdrop-blur-[2px]">
+                                <div className="bg-white rounded-full p-3 shadow-xl">
+                                  <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
+                                    <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                    </svg>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          )}
-                        </motion.button>
+                            ) : (
+                              <div className="absolute bottom-3 right-3 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-medium text-gray-700">
+                                {index + 1}
+                              </div>
+                            )}
+                          </motion.button>
+                        </motion.div>
                       ))}
                     </div>
                   ) : null}
@@ -285,7 +376,7 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
               )}
             </div>
 
-            {brandData.brandPersonality && brandData.targetAudience && brandData.coverImage && (
+            {brandData.brandPersonality && brandData.targetAudience && (
               <div className="mt-12 relative rounded-2xl p-8 overflow-hidden border border-gray-200 bg-gray-50">
                 <div className="absolute inset-0 bg-white/40" />
                 <motion.div
@@ -310,7 +401,9 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
                     </div>
                     <div className="flex items-baseline gap-3">
                       <span className="text-sm font-medium text-gray-900 min-w-[100px]">Couverture</span>
-                      <span className="text-sm text-green-600 font-medium">Sélectionnée</span>
+                      <span className={`text-sm font-medium ${brandData.coverImage ? 'text-green-600' : 'text-gray-500'}`}>
+                        {brandData.coverImage ? '✓ Sélectionnée' : 'Design automatique'}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -336,10 +429,10 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
 
               <motion.button
                 onClick={onNext}
-                disabled={!brandData.brandPersonality || !brandData.targetAudience || !brandData.coverImage}
+                disabled={!brandData.brandPersonality || !brandData.targetAudience}
                 className="relative overflow-hidden px-8 py-3 rounded-full bg-black text-white hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                whileHover={{ scale: brandData.brandPersonality && brandData.targetAudience && brandData.coverImage ? 1.02 : 1 }}
-                whileTap={{ scale: brandData.brandPersonality && brandData.targetAudience && brandData.coverImage ? 0.98 : 1 }}
+                whileHover={{ scale: brandData.brandPersonality && brandData.targetAudience ? 1.02 : 1 }}
+                whileTap={{ scale: brandData.brandPersonality && brandData.targetAudience ? 0.98 : 1 }}
               >
                 <div className="absolute inset-0 bg-white/10" />
                 <motion.div

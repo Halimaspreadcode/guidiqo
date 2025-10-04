@@ -203,8 +203,9 @@ export default function BibliothequePage() {
                       className="relative w-full h-64 sm:h-72 md:h-80 rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200"
                       style={{ background: gradient }}
                     >
+                      {/* Utiliser l'image de couverture si disponible, sinon image générée */}
                       <img
-                        src={brandImages[brand.id] || 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&h=900&fit=crop'}
+                        src={brand.coverImage || brandImages[brand.id] || 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&h=900&fit=crop'}
                         alt={brand.name}
                         className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-700"
                         onError={(e) => {
