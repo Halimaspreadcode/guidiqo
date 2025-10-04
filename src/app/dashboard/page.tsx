@@ -423,7 +423,7 @@ export default function DashboardPage() {
 
                   {/* Title */}
                   <h3 className="text-2xl font-bold text-black mb-3">
-                    Œuvre d'art détectée !
+                    Œuvre d&apos;art détectée !
                   </h3>
                   
                   {/* Brand Name */}

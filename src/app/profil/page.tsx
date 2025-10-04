@@ -185,7 +185,7 @@ export default function ProfilPage() {
             <div className="space-y-6 mb-8">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nom d'affichage
+                  Nom d&apos;affichage
                 </label>
                 <input
                   type="text"
@@ -208,7 +208,7 @@ export default function ProfilPage() {
                   placeholder="votre@email.com"
                 />
                 <p className="text-xs text-gray-500 mt-2">
-                  L'email ne peut pas être modifié pour des raisons de sécurité
+                  L&apos;email ne peut pas être modifié pour des raisons de sécurité
                 </p>
               </div>
             </div>

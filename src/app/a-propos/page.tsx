@@ -75,7 +75,7 @@ export default function AboutPage() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.3 }}
                 >
-                  Un système intelligent qui t&apos;accompagne pour créer une identité de marque professionnelle en quelques minutes. Guidiqo c'est ton assistant créatif.
+                  Un système intelligent qui t&apos;accompagne pour créer une identité de marque professionnelle en quelques minutes. Guidiqo c&apos;est ton assistant créatif.
                 </motion.p>
               </div>
 
@@ -182,7 +182,7 @@ export default function AboutPage() {
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              Guidiqo génère un système de marque complet, cohérent et prêt à être publier. Aider de l'IA pour créer un branding unique et professionnel, les possibilités deviennent infinis.
+              Guidiqo génère un système de marque complet, cohérent et prêt à être publier. Aider de l&apos;IA pour créer un branding unique et professionnel, les possibilités deviennent infinis.
             </motion.p>
           </motion.div>
         </section>
@@ -269,7 +269,7 @@ export default function AboutPage() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                C'est parti !
+                C&apos;est parti !
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" strokeWidth={2} />
               </motion.button>
             </div>

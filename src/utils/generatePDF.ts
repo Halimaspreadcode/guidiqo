@@ -171,7 +171,7 @@ const createCoverPage = (brand: Brand, styleVariant: number) => {
           font-size: 180px;
           font-weight: 300;
           color: #000;
-          margin: 0 0 40px 0;
+          margin: 0 0 150px 0;
           letter-spacing: -4px;
           line-height: 0.9;
         ">${brand.name}</h1>
@@ -180,10 +180,11 @@ const createCoverPage = (brand: Brand, styleVariant: number) => {
           font-size: 18px;
           color: #666;
           margin: 0;
+          margin-top: 20px;
           letter-spacing: 12px;
           text-transform: uppercase;
           font-weight: 300;
-        ">Brand Guidelines</p>
+        ">Guide de Style</p>
       </div>
       
       <!-- Description en bas à droite (si variante 0 ou 2) -->
@@ -316,6 +317,51 @@ const createColorsPage = (brand: Brand, styleVariant: number) => {
           color: #999;
           font-weight: 300;
         ">01</span>
+      </div>
+      
+      <!-- Watermark "Made with Guidiqo" - Top Right -->
+      <div style="
+        position: absolute;
+        top: 60px;
+        right: 120px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        opacity: 0.5;
+      ">
+        <span style="
+          font-size: 13px;
+          color: #999;
+          font-weight: 300;
+          letter-spacing: 0.5px;
+        ">Made with</span>
+        <div style="
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        ">
+          <div style="
+            width: 20px;
+            height: 20px;
+            background: #000;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          ">
+            <span style="
+              color: white;
+              font-size: 12px;
+              font-weight: bold;
+            ">G</span>
+          </div>
+          <span style="
+            font-size: 14px;
+            color: #000;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+          ">Guidiqo</span>
+        </div>
       </div>
     </div>
   `
@@ -520,6 +566,51 @@ const createTypographyPage = (brand: Brand, styleVariant: number) => {
           font-weight: 300;
         ">02</span>
       </div>
+      
+      <!-- Watermark "Made with Guidiqo" - Top Right -->
+      <div style="
+        position: absolute;
+        top: 60px;
+        right: 120px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        opacity: 0.5;
+      ">
+        <span style="
+          font-size: 13px;
+          color: #999;
+          font-weight: 300;
+          letter-spacing: 0.5px;
+        ">Made with</span>
+        <div style="
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        ">
+          <div style="
+            width: 20px;
+            height: 20px;
+            background: #000;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          ">
+            <span style="
+              color: white;
+              font-size: 12px;
+              font-weight: bold;
+            ">G</span>
+          </div>
+          <span style="
+            font-size: 14px;
+            color: #000;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+          ">Guidiqo</span>
+        </div>
+      </div>
     </div>
   `
 }
@@ -667,6 +758,52 @@ const createPersonalityPage = (brand: Brand, styleVariant: number) => {
           color: #999;
           font-weight: 300;
         ">03</span>
+      </div>
+      
+      <!-- Watermark "Made with Guidiqo" - Top Right -->
+      <div style="
+        position: absolute;
+        top: 60px;
+        right: 120px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        opacity: 0.5;
+        z-index: 1;
+      ">
+        <span style="
+          font-size: 13px;
+          color: #999;
+          font-weight: 300;
+          letter-spacing: 0.5px;
+        ">Made with</span>
+        <div style="
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        ">
+          <div style="
+            width: 20px;
+            height: 20px;
+            background: #000;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          ">
+            <span style="
+              color: white;
+              font-size: 12px;
+              font-weight: bold;
+            ">G</span>
+          </div>
+          <span style="
+            font-size: 14px;
+            color: #000;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+          ">Guidiqo</span>
+        </div>
       </div>
     </div>
   `
@@ -847,6 +984,51 @@ const createApplicationPage = (brand: Brand, styleVariant: number) => {
           color: #999;
           font-weight: 300;
         ">04</span>
+      </div>
+      
+      <!-- Watermark "Made with Guidiqo" - Top Right -->
+      <div style="
+        position: absolute;
+        top: 60px;
+        right: 120px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        opacity: 0.5;
+      ">
+        <span style="
+          font-size: 13px;
+          color: #999;
+          font-weight: 300;
+          letter-spacing: 0.5px;
+        ">Made with</span>
+        <div style="
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        ">
+          <div style="
+            width: 20px;
+            height: 20px;
+            background: #000;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          ">
+            <span style="
+              color: white;
+              font-size: 12px;
+              font-weight: bold;
+            ">G</span>
+          </div>
+          <span style="
+            font-size: 14px;
+            color: #000;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+          ">Guidiqo</span>
+        </div>
       </div>
     </div>
   `
