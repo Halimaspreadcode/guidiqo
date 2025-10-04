@@ -1,115 +1,61 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Eye, EyeOff, Check, AlertCircle } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
+import { PasswordReset } from '@stackframe/stack'
 
 export default function PasswordResetPage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState(false)
-  const [code, setCode] = useState<string | null>(null)
 
+  // Traduire automatiquement en français
   useEffect(() => {
-    const resetCode = searchParams.get('code')
-    if (!resetCode) {
-      setError('Code de réinitialisation invalide ou expiré')
-    } else {
-      setCode(resetCode)
-    }
-  }, [searchParams])
+    const translateLabels = () => {
+      const translations: Record<string, string> = {
+        'New Password': 'Nouveau mot de passe',
+        'Confirm Password': 'Confirmer le mot de passe',
+        'Password': 'Mot de passe',
+        'Reset Password': 'Réinitialiser',
+        'Reset password': 'Réinitialiser',
+        'Change Password': 'Changer le mot de passe',
+        'Confirm password': 'Confirmer le mot de passe',
+      }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-
-    // Validation
-    if (password.length < 8) {
-      setError('Le mot de passe doit contenir au moins 8 caractères')
-      return
-    }
-
-    if (password !== confirmPassword) {
-      setError('Les mots de passe ne correspondent pas')
-      return
-    }
-
-    if (!code) {
-      setError('Code de réinitialisation manquant')
-      return
-    }
-
-    setIsLoading(true)
-
-    try {
-      // Appel à l'API Stack Auth pour réinitialiser le mot de passe
-      const response = await fetch('/api/reset-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          code,
-          password,
-        }),
+      // Traduire les labels
+      document.querySelectorAll('.stack-auth-custom label').forEach((label) => {
+        const text = label.textContent?.trim()
+        if (text && translations[text]) {
+          label.textContent = translations[text]
+        }
       })
 
-      if (response.ok) {
-        setSuccess(true)
-        setTimeout(() => {
-          router.push('/auth/signin')
-        }, 3000)
-      } else {
-        const data = await response.json()
-        setError(data.error || 'Erreur lors de la réinitialisation')
-      }
-    } catch (err) {
-      setError('Une erreur est survenue. Veuillez réessayer.')
-    } finally {
-      setIsLoading(false)
-    }
-  }
+      // Traduire les boutons
+      document.querySelectorAll('.stack-auth-custom button[type="submit"]').forEach((button) => {
+        const text = button.textContent?.trim()
+        if (text && translations[text]) {
+          button.textContent = translations[text]
+        }
+      })
 
-  if (success) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center px-4">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="max-w-md w-full text-center"
-        >
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2, type: "spring" }}
-            className="w-20 h-20 mx-auto mb-6 bg-green-100 rounded-full flex items-center justify-center"
-          >
-            <Check className="w-10 h-10 text-green-600" />
-          </motion.div>
-          
-          <h2 className="text-3xl font-bold text-black mb-4">
-            Mot de passe changé !
-          </h2>
-          <p className="text-gray-600 mb-8">
-            Votre mot de passe a été réinitialisé avec succès.
-            Vous allez être redirigé vers la page de connexion...
-          </p>
-          
-          <button
-            onClick={() => router.push('/auth/signin')}
-            className="px-8 py-3 bg-black text-white rounded-full font-semibold hover:bg-gray-800 transition-colors"
-          >
-            Se connecter maintenant
-          </button>
-        </motion.div>
-      </div>
-    )
-  }
+      // Traduire les placeholders
+      document.querySelectorAll('.stack-auth-custom input[type="password"]').forEach((input) => {
+        const placeholder = (input as HTMLInputElement).placeholder
+        if (placeholder.includes('password')) {
+          (input as HTMLInputElement).placeholder = 'Entrez votre mot de passe'
+        }
+      })
+    }
+
+    const timer = setTimeout(translateLabels, 100)
+    const observer = new MutationObserver(translateLabels)
+    observer.observe(document.body, { childList: true, subtree: true })
+
+    return () => {
+      clearTimeout(timer)
+      observer.disconnect()
+    }
+  }, [])
 
   return (
     <div className="min-h-screen bg-white flex">
@@ -182,109 +128,71 @@ export default function PasswordResetPage() {
               </p>
             </div>
 
-            {error && !code && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl flex items-start gap-3"
-              >
-                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-red-600 text-sm font-medium">
-                    {error}
-                  </p>
-                  <button
-                    onClick={() => router.push('/auth/forgot-password')}
-                    className="text-red-700 text-sm underline mt-2"
-                  >
-                    Demander un nouveau lien
-                  </button>
-                </div>
-              </motion.div>
-            )}
-
-            {code && (
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {error && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="p-4 bg-red-50 border border-red-200 rounded-2xl text-red-600 text-sm"
-                  >
-                    {error}
-                  </motion.div>
-                )}
-
-                {/* Nouveau mot de passe */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-3">
-                    Nouveau mot de passe
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Au moins 8 caractères"
-                      required
-                      className="w-full px-6 py-4 pr-12 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-black focus:border-transparent"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                    >
-                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Confirmer mot de passe */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-3">
-                    Confirmer le mot de passe
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="Retapez votre mot de passe"
-                      required
-                      className="w-full px-6 py-4 pr-12 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-black focus:border-transparent"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                    >
-                      {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Critères de mot de passe */}
-                <div className="bg-gray-50 rounded-2xl p-4 text-sm text-gray-600">
-                  <p className="font-medium mb-2">Votre mot de passe doit contenir :</p>
-                  <ul className="space-y-1">
-                    <li className={password.length >= 8 ? 'text-green-600' : ''}>
-                      • Au moins 8 caractères
-                    </li>
-                    <li className={password !== confirmPassword && confirmPassword ? 'text-red-600' : password === confirmPassword && password ? 'text-green-600' : ''}>
-                      • Les deux mots de passe doivent correspondre
-                    </li>
-                  </ul>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isLoading || !password || !confirmPassword}
-                  className="w-full py-4 bg-black text-white rounded-3xl font-semibold hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isLoading ? 'Changement en cours...' : 'Changer le mot de passe'}
-                </button>
-              </form>
-            )}
+            {/* Composant Stack Auth avec styles */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="stack-auth-custom"
+            >
+              <style jsx global>{`
+                .stack-auth-custom input {
+                  width: 100%;
+                  padding: 16px 24px;
+                  border: 1px solid #d1d5db;
+                  border-radius: 24px;
+                  font-size: 16px;
+                  transition: all 0.2s;
+                  outline: none;
+                }
+                .stack-auth-custom input:focus {
+                  border-color: #000;
+                  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+                }
+                .stack-auth-custom button[type="submit"] {
+                  width: 100%;
+                  padding: 16px 24px;
+                  background: #000;
+                  color: white;
+                  border: none;
+                  border-radius: 24px;
+                  font-weight: 600;
+                  font-size: 16px;
+                  cursor: pointer;
+                  transition: all 0.2s;
+                  margin-top: 24px;
+                }
+                .stack-auth-custom button[type="submit"]:hover {
+                  background: #333;
+                }
+                .stack-auth-custom button[type="submit"]:disabled {
+                  opacity: 0.5;
+                  cursor: not-allowed;
+                }
+                .stack-auth-custom label {
+                  display: block;
+                  font-weight: 500;
+                  color: #111827;
+                  margin-bottom: 12px;
+                  font-size: 14px;
+                }
+                .stack-auth-custom form > div {
+                  margin-bottom: 24px;
+                }
+                .stack-auth-custom button:not([type="submit"]) {
+                  background: transparent;
+                  border: none;
+                  padding: 0;
+                  cursor: pointer;
+                }
+              `}</style>
+              {/* 
+                Correction : 
+                - Suppression de l'attribut searchParams={undefined} qui provoquait une erreur de typage.
+                - Le composant PasswordReset doit recevoir un objet searchParams de type Record<string, string>.
+                - Si vous n'avez pas de searchParams à passer, transmettez un objet vide.
+              */}
+              <PasswordReset searchParams={{}} />
+            </motion.div>
           </motion.div>
         </div>
       </div>

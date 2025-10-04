@@ -713,6 +713,7 @@ export default function PreviewPage() {
 
             {/* Bouton de partage */}
             <SocialShare
+              brandId={brandData.id}
               brandName={brandData.name}
               brandDescription={brandData.description}
               brandUrl={typeof window !== 'undefined' ? window.location.href : ''}

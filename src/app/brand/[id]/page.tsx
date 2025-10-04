@@ -48,6 +48,11 @@ export default function BrandPage() {
     setDownloadingPDF(true)
     try {
       await generateModernBrandPDF(brand, images)
+      
+      // Incrémenter le compteur de téléchargements
+      await fetch(`/api/brands/${brand.id}/download`, {
+        method: 'POST',
+      })
     } catch (error) {
       console.error('Error generating PDF:', error)
     } finally {
@@ -209,6 +214,7 @@ export default function BrandPage() {
             <div className="flex gap-3">
               {/* Bouton de partage - visible pour tous */}
               <SocialShare
+                brandId={brand.id}
                 brandName={brand.name}
                 brandDescription={brand.description || undefined}
                 brandUrl={typeof window !== 'undefined' ? window.location.href : ''}

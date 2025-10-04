@@ -61,12 +61,36 @@ export default function ModifierPage() {
   const [aiInput, setAiInput] = useState('')
   const [generating, setGenerating] = useState(false)
   const [aiSuggestion, setAiSuggestion] = useState<any>(null)
+  const [manualInput, setManualInput] = useState<any>({})
+  const [editMode, setEditMode] = useState<'ai' | 'manual'>('ai')
 
   useEffect(() => {
     if (params.id) {
       fetchBrand()
     }
   }, [params.id])
+
+  useEffect(() => {
+    if (brand && selectedOption) {
+      // Initialiser les valeurs manuelles avec les valeurs actuelles
+      if (selectedOption === 'name') {
+        setManualInput({ name: brand.name || '' })
+      } else if (selectedOption === 'colors') {
+        setManualInput({
+          primaryColor: brand.primaryColor || '',
+          secondaryColor: brand.secondaryColor || '',
+          accentColor: brand.accentColor || ''
+        })
+      } else if (selectedOption === 'typography') {
+        setManualInput({
+          primaryFont: brand.primaryFont || '',
+          secondaryFont: brand.secondaryFont || ''
+        })
+      } else if (selectedOption === 'personality') {
+        setManualInput({ brandPersonality: brand.brandPersonality || '' })
+      }
+    }
+  }, [brand, selectedOption])
 
   const fetchBrand = async () => {
     try {
@@ -108,6 +132,9 @@ export default function ModifierPage() {
         if (response.ok) {
           const data = await response.json()
           setAiSuggestion(data)
+        } else {
+          const error = await response.json()
+          alert(error.error || 'Erreur lors de la génération IA')
         }
       } else if (selectedOption === 'typography') {
         const response = await fetch('/api/ai/suggest-fonts', {
@@ -123,10 +150,21 @@ export default function ModifierPage() {
         if (response.ok) {
           const data = await response.json()
           setAiSuggestion(data)
+        } else {
+          const error = await response.json()
+          alert(error.error || 'Erreur lors de la génération IA')
         }
+      } else if (selectedOption === 'name' || selectedOption === 'personality') {
+        // Pour ces options, on applique directement la valeur saisie
+        setAiSuggestion({
+          value: aiInput,
+          type: selectedOption,
+          explanation: 'Modification directe sans génération IA'
+        })
       }
     } catch (error) {
       console.error('Error getting AI suggestion:', error)
+      alert('Erreur lors de la génération IA. Veuillez réessayer.')
     } finally {
       setGenerating(false)
     }
@@ -146,9 +184,9 @@ export default function ModifierPage() {
         updateData.primaryFont = aiSuggestion.primaryFont
         updateData.secondaryFont = aiSuggestion.secondaryFont
       } else if (selectedOption === 'name') {
-        updateData.name = aiInput
+        updateData.name = aiSuggestion.value || aiInput
       } else if (selectedOption === 'personality') {
-        updateData.brandPersonality = aiInput
+        updateData.brandPersonality = aiSuggestion.value || aiInput
       }
 
       const response = await fetch(`/api/brands/${brand.id}`, {
@@ -159,16 +197,30 @@ export default function ModifierPage() {
 
       if (response.ok) {
         router.push(`/brand/${brand.id}`)
+      } else {
+        alert('Erreur lors de la mise à jour')
       }
     } catch (error) {
       console.error('Error updating brand:', error)
+      alert('Erreur lors de la mise à jour')
     }
   }
 
-  const handleDirectModification = () => {
-    const option = modificationOptions.find(opt => opt.id === selectedOption)
-    if (option && brand) {
-      router.push(`/onboarding/${brand.id}?step=${option.step}`)
+  const handleApplyManual = async () => {
+    if (!brand) return
+
+    try {
+      const response = await fetch(`/api/brands/${brand.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(manualInput)
+      })
+
+      if (response.ok) {
+        router.push(`/brand/${brand.id}`)
+      }
+    } catch (error) {
+      console.error('Error updating brand:', error)
     }
   }
 
@@ -261,21 +313,63 @@ export default function ModifierPage() {
                   </p>
                 </div>
 
-                {/* AI Input */}
+                {/* Sélecteur de mode */}
+                <div className="flex gap-2 bg-gray-100 rounded-full p-1">
+                  <button
+                    onClick={() => setEditMode('ai')}
+                    className={`flex-1 px-6 py-3 rounded-full font-semibold transition-all ${
+                      editMode === 'ai'
+                        ? 'bg-black text-white'
+                        : 'text-gray-600 hover:text-black'
+                    }`}
+                  >
+                    Générer avec IA
+                  </button>
+                  <button
+                    onClick={() => setEditMode('manual')}
+                    className={`flex-1 px-6 py-3 rounded-full font-semibold transition-all ${
+                      editMode === 'manual'
+                        ? 'bg-black text-white'
+                        : 'text-gray-600 hover:text-black'
+                    }`}
+                  >
+                    Saisie manuelle
+                  </button>
+                </div>
+
+                {/* Contenu en fonction du mode */}
+                {editMode === 'ai' ? (
                 <div className="space-y-4">
+                    <div>
                   <textarea
                     value={aiInput}
                     onChange={(e) => setAiInput(e.target.value)}
-                    placeholder="Décrivez ce que vous souhaitez..."
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-stone-900 focus:border-transparent resize-none"
+                        placeholder={
+                          selectedOption === 'colors' 
+                            ? "Ex: Des couleurs vibrantes et modernes pour une startup tech..." 
+                            : selectedOption === 'typography'
+                            ? "Ex: Une typographie élégante et professionnelle pour un cabinet d'avocats..."
+                            : selectedOption === 'name'
+                            ? "Ex: TechFlow, Nova Design, etc."
+                            : "Ex: Moderne, accessible, innovante..."
+                        }
+                        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-stone-900 focus:border-transparent resize-none transition-colors ${
+                          !aiInput.trim() ? 'border-gray-300' : 'border-stone-900'
+                        }`}
                     rows={4}
                   />
+                      {!aiInput.trim() && (
+                        <p className="text-xs text-gray-500 mt-2">
+                          Décrivez ce que vous souhaitez pour obtenir une suggestion de l'IA
+                        </p>
+                      )}
+                    </div>
 
-                  <div className="flex gap-3">
+                    <div className="flex justify-center">
                     <LiquidButton
                       onClick={handleAISuggestion}
                       disabled={!aiInput.trim() || generating}
-                      className="flex-1 py-3 bg-gradient-to-r from-stone-900 to-gray-800 text-white rounded-full font-semibold hover:from-red-900 hover:to-red-600 transition-all disabled:opacity-50"
+                        className="px-8 py-3 bg-gradient-to-r from-stone-900 to-gray-800 text-white rounded-full font-semibold hover:from-red-900 hover:to-red-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {generating ? (
                         <span className="flex items-center justify-center gap-2">
@@ -283,20 +377,151 @@ export default function ModifierPage() {
                           Génération...
                         </span>
                       ) : (
-                        'Suggérer avec IA'
+                          <span className="flex items-center gap-2">
+                            
+                            Générer avec IA
+                          </span>
                       )}
                     </LiquidButton>
-
-                    <motion.button
-                      onClick={handleDirectModification}
-                      className="px-6 py-3 bg-white border border-gray-200 text-black rounded-full font-semibold hover:bg-gray-50 transition-colors"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      Modifier manuellement
-                    </motion.button>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="space-y-4">
+                    {/* Inputs manuels selon l'option sélectionnée */}
+                    {selectedOption === 'name' && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Nom de la marque
+                        </label>
+                        <input
+                          type="text"
+                          value={manualInput.name || ''}
+                          onChange={(e) => setManualInput({ ...manualInput, name: e.target.value })}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-stone-900 focus:border-transparent"
+                          placeholder="Entrez le nouveau nom"
+                        />
+                      </div>
+                    )}
+
+                    {selectedOption === 'colors' && (
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Couleur Principale
+                          </label>
+                          <div className="flex gap-3">
+                            <input
+                              type="color"
+                              value={manualInput.primaryColor || '#000000'}
+                              onChange={(e) => setManualInput({ ...manualInput, primaryColor: e.target.value })}
+                              className="w-16 h-12 border border-gray-300 rounded-lg cursor-pointer"
+                            />
+                            <input
+                              type="text"
+                              value={manualInput.primaryColor || ''}
+                              onChange={(e) => setManualInput({ ...manualInput, primaryColor: e.target.value })}
+                              className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-stone-900 focus:border-transparent font-mono"
+                              placeholder="#000000"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Couleur Secondaire
+                          </label>
+                          <div className="flex gap-3">
+                            <input
+                              type="color"
+                              value={manualInput.secondaryColor || '#333333'}
+                              onChange={(e) => setManualInput({ ...manualInput, secondaryColor: e.target.value })}
+                              className="w-16 h-12 border border-gray-300 rounded-lg cursor-pointer"
+                            />
+                            <input
+                              type="text"
+                              value={manualInput.secondaryColor || ''}
+                              onChange={(e) => setManualInput({ ...manualInput, secondaryColor: e.target.value })}
+                              className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-stone-900 focus:border-transparent font-mono"
+                              placeholder="#333333"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Couleur d'Accent
+                          </label>
+                          <div className="flex gap-3">
+                            <input
+                              type="color"
+                              value={manualInput.accentColor || '#666666'}
+                              onChange={(e) => setManualInput({ ...manualInput, accentColor: e.target.value })}
+                              className="w-16 h-12 border border-gray-300 rounded-lg cursor-pointer"
+                            />
+                            <input
+                              type="text"
+                              value={manualInput.accentColor || ''}
+                              onChange={(e) => setManualInput({ ...manualInput, accentColor: e.target.value })}
+                              className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-stone-900 focus:border-transparent font-mono"
+                              placeholder="#666666"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedOption === 'typography' && (
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Police Principale
+                          </label>
+                          <input
+                            type="text"
+                            value={manualInput.primaryFont || ''}
+                            onChange={(e) => setManualInput({ ...manualInput, primaryFont: e.target.value })}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-stone-900 focus:border-transparent"
+                            placeholder="Ex: Inter, Roboto, Raleway"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Police Secondaire
+                          </label>
+                          <input
+                            type="text"
+                            value={manualInput.secondaryFont || ''}
+                            onChange={(e) => setManualInput({ ...manualInput, secondaryFont: e.target.value })}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-stone-900 focus:border-transparent"
+                            placeholder="Ex: Georgia, Merriweather"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedOption === 'personality' && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Personnalité de la marque
+                        </label>
+                        <textarea
+                          value={manualInput.brandPersonality || ''}
+                          onChange={(e) => setManualInput({ ...manualInput, brandPersonality: e.target.value })}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-stone-900 focus:border-transparent resize-none"
+                          rows={4}
+                          placeholder="Ex: Moderne, élégante, accessible..."
+                        />
+                      </div>
+                    )}
+
+                    <div className="flex justify-center">
+                      <LiquidButton
+                        onClick={handleApplyManual}
+                        className="px-8 py-3 bg-black text-white rounded-full font-semibold hover:bg-gray-800 transition-colors"
+                      >
+                        Appliquer les modifications
+                      </LiquidButton>
+                    </div>
+                  </div>
+                )}
 
                 {/* AI Suggestion */}
                 {aiSuggestion && (
@@ -350,12 +575,30 @@ export default function ModifierPage() {
                       </div>
                     )}
 
-                    <LiquidButton
-                      onClick={handleApplySuggestion}
-                      className="w-full mt-6 py-3 bg-black text-white rounded-full font-semibold hover:bg-gray-800 transition-colors"
-                    >
-                      Appliquer cette suggestion
-                    </LiquidButton>
+                    {(selectedOption === 'name' || selectedOption === 'personality') && aiSuggestion.value && (
+                      <div className="space-y-4">
+                        <div className="bg-white rounded-xl p-4 border border-gray-200">
+                          <p className="text-sm text-gray-500 mb-2">
+                            {selectedOption === 'name' ? 'Nouveau nom' : 'Nouvelle personnalité'}
+                          </p>
+                          <p className="text-xl font-bold text-black">
+                            {aiSuggestion.value}
+                          </p>
+                        </div>
+                        {aiSuggestion.explanation && (
+                          <p className="text-sm text-gray-600">{aiSuggestion.explanation}</p>
+                        )}
+                      </div>
+                    )}
+
+                    <div className="flex justify-center mt-6">
+                      <LiquidButton
+                        onClick={handleApplySuggestion}
+                        className="px-8 py-3 bg-black text-white rounded-full font-semibold hover:bg-gray-800 transition-colors"
+                      >
+                        Appliquer cette suggestion
+                      </LiquidButton>
+                    </div>
                   </motion.div>
                 )}
               </motion.div>

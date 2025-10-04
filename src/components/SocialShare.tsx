@@ -5,13 +5,14 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Share2, Twitter, Facebook, Linkedin, Copy, Check } from 'lucide-react'
 
 interface SocialShareProps {
+  brandId: string
   brandName: string
   brandDescription?: string
   brandUrl: string
   className?: string
 }
 
-export default function SocialShare({ brandName, brandDescription, brandUrl, className = '' }: SocialShareProps) {
+export default function SocialShare({ brandId, brandName, brandDescription, brandUrl, className = '' }: SocialShareProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [copied, setCopied] = useState(false)
 
@@ -25,20 +26,32 @@ export default function SocialShare({ brandName, brandDescription, brandUrl, cla
     linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`
   }
 
+  const trackShare = async () => {
+    try {
+      await fetch(`/api/brands/${brandId}/share`, {
+        method: 'POST',
+      })
+    } catch (error) {
+      console.error('Erreur lors du tracking du partage:', error)
+    }
+  }
+
   const handleCopyLink = async () => {
     try {
       await navigator.clipboard.writeText(brandUrl)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
+      await trackShare()
     } catch (error) {
       console.error('Erreur lors de la copie:', error)
     }
   }
 
-  const handleShare = (platform: string) => {
+  const handleShare = async (platform: string) => {
     const url = shareLinks[platform as keyof typeof shareLinks]
     if (url) {
       window.open(url, '_blank', 'width=600,height=400')
+      await trackShare()
     }
   }
 
