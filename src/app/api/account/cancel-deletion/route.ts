@@ -151,16 +151,17 @@ export async function POST(req: NextRequest) {
     // Envoyer les emails
     try {
       console.log('📧 Envoi emails d\'annulation...')
+      console.log('📧 Destinataire:', dbUser.email)
       
       await resend.emails.send({
-        from: 'Guidiqo <onboarding@resend.dev>',
+        from: 'Guidiqo <noreply@santosagence.com>',
         to: [dbUser.email],
         subject: '✅ Votre compte Guidiqo a été conservé',
         html: userEmailHtml,
       })
 
       await resend.emails.send({
-        from: 'Guidiqo <onboarding@resend.dev>',
+        from: 'Guidiqo <noreply@santosagence.com>',
         to: [process.env.ADMIN_EMAIL || dbUser.email],
         subject: `Annulation suppression - ${dbUser.email}`,
         html: adminEmailHtml,

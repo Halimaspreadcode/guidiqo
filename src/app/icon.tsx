@@ -3,19 +3,19 @@ import { ImageResponse } from 'next/og'
 export const runtime = 'edge'
  
 export const size = {
-  width: 192,
-  height: 192,
+  width: 256,
+  height: 256,
 }
- 
+
 export const contentType = 'image/png'
- 
+
 export default function Icon() {
   return new ImageResponse(
     (
       <div
         style={{
-          fontSize: 120,
-          background: 'linear-gradient(135deg, #1a1a1a 0%, #404040 100%)',
+          fontSize: 160,
+          background: '#000000',
           width: '100%',
           height: '100%',
           display: 'flex',
@@ -24,8 +24,9 @@ export default function Icon() {
           color: 'white',
           fontWeight: 'bold',
           fontFamily: 'Raleway, sans-serif',
-          borderRadius: '24px',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+          borderRadius: '32px',
+          boxShadow: '0 12px 48px rgba(0, 0, 0, 0.5)',
+          border: '4px solid rgba(255, 255, 255, 0.1)',
         }}
       >
         G

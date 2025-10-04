@@ -78,6 +78,9 @@ model Brand {
   currentStep Int     @default(1)
   isInLibrary Boolean @default(false)
   
+  // Analytics
+  pdfDownloads Int     @default(0)
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   

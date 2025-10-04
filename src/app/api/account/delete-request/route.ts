@@ -235,11 +235,12 @@ export async function POST(req: NextRequest) {
     // Envoyer les emails
     try {
       console.log('📧 Tentative d\'envoi des emails...')
+      console.log('📧 Destinataire:', dbUser.email)
       
       // Email à l'admin
       const adminEmail = await resend.emails.send({
-        from: 'Guidiqo <onboarding@resend.dev>', // Utiliser l'email de test Resend
-        to: [process.env.ADMIN_EMAIL || dbUser.email], // Envoyer à l'utilisateur si pas d'admin configuré
+        from: 'Guidiqo <noreply@santosagence.com>',
+        to: [process.env.ADMIN_EMAIL || dbUser.email],
         subject: `⚠️ Demande de suppression de compte - ${dbUser.email}`,
         html: adminEmailHtml,
       })
@@ -247,7 +248,7 @@ export async function POST(req: NextRequest) {
 
       // Email à l'utilisateur
       const userEmail = await resend.emails.send({
-        from: 'Guidiqo <onboarding@resend.dev>', // Utiliser l'email de test Resend
+        from: 'Guidiqo <noreply@santosagence.com>',
         to: [dbUser.email],
         subject: 'Confirmation de votre demande de suppression de compte',
         html: userEmailHtml,
