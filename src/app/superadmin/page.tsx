@@ -191,9 +191,15 @@ export default function SuperAdminPage() {
             ? { ...brand, isSpotlighted: !currentStatus }
             : brand
         ))
+        console.log(`✅ Brand ${brandId} spotlight status updated to ${!currentStatus}`)
+      } else {
+        const error = await response.json()
+        console.error('Error response:', error)
+        alert(error.error || 'Erreur lors de la mise à jour')
       }
     } catch (error) {
       console.error('Error updating brand spotlight status:', error)
+      alert('Erreur lors de la mise à jour')
     }
   }
 
@@ -492,8 +498,8 @@ export default function SuperAdminPage() {
               <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-6 mb-6">
                 <p className="text-sm text-yellow-800">
                   <Crown className="w-5 h-5 inline mr-2" />
-                  Sélectionnez jusqu'à 5 brands à mettre en avant sur la page d'accueil. 
-                  Ces brands seront affichés dans la section "Explorez et inspirez-vous".
+                  Sélectionnez jusqu&apos;à 5 brands à mettre en avant sur la page d&apos;accueil. 
+                  Ces brands seront affichés dans la section &quot;Explorez et inspirez-vous&quot;.
                 </p>
               </div>
 

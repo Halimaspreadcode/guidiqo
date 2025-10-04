@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, Edit, Download, X, Eye } from 'lucide-react'
@@ -24,6 +25,10 @@ interface Brand {
   targetAudience: string | null
   isCompleted: boolean
   currentStep: number
+  user?: {
+    name: string | null
+    email: string
+  }
 }
 
 export default function BrandPage() {
@@ -772,6 +777,48 @@ export default function BrandPage() {
           </>
         )}
       </AnimatePresence>
+
+      {/* Card créateur */}
+      {brand && brand.user && (
+        <section className="py-12 px-4 sm:px-6 bg-gray-50">
+          <div className="max-w-4xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="relative overflow-hidden rounded-3xl p-8 sm:p-12"
+              style={{
+                background: `linear-gradient(135deg, ${brand.primaryColor || '#000'} 0%, ${brand.secondaryColor || '#333'} 100%)`
+              }}
+            >
+              {/* Pattern overlay */}
+              <Image
+            src="https://images.unsplash.com/photo-1758551015352-fa735f167422?q=80&w=2600&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            alt="Music studio background"
+            fill
+            className="object-cover opacity-90"
+            priority
+          />
+              <div className="relative z-10 flex flex-col sm:flex-row items-center gap-6">
+                
+
+                {/* Info */}
+                <div className="flex-1 text-center sm:text-left">
+                  <p className="text-white/80 text-sm sm:text-base mb-2">Créé par</p>
+                  <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+                    {brand.user.name || brand.user.email.split('@')[0]}
+                  </h3>
+                  <p className="text-white/70 text-sm sm:text-base">
+                    {brand.user.email}
+                  </p>
+                </div>
+
+               
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       <Footer />
     </div>
