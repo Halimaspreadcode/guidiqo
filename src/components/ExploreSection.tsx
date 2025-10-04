@@ -99,8 +99,9 @@ export default function ExploreSection () {
                 >
                   <div 
                     className='relative w-full h-64 sm:h-72 md:h-80 rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200'
-                    style={{ background: brand.coverImage ? 'transparent' : gradient }}
+                    style={{ background: gradient }}
                   >
+                    {/* Image de fond */}
                     {brand.coverImage ? (
                       <img
                         src={brand.coverImage}
@@ -108,12 +109,48 @@ export default function ExploreSection () {
                         className='absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700'
                       />
                     ) : (
-                      <div className="absolute inset-0" style={{ background: gradient }} />
+                      <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-black/60" />
                     )}
+
+                    {/* Bandes de couleurs horizontales sur le côté gauche */}
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-10">
+                      {[
+                        { color: brand.primaryColor, label: 'P' },
+                        { color: brand.secondaryColor, label: 'S' },
+                        { color: brand.accentColor, label: 'A' }
+                      ]
+                        .filter(item => item.color)
+                        .map((item, idx) => (
+                          <motion.div
+                            key={idx}
+                            className="relative h-12 cursor-pointer overflow-hidden group/color rounded-r-lg"
+                            initial={{ width: '20px' }}
+                            whileHover={{ width: '180px' }}
+                            transition={{ duration: 0.3, ease: 'easeOut' }}
+                            style={{ backgroundColor: item.color! }}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {/* Contenu visible au hover */}
+                            <motion.div 
+                              className="absolute inset-0 flex flex-col items-center justify-center px-3"
+                              initial={{ opacity: 0 }}
+                              whileHover={{ opacity: 1 }}
+                              transition={{ duration: 0.2 }}
+                            >
+                              <p className="text-[10px] font-bold text-white uppercase tracking-wider mb-0.5 whitespace-nowrap drop-shadow-md">
+                                {item.label === 'P' ? 'Principale' : item.label === 'S' ? 'Secondaire' : 'Accent'}
+                              </p>
+                              <p className="text-xs font-mono text-white/95 whitespace-nowrap drop-shadow-md">
+                                {item.color}
+                              </p>
+                            </motion.div>
+                          </motion.div>
+                        ))}
+                    </div>
                     
                     <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent' />
                     
-                    <div className='absolute inset-0 flex items-end p-3 sm:p-4 md:p-6'>
+                    <div className='absolute inset-0 flex items-end p-3 sm:p-4 md:p-6 z-20'>
                       <LiquidButton className='opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
                         {brand.name}
                       </LiquidButton>
