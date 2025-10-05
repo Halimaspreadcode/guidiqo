@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, X } from 'lucide-react'
@@ -41,6 +41,7 @@ export default function CreerPage() {
   const [brandId, setBrandId] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [showCancelModal, setShowCancelModal] = useState(false)
+  const isCreatingRef = useRef(false) // Protection contre les créations multiples
 
   const steps = [
     { number: 1, title: 'Informations', component: Step1BasicInfo },
@@ -85,6 +86,13 @@ export default function CreerPage() {
           console.error('Erreur lors de la sauvegarde')
         }
       } else {
+        // Protection contre les créations multiples
+        if (isCreatingRef.current) {
+          return // Une création est déjà en cours
+        }
+
+        isCreatingRef.current = true
+        
         // Créer un nouveau brand
         const response = await fetch('/api/brands', {
           method: 'POST',
@@ -100,9 +108,12 @@ export default function CreerPage() {
           const newBrand = await response.json()
           setBrandId(newBrand.id)
         }
+        
+        isCreatingRef.current = false
       }
     } catch (error) {
       console.error('Erreur lors de la sauvegarde automatique:', error)
+      isCreatingRef.current = false
     } finally {
       setSaving(false)
     }

@@ -13,7 +13,7 @@ export async function GET(
       where: {
         userId: userId,
         isPublic: true,
-        //isCompleted: true
+        isCompleted: true
       },
       include: {
         user: {

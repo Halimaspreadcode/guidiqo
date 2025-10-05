@@ -129,21 +129,14 @@ export default function DashboardPage() {
 
   const fetchBrands = async () => {
     try {
-      console.log('🔄 Récupération des brands...')
       const response = await fetch('/api/brands')
-      console.log('📡 Réponse API:', response.status, response.statusText)
       
       if (response.ok) {
         const data = await response.json()
-        console.log('✅ Brands récupérés:', data.length, 'brand(s)')
-        console.log('📦 Données:', data)
         setBrands(data)
-      } else {
-        const errorData = await response.json()
-        console.error('❌ Erreur API:', errorData)
       }
     } catch (error) {
-      console.error('❌ Error fetching brands:', error)
+      // Erreur silencieuse
     } finally {
       setLoading(false)
     }
