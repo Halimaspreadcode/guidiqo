@@ -65,7 +65,6 @@ export default function BrandPage() {
           await fetch(`/api/brands/${brand.id}/download`, {
             method: 'POST',
           })
-          console.log('✅ Téléchargement comptabilisé')
         } catch (error) {
           console.error('Erreur lors du comptage:', error)
         }

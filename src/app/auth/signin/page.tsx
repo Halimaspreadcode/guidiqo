@@ -14,22 +14,14 @@ export default function SignInPage() {
   // Rediriger si l'utilisateur est connecté
   useEffect(() => {
     if (user) {
-      console.log('👤 SignIn - Utilisateur connecté:', user.primaryEmail)
-      
       // Vérifier s'il y a une intention de téléchargement
       const downloadIntent = localStorage.getItem('downloadIntent') || sessionStorage.getItem('downloadIntent')
       const brandData = localStorage.getItem('pendingBrandData') || sessionStorage.getItem('brandData')
       
-      console.log('🔍 SignIn - Vérification:')
-      console.log('  - downloadIntent:', downloadIntent)
-      console.log('  - brandData:', brandData ? 'PRÉSENT' : 'ABSENT')
-      
       if (downloadIntent && brandData) {
         const data = JSON.parse(brandData)
-        console.log('✅ SignIn - Redirection vers preview:', data.id)
         router.push(`/brand/preview/${data.id}`)
       } else {
-        console.log('➡️ SignIn - Redirection vers dashboard (pas de branding en attente)')
         router.push('/dashboard')
       }
     }

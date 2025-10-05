@@ -62,7 +62,6 @@ export default function DashboardPage() {
     if (pendingData) {
       try {
         const data = JSON.parse(pendingData)
-        console.log('🎨 Branding en attente trouvé:', data.name)
         setPendingBrandData(data)
         setShowRecoveryModal(true)
       } catch (error) {
@@ -79,7 +78,6 @@ export default function DashboardPage() {
 
     setSavingPendingBrand(true)
     try {
-      console.log('💾 Sauvegarde du branding en attente...')
       const response = await fetch('/api/brands', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -92,7 +90,6 @@ export default function DashboardPage() {
 
       if (response.ok) {
         const savedBrand = await response.json()
-        console.log('✅ Branding sauvegardé:', savedBrand)
         
         // Nettoyer le storage
         localStorage.removeItem('pendingBrandData')

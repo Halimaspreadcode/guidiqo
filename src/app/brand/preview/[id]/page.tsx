@@ -47,15 +47,10 @@ export default function PreviewPage() {
     const sessionStored = sessionStorage.getItem('brandData')
     const localStored = localStorage.getItem('pendingBrandData')
     
-    console.log('📦 Preview - Chargement des données:')
-    console.log('  - sessionStorage:', sessionStored ? 'PRÉSENT' : 'ABSENT')
-    console.log('  - localStorage:', localStored ? 'PRÉSENT' : 'ABSENT')
-    
     const stored = sessionStored || localStored
     
     if (stored) {
       const data = JSON.parse(stored)
-      console.log('✅ Preview - Données chargées:', data.name)
       setBrandData(data)
       // Générer les images IA
       generateImages(data)
@@ -63,10 +58,8 @@ export default function PreviewPage() {
       // Si on a chargé depuis localStorage, le copier dans sessionStorage
       if (localStored && !sessionStored) {
         sessionStorage.setItem('brandData', localStored)
-        console.log('Preview - Copié de localStorage vers sessionStorage')
       }
     } else {
-      console.log('❌ Preview - Aucune donnée trouvée, redirection vers /')
       router.push('/')
     }
   }, [router])
@@ -76,14 +69,7 @@ export default function PreviewPage() {
     const autoSave = async () => {
       const downloadIntent = localStorage.getItem('downloadIntent') || sessionStorage.getItem('downloadIntent')
       
-      console.log('🔍 AutoSave - Vérification:', {
-        user: user?.primaryEmail || 'NON CONNECTÉ',
-        brandData: brandData?.name || 'ABSENT',
-        downloadIntent: downloadIntent
-      })
-      
       if (user && brandData && downloadIntent === 'true') {
-        console.log('🔄 AutoSave - CONDITIONS REMPLIES!')
         // Attendre un peu pour s'assurer que tout est chargé
         setTimeout(async () => {
           await saveBrandToDatabase(brandData)
@@ -142,7 +128,6 @@ export default function PreviewPage() {
   }
 
   const saveBrandToDatabase = async (data: BrandData) => {
-    console.log('💾 Sauvegarde en DB...', data.name)
     setSaving(true)
     try {
       const response = await fetch('/api/brands', {
@@ -157,7 +142,6 @@ export default function PreviewPage() {
 
       if (response.ok) {
         const savedBrand = await response.json()
-        console.log('✅ Brand sauvegardé avec succès:', savedBrand)
         // Nettoyer tous les storage
         sessionStorage.removeItem('brandData')
         sessionStorage.removeItem('downloadIntent')
@@ -229,16 +213,11 @@ export default function PreviewPage() {
                 <LiquidButton
                   onClick={() => {
                     // FORCER la sauvegarde dans localStorage
-                    console.log('🔐 Modal - Clic sur Créer un compte')
                     const dataToSave = brandData || JSON.parse(sessionStorage.getItem('brandData') || '{}')
                     
                     if (dataToSave && dataToSave.id) {
-                      console.log('💾 Modal - FORCE sauvegarde dans localStorage:', dataToSave.name)
                       localStorage.setItem('pendingBrandData', JSON.stringify(dataToSave))
                       localStorage.setItem('downloadIntent', 'true')
-                      console.log('✅ Modal - Données sauvegardées en localStorage')
-                    } else {
-                      console.log('❌ Modal - Pas de brandData valide!')
                     }
                     router.push('/auth/signup')
                   }}
@@ -249,16 +228,11 @@ export default function PreviewPage() {
                 <motion.button
                   onClick={() => {
                     // FORCER la sauvegarde dans localStorage
-                    console.log('🔐 Modal - Clic sur Se connecter')
                     const dataToSave = brandData || JSON.parse(sessionStorage.getItem('brandData') || '{}')
                     
                     if (dataToSave && dataToSave.id) {
-                      console.log('💾 Modal - FORCE sauvegarde dans localStorage:', dataToSave.name)
                       localStorage.setItem('pendingBrandData', JSON.stringify(dataToSave))
                       localStorage.setItem('downloadIntent', 'true')
-                      console.log('✅ Modal - Données sauvegardées en localStorage')
-                    } else {
-                      console.log('❌ Modal - Pas de brandData valide!')
                     }
                     router.push('/auth/signin')
                   }}

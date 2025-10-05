@@ -100,23 +100,17 @@ export default function SuperAdminPage() {
 
   useEffect(() => {
     if (!user) {
-      console.log('❌ No user, redirecting to signin...')
       router.push('/auth/signin')
       return
     }
 
-    console.log('🔐 SuperAdmin - isAdmin:', isAdmin, 'user:', user.primaryEmail)
-
     // Attendre que isAdmin soit vérifié avant de rediriger
     if (user && isAdmin === true) {
-      console.log('✅ User is admin, fetching data...')
       fetchData()
     } else if (user && isAdmin === false) {
-      console.log('❌ User is NOT admin, will redirect...')
       // Attendre un peu au cas où isAdmin change
       const timer = setTimeout(() => {
         if (isAdmin === false) {
-          console.log('🔄 Redirecting non-admin user to home...')
           router.push('/')
         }
       }, 2000) // Attendre 2 secondes
@@ -192,7 +186,6 @@ export default function SuperAdminPage() {
             ? { ...brand, isSpotlighted: !currentStatus }
             : brand
         ))
-        console.log(`✅ Brand ${brandId} spotlight status updated to ${!currentStatus}`)
       } else {
         const error = await response.json()
         console.error('Error response:', error)
@@ -218,7 +211,6 @@ export default function SuperAdminPage() {
             ? { ...user, isVerified: !currentStatus }
             : user
         ))
-        console.log(`✅ User ${userId} verified status updated to ${!currentStatus}`)
       } else {
         const error = await response.json()
         console.error('Error response:', error)

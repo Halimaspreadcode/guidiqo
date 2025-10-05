@@ -169,7 +169,6 @@ export default function ProfilPage() {
                 currentImage={user?.profileImageUrl || undefined}
                 onImageChange={(imageUrl) => {
                   // L'image sera automatiquement mise à jour via Stack Auth
-                  console.log('Image de profil mise à jour:', imageUrl)
                 }}
               />
               <div>

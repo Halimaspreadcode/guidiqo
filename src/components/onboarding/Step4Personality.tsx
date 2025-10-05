@@ -63,8 +63,6 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
       // Utiliser la DESCRIPTION COMPLÈTE comme base principale
       const projectDescription = brandData.description || brandData.name || brandData.prompt || ''
       const projectName = brandData.name || ''
-      
-      console.log('🎨 Génération d\'images pour:', projectDescription)
 
       // Mapping subtil des personnalités (termes minimalistes)
       const personalityVisuals: {[key: string]: string} = {
@@ -88,12 +86,9 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
         `${projectDescription.split(' ').slice(0, 4).join(' ')} ${personalityTerm}`.trim()
       ]
 
-      console.log('📸 Requêtes d\'images:', queries)
-
       const imagePromises = queries.map(async (query, index) => {
         // Ne pas faire de requête vide
         if (!query || query.length < 3) {
-          console.warn(`⚠️ Requête ${index + 1} trop courte, ignorée`)
           return null
         }
 
@@ -113,7 +108,6 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
           if (response.ok) {
             const data = await response.json()
             const imageUrl = data.image?.url || data.imageUrl
-            console.log(`✅ Image ${index + 1} trouvée:`, imageUrl ? 'OK' : 'FAIL')
             return imageUrl || null
           }
         } catch (error) {
@@ -125,12 +119,8 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
       const images = await Promise.all(imagePromises)
       const validImages = images.filter(Boolean) as string[]
       
-      console.log(`📊 Images valides trouvées: ${validImages.length}/3`)
-      
       // S'assurer qu'on a au moins 3 images
       if (validImages.length < 3) {
-        console.warn('⚙️ Recherche d\'images complémentaires...')
-        
         const additionalQueries = [
           // Encore plus centré sur le projet
           projectDescription,
@@ -160,7 +150,6 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
               const imageUrl = data.image?.url || data.imageUrl
               if (imageUrl && !validImages.includes(imageUrl)) {
                 validImages.push(imageUrl)
-                console.log(`✅ Image complémentaire ${i + 1} ajoutée`)
               }
             }
           } catch (error) {
@@ -169,7 +158,6 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
         }
       }
       
-      console.log(`🎉 Total final: ${validImages.length} images`)
       setSuggestedImages(validImages)
     } catch (error) {
       console.error('❌ Erreur génération:', error)

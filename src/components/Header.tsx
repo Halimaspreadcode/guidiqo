@@ -27,7 +27,6 @@ export default function Header() {
         const response = await fetch('/api/check-admin');
         if (response.ok) {
           const data = await response.json();
-          console.log('data', data)
           setIsAdmin(data.isAdmin);
         }
       } catch (error) {
@@ -45,7 +44,6 @@ export default function Header() {
 
   const handleSignOut = async () => {
     // Nettoyer toutes les données en attente avant de se déconnecter
-    console.log('🚪 Header - Déconnexion, nettoyage du storage')
     localStorage.removeItem('pendingBrandData')
     localStorage.removeItem('downloadIntent')
     sessionStorage.removeItem('brandData')

@@ -32,7 +32,6 @@ export default function Sidebar({ isOpen = false, onClose, isMobile = false }: S
         const response = await fetch('/api/check-admin')
         if (response.ok) {
           const data = await response.json()
-          console.log('🔐 Sidebar - Check admin result:', data)
           setIsAdmin(data.isAdmin)
         }
       } catch (error) {
@@ -47,7 +46,6 @@ export default function Sidebar({ isOpen = false, onClose, isMobile = false }: S
   // Fonction de déconnexion
   const handleSignOut = async () => {
     // Nettoyer toutes les données en attente avant de se déconnecter
-    console.log('🚪 Sidebar - Déconnexion, nettoyage du storage')
     localStorage.removeItem('pendingBrandData')
     localStorage.removeItem('downloadIntent')
     sessionStorage.removeItem('brandData')

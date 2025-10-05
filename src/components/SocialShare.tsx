@@ -36,7 +36,6 @@ export default function SocialShare({ brandId, brandName, brandDescription, bran
         method: 'POST',
       })
       setHasTracked(true)
-      console.log('✅ Partage comptabilisé')
     } catch (error) {
       console.error('Erreur lors du tracking du partage:', error)
     }
