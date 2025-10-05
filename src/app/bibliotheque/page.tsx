@@ -23,8 +23,11 @@ interface LibraryBrand {
   createdAt: string
   updatedAt: string
   user: {
+    id: string
     name: string | null
     email: string
+    profileImage: string | null
+    isVerified: boolean
   }
 }
 
@@ -270,17 +273,29 @@ export default function BibliothequePage() {
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                           >
-                            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-stone-900 to-gray-800 flex items-center justify-center overflow-hidden">
-                              {brand.user.profileImage ? (
-                                <img
-                                  src={brand.user.profileImage}
-                                  alt={brand.user.name || ''}
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <span className="text-white text-[10px] font-bold">
-                                  {(brand.user.name || brand.user.email).substring(0, 2).toUpperCase()}
-                                </span>
+                            <div className="relative">
+                              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-stone-900 to-gray-800 flex items-center justify-center overflow-hidden">
+                                {brand.user.profileImage ? (
+                                  <img
+                                    src={brand.user.profileImage}
+                                    alt={brand.user.name || ''}
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <span className="text-white text-[10px] font-bold">
+                                    {(brand.user.name || brand.user.email).substring(0, 2).toUpperCase()}
+                                  </span>
+                                )}
+                              </div>
+                              {brand.user.isVerified && (
+                                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3">
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <img
+                                    src="https://e7msojy1cjnzyvsj.public.blob.vercel-storage.com/images/1759665603040-verified-badge-profile-icon-png.webp"
+                                    alt="Verified"
+                                    className="w-full h-full"
+                                  />
+                                </div>
                               )}
                             </div>
                             <p className="text-xs font-semibold text-white hidden md:flex">

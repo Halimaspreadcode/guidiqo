@@ -10,6 +10,7 @@ interface UserProfile {
   name: string | null
   profileImage: string | null
   role: string
+  isVerified: boolean
   createdAt: string
   updatedAt: string
 }

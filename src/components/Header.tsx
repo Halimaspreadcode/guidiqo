@@ -119,25 +119,37 @@ export default function Header() {
           <div className="hidden sm:block">
             {user ? (
               <div className="flex items-center gap-2">
-                <motion.button
-                  onClick={() => router.push('/dashboard')}
-                  className="w-10 h-10 rounded-full overflow-hidden hover:from-red-900 hover:to-red-600 transition-all duration-200"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  title={user.displayName || user.primaryEmail || 'Mon compte'}
-                >
-                  {profile?.profileImage ? (
-                    <img
-                      src={profile.profileImage}
-                      alt="Avatar"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-r from-stone-900 to-gray-800 text-white font-semibold flex items-center justify-center">
-                      {getInitials()}
+                <div className="relative">
+                  <motion.button
+                    onClick={() => router.push('/dashboard')}
+                    className="w-10 h-10 rounded-full overflow-hidden hover:from-red-900 hover:to-red-600 transition-all duration-200"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    title={user.displayName || user.primaryEmail || 'Mon compte'}
+                  >
+                    {profile?.profileImage ? (
+                      <img
+                        src={profile.profileImage}
+                        alt="Avatar"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-r from-stone-900 to-gray-800 text-white font-semibold flex items-center justify-center">
+                        {getInitials()}
+                      </div>
+                    )}
+                  </motion.button>
+                  {profile?.isVerified && (
+                    <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src="https://e7msojy1cjnzyvsj.public.blob.vercel-storage.com/images/1759665603040-verified-badge-profile-icon-png.webp"
+                        alt="Verified"
+                        className="w-full h-full"
+                      />
                     </div>
                   )}
-                </motion.button>
+                </div>
               </div>
             ) : (
               <LiquidButton 
@@ -151,25 +163,37 @@ export default function Header() {
 
           {/* User Avatar - Mobile (à droite du hamburger) */}
           {user && (
-            <motion.button
-              onClick={() => router.push('/dashboard')}
-              className="sm:hidden w-10 h-10 rounded-full overflow-hidden hover:from-red-900 hover:to-red-600 transition-all duration-200"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              title={user.displayName || user.primaryEmail || 'Mon compte'}
-            >
-              {profile?.profileImage ? (
-                <img
-                  src={profile.profileImage}
-                  alt="Avatar"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-r from-stone-900 to-gray-800 text-white font-semibold flex items-center justify-center">
-                  {getInitials()}
+            <div className="relative sm:hidden">
+              <motion.button
+                onClick={() => router.push('/dashboard')}
+                className="w-10 h-10 rounded-full overflow-hidden hover:from-red-900 hover:to-red-600 transition-all duration-200"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                title={user.displayName || user.primaryEmail || 'Mon compte'}
+              >
+                {profile?.profileImage ? (
+                  <img
+                    src={profile.profileImage}
+                    alt="Avatar"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-r from-stone-900 to-gray-800 text-white font-semibold flex items-center justify-center">
+                    {getInitials()}
+                  </div>
+                )}
+              </motion.button>
+              {profile?.isVerified && (
+                <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="https://e7msojy1cjnzyvsj.public.blob.vercel-storage.com/images/1759665603040-verified-badge-profile-icon-png.webp"
+                    alt="Verified"
+                    className="w-full h-full"
+                  />
                 </div>
               )}
-            </motion.button>
+            </div>
           )}
         </motion.div>
       </motion.header>

@@ -208,22 +208,35 @@ export default function Sidebar({ isOpen = false, onClose, isMobile = false }: S
             transition={{ duration: 3, repeat: Infinity }}
           />
           <div className="relative z-10 flex items-center gap-3">
-            <motion.div
-              className="w-12 h-12 rounded-full overflow-hidden border-2 border-white/30 shadow-lg flex items-center justify-center"
-              whileHover={{ scale: 1.1, rotate: 5 }}
-            >
-              {profile?.profileImage || user?.profileImageUrl ? (
-                <img
-                  src={profile?.profileImage || user?.profileImageUrl || ''}
-                  alt="Avatar"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-br from-red-900 to-red-950 text-white font-bold flex items-center justify-center">
-                  {getInitials()}
+            <div className="relative">
+              <motion.div
+                className="w-12 h-12 rounded-full overflow-hidden border-2 border-white/30 shadow-lg flex items-center justify-center"
+                whileHover={{ scale: 1.1, rotate: 5 }}
+              >
+                {profile?.profileImage || user?.profileImageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={profile?.profileImage || user?.profileImageUrl || ''}
+                    alt="Avatar"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-red-900 to-red-950 text-white font-bold flex items-center justify-center">
+                    {getInitials()}
+                  </div>
+                )}
+              </motion.div>
+              {profile?.isVerified && (
+                <div className="absolute -bottom-1 -right-1 w-5 h-5">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="https://e7msojy1cjnzyvsj.public.blob.vercel-storage.com/images/1759665603040-verified-badge-profile-icon-png.webp"
+                    alt="Verified"
+                    className="w-full h-full"
+                  />
                 </div>
               )}
-            </motion.div>
+            </div>
             <div className="flex-1 min-w-0">
               <p className="font-bold text-black truncate text-sm">
                 {user?.displayName || user?.primaryEmail?.split('@')[0]}

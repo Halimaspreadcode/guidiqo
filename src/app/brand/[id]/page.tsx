@@ -26,8 +26,11 @@ interface Brand {
   isCompleted: boolean
   currentStep: number
   user?: {
+    id: string
     name: string | null
     email: string
+    profileImage: string | null
+    isVerified: boolean
   }
 }
 
@@ -40,6 +43,7 @@ export default function BrandPage() {
   const [isOwner, setIsOwner] = useState(false)
   const [downloadingPDF, setDownloadingPDF] = useState(false)
   const [showPreviewModal, setShowPreviewModal] = useState(false)
+  const [showFullDescription, setShowFullDescription] = useState(false)
   const [images, setImages] = useState<{[key: string]: string}>({
     hero: '',
     typography: '',
@@ -186,12 +190,12 @@ export default function BrandPage() {
         {/* Bouton retour */}
         <div className="max-w-7xl mx-auto mb-8">
           <motion.button
-            onClick={() => router.push('/dashboard')}
+            onClick={() => router.push(isOwner ? '/dashboard' : '/bibliotheque')}
             className="flex items-center gap-2 text-gray-600 hover:text-black transition-colors"
             whileHover={{ x: -5 }}
           >
             <ArrowLeft className="w-5 h-5" />
-            Retour au dashboard
+            {isOwner ? 'Retour au dashboard' : 'Retour'}
           </motion.button>
         </div>
 
@@ -214,14 +218,29 @@ export default function BrandPage() {
               </motion.h1>
 
               {brand.description && (
-                <motion.p
-                  className="text-lg md:text-xl lg:text-2xl text-gray-600 max-w-3xl"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.8, delay: 0.4 }}
-                >
-                  {brand.description}
-                </motion.p>
+                <div className="max-w-3xl">
+                  <motion.p
+                    className="text-lg md:text-xl lg:text-2xl text-gray-600"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 0.4 }}
+                  >
+                    {showFullDescription || brand.description.length <= 150
+                      ? brand.description
+                      : `${brand.description.substring(0, 150)}...`}
+                  </motion.p>
+                  {brand.description.length > 150 && (
+                    <motion.button
+                      onClick={() => setShowFullDescription(!showFullDescription)}
+                      className="mt-2 text-sm font-semibold text-black hover:text-gray-600 transition-colors underline"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.6, delay: 0.6 }}
+                    >
+                      {showFullDescription ? 'Voir moins' : 'Voir plus'}
+                    </motion.button>
+                  )}
+                </div>
               )}
             </div>
 
@@ -562,15 +581,34 @@ export default function BrandPage() {
 
                   <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 md:gap-8">
                     {brand.description && (
-                      <motion.p
-                        className="text-base md:text-xl lg:text-2xl text-white/90 max-w-2xl"
-                        initial={{ y: 20, opacity: 0 }}
-                        whileInView={{ y: 0, opacity: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6, delay: 0.2 }}
-                      >
-                        {brand.description}
-                      </motion.p>
+                      <div className="max-w-2xl">
+                        <motion.p
+                          className="text-base md:text-xl lg:text-2xl text-white/90"
+                          initial={{ y: 20, opacity: 0 }}
+                          whileInView={{ y: 0, opacity: 1 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.6, delay: 0.2 }}
+                        >
+                          {showFullDescription || brand.description.length <= 120
+                            ? brand.description
+                            : `${brand.description.substring(0, 120)}...`}
+                        </motion.p>
+                        {brand.description.length > 120 && (
+                          <motion.button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setShowFullDescription(!showFullDescription)
+                            }}
+                            className="mt-2 text-sm font-semibold text-white/90 hover:text-white transition-colors underline"
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.6, delay: 0.4 }}
+                          >
+                            {showFullDescription ? 'Voir moins' : 'Voir plus'}
+                          </motion.button>
+                        )}
+                      </div>
                     )}
 
                     <div className="flex gap-3 md:gap-4">
@@ -786,21 +824,52 @@ export default function BrandPage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="relative overflow-hidden rounded-3xl p-8 sm:p-12"
+              className="relative overflow-hidden rounded-3xl p-8 sm:p-12 cursor-pointer hover:scale-[1.02] transition-transform duration-300"
               style={{
                 background: `linear-gradient(135deg, ${brand.primaryColor || '#000'} 0%, ${brand.secondaryColor || '#333'} 100%)`
               }}
+              onClick={() => router.push(`/createur/${brand.user!.id}`)}
             >
               {/* Pattern overlay */}
               <Image
-            src="https://images.unsplash.com/photo-1758551015352-fa735f167422?q=80&w=2600&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-            alt="Music studio background"
-            fill
-            className="object-cover opacity-90"
-            priority
-          />
+                src="https://images.unsplash.com/photo-1758551015352-fa735f167422?q=80&w=2600&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                alt="Music studio background"
+                fill
+                className="object-cover opacity-90"
+                priority
+              />
               <div className="relative z-10 flex flex-col sm:flex-row items-center gap-6">
-                
+                {/* Avatar */}
+                <div className="relative">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center overflow-hidden border-4 border-white/30"
+                  >
+                    {brand.user.profileImage ? (
+                      <img
+                        src={brand.user.profileImage}
+                        alt={brand.user.name || ''}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-white text-2xl sm:text-3xl font-bold">
+                        {(brand.user.name || brand.user.email).substring(0, 2).toUpperCase()}
+                      </span>
+                    )}
+                  </motion.div>
+                  {brand.user.isVerified && (
+                    <div className="absolute -bottom-1 -right-1 w-7 h-7">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src="https://e7msojy1cjnzyvsj.public.blob.vercel-storage.com/images/1759665603040-verified-badge-profile-icon-png.webp"
+                        alt="Verified"
+                        className="w-full h-full"
+                      />
+                    </div>
+                  )}
+                </div>
 
                 {/* Info */}
                 <div className="flex-1 text-center sm:text-left">
@@ -813,7 +882,16 @@ export default function BrandPage() {
                   </p>
                 </div>
 
-               
+                {/* Bouton "Voir plus" */}
+                <motion.div
+                  className="px-6 py-3 bg-white/20 backdrop-blur-md rounded-full border-2 border-white/30 hover:bg-white/30 transition-colors"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <p className="text-white font-semibold text-sm sm:text-base whitespace-nowrap">
+                    Voir plus →
+                  </p>
+                </motion.div>
               </div>
             </motion.div>
           </div>

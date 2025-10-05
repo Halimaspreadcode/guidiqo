@@ -130,8 +130,10 @@ export default function BrandCard({ brand, index, onDelete }: BrandCardProps) {
               {brand.name}
             </h3>
             {brand.description && (
-              <p className="hidden md:block text-sm text-gray-500 line-clamp-1">
-                {brand.description}
+              <p className="hidden md:block text-sm text-gray-500 truncate">
+                {brand.description.length > 60 
+                  ? `${brand.description.substring(0, 60)}...` 
+                  : brand.description}
               </p>
             )}
           </div>

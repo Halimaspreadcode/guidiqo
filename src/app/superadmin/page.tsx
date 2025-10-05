@@ -13,6 +13,7 @@ interface User {
   id: string
   name: string | null
   email: string
+  isVerified: boolean
   createdAt: string
   _count: {
     brands: number
@@ -203,6 +204,32 @@ export default function SuperAdminPage() {
     }
   }
 
+  const toggleUserVerified = async (userId: string, currentStatus: boolean) => {
+    try {
+      const response = await fetch(`/api/superadmin/users/${userId}/verify`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isVerified: !currentStatus })
+      })
+
+      if (response.ok) {
+        setUsers(users.map(user => 
+          user.id === userId 
+            ? { ...user, isVerified: !currentStatus }
+            : user
+        ))
+        console.log(`✅ User ${userId} verified status updated to ${!currentStatus}`)
+      } else {
+        const error = await response.json()
+        console.error('Error response:', error)
+        alert(error.error || 'Erreur lors de la mise à jour')
+      }
+    } catch (error) {
+      console.error('Error updating user verified status:', error)
+      alert('Erreur lors de la mise à jour')
+    }
+  }
+
   if (!user || !isAdmin) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -337,8 +364,14 @@ export default function SuperAdminPage() {
 
           {/* Content */}
           {activeTab === 'users' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {users.map((user, index) => (
+            <>
+              {users.length === 0 ? (
+                <div className="text-center py-12 text-gray-500">
+                  <p>Aucun utilisateur trouvé</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {users.map((user, index) => (
                 <motion.div
                   key={user.id}
                   initial={{ opacity: 0, y: 30 }}
@@ -347,16 +380,41 @@ export default function SuperAdminPage() {
                   className="bg-gradient-to-br from-white to-gray-50 border border-gray-100 rounded-2xl p-6 hover:shadow-lg transition-all duration-300"
                   whileHover={{ y: -4 }}
                 >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">
-                      {(user.name || user.email).charAt(0).toUpperCase()}
+                  <div className="mb-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shrink-0">
+                        {(user.name || user.email).charAt(0).toUpperCase()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-bold text-black truncate">
+                            {user.name || user.email.split('@')[0]}
+                          </h3>
+                          {user.isVerified && (
+                            <div className="w-5 h-5 shrink-0">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
+                                src="https://e7msojy1cjnzyvsj.public.blob.vercel-storage.com/images/1759665603040-verified-badge-profile-icon-png.webp"
+                                alt="Verified"
+                                className="w-full h-full"
+                              />
+                            </div>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-600 truncate">{user.email}</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-bold text-black">
-                        {user.name || user.email.split('@')[0]}
-                      </h3>
-                      <p className="text-sm text-gray-600">{user.email}</p>
-                    </div>
+                    <button
+                      onClick={() => toggleUserVerified(user.id, user.isVerified)}
+                      className={`w-full px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                        user.isVerified
+                          ? 'bg-blue-500 text-white hover:bg-blue-600'
+                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      }`}
+                      title={user.isVerified ? 'Retirer la vérification' : 'Vérifier le créateur'}
+                    >
+                      {user.isVerified ? 'Vérifié' : 'Vérifier ce créateur'}
+                    </button>
                   </div>
                   
                   <div className="flex items-center justify-between text-sm">
@@ -368,8 +426,10 @@ export default function SuperAdminPage() {
                     </span>
                   </div>
                 </motion.div>
-              ))}
-            </div>
+                  ))}
+                </div>
+              )}
+            </>
           )}
 
           {activeTab === 'brands' && (

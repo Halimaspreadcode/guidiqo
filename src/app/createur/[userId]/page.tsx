@@ -8,6 +8,14 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { LiquidButton } from '@/components/LiquidGlassButton'
 
+interface User {
+  id: string
+  name: string | null
+  email: string
+  profileImage: string | null
+  isVerified: boolean
+}
+
 interface Brand {
   id: string
   name: string
@@ -22,39 +30,46 @@ interface Brand {
   isCompleted: boolean
   createdAt: string
   updatedAt: string
-  user: {
-    id: string
-    name: string | null
-    email: string
-    profileImage: string | null
-  }
+  user: User
 }
 
 export default function CreateurPage() {
   const params = useParams()
   const router = useRouter()
+  const [creator, setCreator] = useState<User | null>(null)
   const [brands, setBrands] = useState<Brand[]>([])
   const [loading, setLoading] = useState(true)
   const [hoveredColor, setHoveredColor] = useState<string | null>(null)
 
   const userId = params.userId as string
-  const creator = brands[0]?.user
 
   useEffect(() => {
-    fetchCreatorBrands()
+    fetchCreatorData()
   }, [userId])
 
-  const fetchCreatorBrands = async () => {
+  const fetchCreatorData = async () => {
     try {
-      const response = await fetch(`/api/user/${userId}/brands`, {
+      // Récupérer les données du créateur
+      const userResponse = await fetch(`/api/users/${userId}`, {
         cache: 'no-store'
       })
-      if (response.ok) {
-        const data = await response.json()
-        setBrands(data)
+      
+      if (userResponse.ok) {
+        const userData = await userResponse.json()
+        setCreator(userData)
+      }
+
+      // Récupérer les brands du créateur
+      const brandsResponse = await fetch(`/api/user/${userId}/brands`, {
+        cache: 'no-store'
+      })
+      
+      if (brandsResponse.ok) {
+        const brandsData = await brandsResponse.json()
+        setBrands(brandsData)
       }
     } catch (error) {
-      console.error('Error fetching creator brands:', error)
+      console.error('Error fetching creator data:', error)
     } finally {
       setLoading(false)
     }
@@ -64,6 +79,31 @@ export default function CreateurPage() {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
+      </div>
+    )
+  }
+
+  if (!creator) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header />
+        <div className="flex items-center justify-center pt-32 px-4">
+          <div className="text-center">
+            <h1 className="text-5xl font-bold text-gray-800 mb-2">
+              Oops ! Nous ne le trouvons pas...
+            </h1>
+            <h2 className="text-gray-600 mb-6 text-2xl">
+              Ce créateur n&apos;existe pas ou n&apos;est plus disponible.
+            </h2>
+            <button
+              onClick={() => router.push('/bibliotheque')}
+              className="px-6 py-3 bg-black mb-8 text-white rounded-full hover:bg-gray-800 transition-colors"
+            >
+              Retour à la bibliothèque
+            </button>
+          </div>
+        </div>
+        <Footer />
       </div>
     )
   }
@@ -105,15 +145,32 @@ export default function CreateurPage() {
                 </motion.div>
 
                 {/* Creator Name */}
-                <motion.h1
-                  className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 tracking-tighter text-black"
-                  style={{ fontFamily: "'Raleway', sans-serif" }}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.8, delay: 0.3 }}
-                >
-                  {creator.name || creator.email.split('@')[0]}
-                </motion.h1>
+                <div className="flex items-center justify-center gap-3 mb-4">
+                  <motion.h1
+                    className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter text-black"
+                    style={{ fontFamily: "'Raleway', sans-serif" }}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8, delay: 0.3 }}
+                  >
+                    {creator.name || creator.email.split('@')[0]}
+                  </motion.h1>
+                  {creator.isVerified && (
+                    <motion.div
+                      initial={{ scale: 0, rotate: -180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      transition={{ duration: 0.6, delay: 0.5, type: "spring" }}
+                      className="relative w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src="https://e7msojy1cjnzyvsj.public.blob.vercel-storage.com/images/1759665603040-verified-badge-profile-icon-png.webp"
+                        alt="Verified"
+                        className="w-full h-full"
+                      />
+                    </motion.div>
+                  )}
+                </div>
 
                 <motion.p
                   className="text-lg md:text-xl text-gray-600 max-w-2xl"
