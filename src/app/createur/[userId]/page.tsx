@@ -49,6 +49,8 @@ export default function CreateurPage() {
 
   const fetchCreatorData = async () => {
     try {
+     
+      
       // Récupérer les données du créateur
       const userResponse = await fetch(`/api/users/${userId}`, {
         cache: 'no-store'
@@ -57,6 +59,7 @@ export default function CreateurPage() {
       if (userResponse.ok) {
         const userData = await userResponse.json()
         setCreator(userData)
+        console.log('✅ Créateur chargé:', userData)
       }
 
       // Récupérer les brands du créateur
@@ -66,10 +69,11 @@ export default function CreateurPage() {
       
       if (brandsResponse.ok) {
         const brandsData = await brandsResponse.json()
+        console.log(`✅ ${brandsData.length} créations publiques chargées pour l'utilisateur ${userId}`)
         setBrands(brandsData)
       }
     } catch (error) {
-      console.error('Error fetching creator data:', error)
+      console.error('❌ Error fetching creator data:', error)
     } finally {
       setLoading(false)
     }
@@ -225,7 +229,9 @@ export default function CreateurPage() {
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: index * 0.1 }}
-                    onClick={() => router.push(`/brand/${brand.id}`)}
+                    onClick={() => {
+                      router.push(`/brand/${brand.id}`)
+                    }}
                     whileHover={{ y: -5 }}
                   >
                     <div 
@@ -287,8 +293,8 @@ export default function CreateurPage() {
                       
                       <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none z-10' />
                       
-                      <div className='absolute inset-0 flex items-end justify-end p-3 sm:p-4 md:p-6 z-20'>
-                        <LiquidButton className='opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
+                      <div className='absolute inset-0 flex items-end justify-end p-3 sm:p-4 md:p-6 z-20 pointer-events-none'>
+                        <LiquidButton className='opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-auto'>
                           {brand.name}
                         </LiquidButton>
                       </div>
