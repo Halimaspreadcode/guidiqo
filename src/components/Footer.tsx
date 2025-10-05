@@ -1,6 +1,6 @@
 "use client";
 
-import { Twitter, Instagram, Youtube } from 'lucide-react';
+import { Twitter, Instagram, Youtube, Linkedin } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Footer() {
@@ -42,29 +42,22 @@ export default function Footer() {
             <h4 className="font-semibold mb-3 sm:mb-4 text-black text-sm sm:text-base">Suivez-nous</h4>
             <div className="flex gap-3 sm:gap-4">
               <motion.a 
-                href="#" 
+                href="https://www.linkedin.com/in/halima-gueye-532b40a5/" 
                 className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors duration-200"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Twitter className="w-4 h-4 sm:w-5 sm:h-5 text-black" />
+                <Linkedin className="w-4 h-4 sm:w-5 sm:h-5 text-black" />
               </motion.a>
               <motion.a 
-                href="#" 
+                href="https://www.instagram.com/halimaspreadlove/" 
                 className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors duration-200"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <Instagram className="w-4 h-4 sm:w-5 sm:h-5 text-black" />
               </motion.a>
-              <motion.a 
-                href="#" 
-                className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors duration-200"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Youtube className="w-4 h-4 sm:w-5 sm:h-5 text-black" />
-              </motion.a>
+              
             </div>
           </div>
         </motion.div>

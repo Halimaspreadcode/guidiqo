@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Footer from '@/components/Footer'
 import { useState, useEffect } from 'react'
-import { Loader2, RefreshCw } from 'lucide-react'
+import { Loader2, RefreshCw, X } from 'lucide-react'
 
 interface BrandData {
   brandPersonality?: string
@@ -46,6 +46,8 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
   const [suggestedImages, setSuggestedImages] = useState<string[]>([])
   const [loadingImages, setLoadingImages] = useState(false)
   const [imageGeneration, setImageGeneration] = useState(0)
+  const [customImageUrl, setCustomImageUrl] = useState('')
+  const [isValidUrl, setIsValidUrl] = useState(true)
 
   // Générer les images suggérées quand brandPersonality et targetAudience sont sélectionnés
   useEffect(() => {
@@ -185,6 +187,28 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
     updateBrandData({ coverImage: imageUrl })
   }
 
+  const validateImageUrl = (url: string): boolean => {
+    if (!url) return true // Empty is valid
+    try {
+      const urlObj = new URL(url)
+      // Vérifier que c'est une URL http/https
+      return urlObj.protocol === 'http:' || urlObj.protocol === 'https:'
+    } catch {
+      return false
+    }
+  }
+
+  const handleCustomUrlChange = (url: string) => {
+    setCustomImageUrl(url)
+    const valid = validateImageUrl(url)
+    setIsValidUrl(valid)
+    
+    // Si l'URL est valide et non vide, l'appliquer
+    if (valid && url.trim()) {
+      updateBrandData({ coverImage: url.trim() })
+    }
+  }
+
   return (
     <div className="fixed inset-0 flex flex-col md:flex-row">
       {/* Image gauche - 1/4 */}
@@ -195,7 +219,21 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
           fill
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        
+        {/* Logo Guidiqo sur l'image */}
+        <div className="absolute top-6 left-6 z-10">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-3xl font-bold text-white"
+            style={{ fontFamily: "'Raleway', sans-serif" }}
+          >
+            Guidiqo
+          </motion.div>
+        </div>
+        
         {/* Liquid Glass Effect */}
         <motion.div
           className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
@@ -206,17 +244,6 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
 
       {/* Contenu droite - 3/4 */}
       <div className="flex-1 md:w-3/4 overflow-y-auto bg-white">
-        {/* Logo Guidiqo */}
-        <div className="absolute top-6 left-6 z-10">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-2xl font-bold text-white"
-          >
-            Guidiqo
-          </motion.div>
-        </div>
         
         <div className="min-h-screen pt-32 pb-32 px-6 sm:px-12 md:px-16 lg:px-24">
           <div className="max-w-3xl">
@@ -372,6 +399,54 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
                       ))}
                     </div>
                   ) : null}
+
+                  {/* Champ URL personnalisée */}
+                  <div className="mt-6">
+                    <label htmlFor="customImageUrl" className="block text-sm font-medium text-gray-900 mb-3">
+                      Ou collez l&apos;URL de votre propre image
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="url"
+                        id="customImageUrl"
+                        value={customImageUrl}
+                        onChange={(e) => handleCustomUrlChange(e.target.value)}
+                        placeholder="https://exemple.com/mon-image.jpg"
+                        className={`w-full px-6 py-4 bg-white border rounded-2xl focus:outline-none focus:ring-2 transition-all ${
+                          !isValidUrl 
+                            ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+                            : 'border-gray-200 focus:ring-black focus:border-transparent'
+                        } text-black placeholder-gray-400 text-sm`}
+                      />
+                      {customImageUrl && (
+                        <button
+                          onClick={() => {
+                            setCustomImageUrl('')
+                            setIsValidUrl(true)
+                            if (brandData.coverImage === customImageUrl.trim()) {
+                              updateBrandData({ coverImage: undefined })
+                            }
+                          }}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                        >
+                          <X className="w-5 h-5" />
+                        </button>
+                      )}
+                    </div>
+                    {!isValidUrl && customImageUrl && (
+                      <p className="mt-2 text-sm text-red-600">
+                        Veuillez entrer une URL valide (http:// ou https://)
+                      </p>
+                    )}
+                    {isValidUrl && customImageUrl && (
+                      <p className="mt-2 text-sm text-green-600 flex items-center gap-1">
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        Image personnalisée sélectionnée
+                      </p>
+                    )}
+                  </div>
                 </motion.div>
               )}
             </div>
@@ -402,7 +477,7 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
                     <div className="flex items-baseline gap-3">
                       <span className="text-sm font-medium text-gray-900 min-w-[100px]">Couverture</span>
                       <span className={`text-sm font-medium ${brandData.coverImage ? 'text-green-600' : 'text-gray-500'}`}>
-                        {brandData.coverImage ? '✓ Sélectionnée' : 'Design automatique'}
+                        {brandData.coverImage ? 'Sélectionnée' : 'Design automatique'}
                       </span>
                     </div>
                   </div>

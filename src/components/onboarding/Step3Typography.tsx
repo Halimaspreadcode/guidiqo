@@ -106,7 +106,21 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
           fill
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        
+        {/* Logo Guidiqo sur l'image */}
+        <div className="absolute top-6 left-6 z-10">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-3xl font-bold text-white"
+            style={{ fontFamily: "'Raleway', sans-serif" }}
+          >
+            Guidiqo
+          </motion.div>
+        </div>
+        
         {/* Liquid Glass Effect */}
         <motion.div
           className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
@@ -117,17 +131,6 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
 
       {/* Contenu droite - 3/4 */}
       <div className="flex-1 md:w-3/4 overflow-y-auto bg-white">
-        {/* Logo Guidiqo */}
-        <div className="absolute top-6 left-6 z-10">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-2xl font-bold text-white"
-          >
-            Guidiqo
-          </motion.div>
-        </div>
         
         <div className="min-h-screen pt-32 pb-32 px-6 sm:px-12 md:px-16 lg:px-24">
           <div className="max-w-3xl">

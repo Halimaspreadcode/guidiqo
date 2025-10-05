@@ -150,7 +150,7 @@ export default function DashboardPage() {
   }
 
   const handleCreateBrand = () => {
-    router.push('/')
+    router.push('/dashboard/creer?step=1')
   }
 
   const handleDeleteBrand = async (id: string) => {

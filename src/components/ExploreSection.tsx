@@ -22,11 +22,15 @@ export default function ExploreSection () {
   const router = useRouter()
   const [brands, setBrands] = useState<SpotlightedBrand[]>([])
   const [loading, setLoading] = useState(true)
+  const [expandedColor, setExpandedColor] = useState<string | null>(null)
+  const [hoveredColor, setHoveredColor] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchSpotlightedBrands = async () => {
       try {
-        const response = await fetch('/api/spotlighted')
+        const response = await fetch('/api/spotlighted', {
+          cache: 'no-store' // Désactiver le cache pour avoir les données à jour
+        })
         if (response.ok) {
           const data = await response.json()
           setBrands(data)
@@ -72,12 +76,13 @@ export default function ExploreSection () {
             {brands.map((brand, index) => {
               // Définir les proportions pour chaque ligne
               const getColumnSpan = (index: number) => {
-                if (index === 0) return 'col-span-9' // Ligne 1: gauche 3/4, droite 1/4
-                if (index === 1) return 'col-span-3'
-                if (index === 2) return 'col-span-6' // Ligne 2: gauche 1/2, droite 1/2
-                if (index === 3) return 'col-span-6'
-                if (index === 4) return 'col-span-8' // Ligne 3: gauche 2/3, droite 1/3
-                return 'col-span-4'
+                // Mobile: 1/2 ou full, Desktop: proportions variées
+                if (index === 0) return 'col-span-12 md:col-span-9' // Mobile: full, Desktop: 3/4
+                if (index === 1) return 'col-span-6 md:col-span-3' // Mobile: 1/2, Desktop: 1/4
+                if (index === 2) return 'col-span-6' // Mobile et Desktop: 1/2
+                if (index === 3) return 'col-span-6' // Mobile et Desktop: 1/2
+                if (index === 4) return 'col-span-12 md:col-span-8' // Mobile: full, Desktop: 2/3
+                return 'col-span-6 md:col-span-4' // Mobile: 1/2, Desktop: 1/3
               }
 
               const gradient = `linear-gradient(135deg, ${brand.primaryColor || '#000'}, ${brand.secondaryColor || '#333'})`
@@ -112,45 +117,57 @@ export default function ExploreSection () {
                       <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-black/60" />
                     )}
 
-                    {/* Bandes de couleurs horizontales - cachées par défaut, visibles au hover */}
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {/* Bandes de couleurs verticales - toujours visibles */}
+                    <div className="absolute left-0 top-0 bottom-0 flex flex-row gap-0 z-30 opacity-100 transition-opacity duration-300">
                       {[
-                        { color: brand.primaryColor, label: 'P' },
-                        { color: brand.secondaryColor, label: 'S' },
-                        { color: brand.accentColor, label: 'A' }
+                        { color: brand.primaryColor, label: 'P', name: 'Principale' },
+                        { color: brand.secondaryColor, label: 'S', name: 'Secondaire' },
+                        { color: brand.accentColor, label: 'A', name: 'Accent' }
                       ]
                         .filter(item => item.color)
-                        .map((item, idx) => (
-                          <motion.div
-                            key={idx}
-                            className="relative h-12 cursor-pointer overflow-hidden group/color rounded-r-lg"
-                            initial={{ width: '20px' }}
-                            whileHover={{ width: '180px' }}
-                            transition={{ duration: 0.3, ease: 'easeOut' }}
-                            style={{ backgroundColor: item.color! }}
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {/* Contenu visible au hover */}
-                            <motion.div 
-                              className="absolute inset-0 flex flex-col items-center justify-center px-3"
-                              initial={{ opacity: 0 }}
-                              whileHover={{ opacity: 1 }}
-                              transition={{ duration: 0.2 }}
+                        .map((item, idx) => {
+                          const colorKey = `${brand.id}-${idx}`
+                          const isExpanded = expandedColor === colorKey
+                          const isHovered = hoveredColor === colorKey
+                          const shouldExpand = isExpanded || isHovered
+                          
+                          return (
+                            <motion.div
+                              key={idx}
+                              className="relative h-full cursor-pointer overflow-hidden"
+                              animate={{ 
+                                width: shouldExpand ? '100px' : '30px'
+                              }}
+                              transition={{ duration: 0.3, ease: 'easeOut' }}
+                              style={{ backgroundColor: item.color! }}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setExpandedColor(isExpanded ? null : colorKey)
+                              }}
+                              onMouseEnter={() => setHoveredColor(colorKey)}
+                              onMouseLeave={() => setHoveredColor(null)}
                             >
-                              <p className="text-[10px] font-bold text-white uppercase tracking-wider mb-0.5 whitespace-nowrap drop-shadow-md">
-                                {item.label === 'P' ? 'Principale' : item.label === 'S' ? 'Secondaire' : 'Accent'}
-                              </p>
-                              <p className="text-xs font-mono text-white/95 whitespace-nowrap drop-shadow-md">
-                                {item.color}
-                              </p>
+                              {/* Contenu visible au hover ou au clic */}
+                              <motion.div 
+                                className="absolute inset-0 flex flex-col items-center justify-center py-3 px-2"
+                                animate={{ opacity: shouldExpand ? 1 : 0 }}
+                                transition={{ duration: 0.2 }}
+                              >
+                                <p className="text-[11px] font-bold text-white uppercase tracking-wider mb-1 whitespace-nowrap drop-shadow-md">
+                                  {item.name}
+                                </p>
+                                <p className="text-xs font-mono text-white/95 whitespace-nowrap drop-shadow-md">
+                                  {item.color}
+                                </p>
+                              </motion.div>
                             </motion.div>
-                          </motion.div>
-                        ))}
+                          )
+                        })}
                     </div>
                     
-                    <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent' />
+                    <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none z-10' />
                     
-                    <div className='absolute inset-0 flex items-end p-3 sm:p-4 md:p-6 z-20'>
+                    <div className='absolute inset-0 flex items-end justify-end p-3 sm:p-4 md:p-6 z-20'>
                       <LiquidButton className='opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
                         {brand.name}
                       </LiquidButton>

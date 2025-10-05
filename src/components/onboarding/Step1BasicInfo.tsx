@@ -1,7 +1,10 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { X } from 'lucide-react'
 import Footer from '@/components/Footer'
 
 interface BrandData {
@@ -20,6 +23,16 @@ interface Step1Props {
 }
 
 export default function Step1BasicInfo({ brandData, updateBrandData, currentStep, totalSteps, onNext, onPrevious }: Step1Props) {
+  const router = useRouter()
+  const [showCancelModal, setShowCancelModal] = useState(false)
+
+  const handleCancel = () => {
+    // Nettoyer le sessionStorage
+    sessionStorage.removeItem('brandData')
+    sessionStorage.removeItem('downloadIntent')
+    // Rediriger vers la page d'accueil
+    router.push('/')
+  }
   return (
     <div className="fixed inset-0 flex flex-col md:flex-row">
       {/* Image gauche - 1/4 - hidden on mobile */}
@@ -31,7 +44,21 @@ export default function Step1BasicInfo({ brandData, updateBrandData, currentStep
           className="object-cover"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        
+        {/* Logo Guidiqo sur l'image */}
+        <div className="absolute top-6 left-6 z-10">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-3xl font-bold text-white"
+            style={{ fontFamily: "'Raleway', sans-serif" }}
+          >
+            Guidiqo
+          </motion.div>
+        </div>
+        
         {/* Liquid Glass Effect */}
         <motion.div
           className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
@@ -42,17 +69,6 @@ export default function Step1BasicInfo({ brandData, updateBrandData, currentStep
 
       {/* Contenu droite - 3/4 */}
       <div className="flex-1 md:w-3/4 overflow-y-auto bg-white">
-        {/* Logo Guidiqo */}
-        <div className="absolute top-6 left-6 z-10">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-2xl font-bold text-white"
-          >
-            Guidiqo
-          </motion.div>
-        </div>
         
         <div className="min-h-screen pt-32 pb-32 px-6 sm:px-12 md:px-16 lg:px-24">
           <div className="max-w-2xl">
@@ -108,9 +124,8 @@ export default function Step1BasicInfo({ brandData, updateBrandData, currentStep
             {/* Navigation Buttons */}
             <div className="flex justify-end gap-4 mt-12 pb-12">
               <motion.button
-                onClick={onPrevious}
-                disabled={currentStep === 1}
-                className="relative overflow-hidden px-6 py-3 rounded-full border border-gray-300 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={() => setShowCancelModal(true)}
+                className="relative overflow-hidden px-6 py-3 rounded-full border border-red-300 text-red-600 hover:bg-red-50 transition-colors"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -120,7 +135,7 @@ export default function Step1BasicInfo({ brandData, updateBrandData, currentStep
                   animate={{ x: ['-100%', '100%'] }}
                   transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
                 />
-                <span className="relative z-10">Précédent</span>
+                <span className="relative z-10">Annuler</span>
               </motion.button>
 
               <motion.button
@@ -142,6 +157,79 @@ export default function Step1BasicInfo({ brandData, updateBrandData, currentStep
         </div>
         <Footer />
       </div>
+
+      {/* Modal de confirmation d'annulation */}
+      <AnimatePresence>
+        {showCancelModal && (
+          <>
+            {/* Overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-md z-50"
+              onClick={() => setShowCancelModal(false)}
+            />
+
+            {/* Modal */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            >
+              <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 relative">
+                {/* Decorative gradient */}
+                <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-red-500 via-red-600 to-red-500 rounded-t-3xl" />
+                
+                <div className="text-center">
+                  {/* Icon */}
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                    className="mx-auto w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center mb-6"
+                  >
+                    <X className="w-8 h-8 text-white" />
+                  </motion.div>
+
+                  {/* Title */}
+                  <h3 className="text-2xl font-bold text-black mb-3">
+                    Annuler la création ?
+                  </h3>
+
+                  {/* Description */}
+                  <p className="text-gray-600 mb-8 leading-relaxed">
+                    Êtes-vous sûr de vouloir annuler ? Toutes vos modifications seront perdues et ne seront pas sauvegardées.
+                  </p>
+
+                  {/* Actions */}
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <motion.button
+                      onClick={() => setShowCancelModal(false)}
+                      className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-full font-semibold hover:bg-gray-200 transition-colors"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      Non, continuer
+                    </motion.button>
+                    
+                    <motion.button
+                      onClick={handleCancel}
+                      className="flex-1 px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-full font-semibold hover:from-red-600 hover:to-red-700 transition-all"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      Oui, annuler
+                    </motion.button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
     </div>
   )
