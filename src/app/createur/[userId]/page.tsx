@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Palette, ArrowRight } from 'lucide-react'
@@ -43,41 +43,33 @@ export default function CreateurPage() {
 
   const userId = params.userId as string
 
-  useEffect(() => {
-    fetchCreatorData()
-  }, [userId])
-
-  const fetchCreatorData = async () => {
+  const fetchCreatorData = useCallback(async () => {
     try {
-     
-      
-      // Récupérer les données du créateur
-      const userResponse = await fetch(`/api/users/${userId}`, {
-        cache: 'no-store'
-      })
+      // Exécuter les deux requêtes en parallèle pour améliorer les performances
+      const [userResponse, brandsResponse] = await Promise.all([
+        fetch(`/api/users/${userId}`, { cache: 'no-store' }),
+        fetch(`/api/user/${userId}/brands`, { cache: 'no-store' })
+      ])
       
       if (userResponse.ok) {
         const userData = await userResponse.json()
         setCreator(userData)
-        console.log('✅ Créateur chargé:', userData)
       }
-
-      // Récupérer les brands du créateur
-      const brandsResponse = await fetch(`/api/user/${userId}/brands`, {
-        cache: 'no-store'
-      })
       
       if (brandsResponse.ok) {
         const brandsData = await brandsResponse.json()
-        console.log(`✅ ${brandsData.length} créations publiques chargées pour l'utilisateur ${userId}`)
         setBrands(brandsData)
       }
     } catch (error) {
-      console.error('❌ Error fetching creator data:', error)
+      // Erreur silencieuse
     } finally {
       setLoading(false)
     }
-  }
+  }, [userId])
+
+  useEffect(() => {
+    fetchCreatorData()
+  }, [fetchCreatorData])
 
   if (loading) {
     return (

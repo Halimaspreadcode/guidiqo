@@ -8,27 +8,12 @@ export async function GET(
   try {
     const { userId } = params
 
-    console.log(`🔍 API: Récupération des brands pour userId: ${userId}`)
-
-    // Vérifier que l'utilisateur existe
-    const user = await prisma.user.findUnique({
-      where: { id: userId }
-    })
-
-    if (!user) {
-      console.log(`❌ Utilisateur ${userId} non trouvé`)
-      return NextResponse.json({ error: 'Utilisateur non trouvé' }, { status: 404 })
-    }
-
-    // Récupérer toutes les créations publiques, dans la bibliothèque et complétées de l'utilisateur spécifique
+    // Récupérer toutes les créations publiques de cet utilisateur spécifique
     const brands = await prisma.brand.findMany({
       where: {
-        AND: [
-          { userId: userId },
-          { isPublic: true },
-          { isInLibrary: true },
-          { isCompleted: true }
-        ]
+        userId: userId,
+        isPublic: true,
+        //isCompleted: true
       },
       include: {
         user: {
@@ -45,8 +30,6 @@ export async function GET(
         createdAt: 'desc'
       }
     })
-
-    console.log(`✅ API: ${brands.length} brands trouvés pour userId: ${userId}`)
 
     return NextResponse.json(brands)
   } catch (error) {
