@@ -3,6 +3,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 import DeletionBanner from "@/components/DeletionBanner";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: "Guidiqo - Créez votre branding IA | Brand Guidelines Professionnels",
@@ -69,6 +70,7 @@ export default function RootLayout({
           {children}
         </Providers>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
