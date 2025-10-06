@@ -11,6 +11,8 @@ const stackClientApp = new StackClientApp({
     afterSignIn: "/dashboard",
     signUp: "/handler/signup",
     afterSignUp: "/dashboard",
+    emailVerification: "/handler/email-verification",
+    afterEmailVerification: "/dashboard",
   },
 });
 
