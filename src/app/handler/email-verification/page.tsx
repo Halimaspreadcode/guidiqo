@@ -63,16 +63,17 @@ export default function EmailVerificationPage() {
     return (
       <div className="min-h-screen bg-white flex">
         {/* Section gauche - Image/Branding */}
-        <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-black via-gray-900 to-gray-800 relative overflow-hidden">
-          <div className="absolute inset-0 opacity-10">
-            <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <pattern id="grid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
-                  <circle cx="20" cy="20" r="1" fill="white" />
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#grid)" />
-            </svg>
+        <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+          {/* Image de fond en plein écran */}
+          <div className="absolute inset-0">
+            <img
+              src="https://images.unsplash.com/photo-1758551015352-fa735f167422?q=80&w=2600&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="Fond créatif studio"
+              className="w-full h-full object-cover"
+              draggable={false}
+            />
+            {/* Overlay pour lisibilité */}
+            <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-gray-900/60 to-gray-800/80" />
           </div>
 
           <div className="relative z-10 flex flex-col justify-between p-12 w-full">
@@ -175,7 +176,7 @@ export default function EmailVerificationPage() {
               <p className="text-gray-600 text-sm">
                 Besoin d&apos;aide ?{' '}
                 <a
-                  href="mailto:support@guidiqo.com"
+                  href="mailto:workwithhalima@gmail.com"
                   className="text-black font-semibold hover:underline"
                 >
                   Contactez-nous
@@ -295,7 +296,7 @@ export default function EmailVerificationPage() {
             <div className="pt-6 border-t border-gray-200">
               <p className="text-sm text-gray-500">
                 Besoin d&apos;aide ?{' '}
-                <a href="mailto:support@guidiqo.com" className="text-black font-semibold hover:underline">
+                <a href="mailto:workwithhalima@gmail.com" className="text-black font-semibold hover:underline">
                   Contactez-nous
                 </a>
               </p>
@@ -341,7 +342,7 @@ export default function EmailVerificationPage() {
             <div className="mt-8 pt-6 border-t border-gray-200 text-center">
               <p className="text-sm text-gray-500">
                 Besoin d&apos;aide ?{' '}
-                <a href="mailto:support@guidiqo.com" className="text-black font-semibold hover:underline">
+                <a href="mailto:workwithhalima@gmail.com" className="text-black font-semibold hover:underline">
                   Contactez-nous
                 </a>
               </p>
@@ -387,7 +388,7 @@ export default function EmailVerificationPage() {
             <div className="mt-8 pt-6 border-t border-gray-200 text-center">
               <p className="text-sm text-gray-500">
                 Besoin d&apos;aide ?{' '}
-                <a href="mailto:support@guidiqo.com" className="text-black font-semibold hover:underline">
+                <a href="mailto:workwithhalima@gmail.com" className="text-black font-semibold hover:underline">
                   Contactez-nous
                 </a>
               </p>
@@ -441,7 +442,7 @@ export default function EmailVerificationPage() {
             <div className="mt-8 pt-6 border-t border-gray-200 text-center">
               <p className="text-sm text-gray-500">
                 Besoin d&apos;aide ?{' '}
-                <a href="mailto:support@guidiqo.com" className="text-black font-semibold hover:underline">
+                <a href="mailto:workwithhalima@gmail.com" className="text-black font-semibold hover:underline">
                   Contactez-nous
                 </a>
               </p>
