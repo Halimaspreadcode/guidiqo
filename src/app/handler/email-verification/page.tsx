@@ -118,7 +118,7 @@ export default function EmailVerificationPage() {
 
             {/* Bouton retour */}
             <motion.button
-              onClick={() => router.push('/')}
+              onClick={() => router.push('/auth/signin')}
               className="mb-6 flex items-center gap-2 text-gray-600 hover:text-black transition-colors"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
