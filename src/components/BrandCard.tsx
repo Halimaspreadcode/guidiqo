@@ -40,9 +40,7 @@ export default function BrandCard({ brand, index, onDelete }: BrandCardProps) {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          isPublic: newPublicState,
-          // Si on rend public, mettre automatiquement en bibliothèque
-          isInLibrary: newPublicState ? true : undefined
+          isPublic: newPublicState
         })
       })
       
@@ -203,7 +201,7 @@ export default function BrandCard({ brand, index, onDelete }: BrandCardProps) {
                   {brand.isPublic ? 'Public' : 'Privé'}
                 </p>
                 <p className="text-xs text-gray-500">
-                  {brand.isPublic ? 'Visible dans la bibliothèque' : 'Visible uniquement par vous'}
+                  {brand.isPublic ? 'Visible sur votre profil public' : 'Visible uniquement par vous'}
                 </p>
               </div>
             </div>
