@@ -43,14 +43,21 @@ export default function BibliothequePage() {
 
   const fetchLibraryBrands = async () => {
     try {
-      const response = await fetch('/api/bibliotheque')
+      // Ajouter un timestamp pour éviter le cache du navigateur
+      const timestamp = new Date().getTime()
+      const response = await fetch(`/api/bibliotheque?t=${timestamp}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+        }
+      })
       if (response.ok) {
         const data = await response.json()
         setBrands(data)
         // Ne plus générer d'images automatiquement - utiliser seulement les images fournies
       }
     } catch (error) {
-      console.error('Error fetching library brands:', error)
+      console.error('❌ Error fetching library brands:', error)
     } finally {
       setLoading(false)
     }

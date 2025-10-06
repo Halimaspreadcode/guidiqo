@@ -161,14 +161,22 @@ export default function SuperAdminPage() {
       })
 
       if (response.ok) {
+        const updatedBrand = await response.json()
+        
+        // Mettre à jour l'état local
         setBrands(brands.map(brand => 
           brand.id === brandId 
             ? { ...brand, isInLibrary: !currentStatus }
             : brand
         ))
+      } else {
+        const errorData = await response.json()
+        console.error('❌ Failed to update brand library status:', errorData)
+        alert('Erreur lors de la mise à jour. Veuillez réessayer.')
       }
     } catch (error) {
-      console.error('Error updating brand library status:', error)
+      console.error('❌ Error updating brand library status:', error)
+      alert('Erreur de connexion. Veuillez vérifier votre connexion internet.')
     }
   }
 

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { stackServerApp } from '@/lib/stack'
 
@@ -34,6 +35,14 @@ export async function PATCH(
         isInLibrary: isInLibrary
       }
     })
+
+    // Revalider le cache de la bibliothèque et du superadmin
+    revalidatePath('/bibliotheque')
+    revalidatePath('/superadmin')
+    revalidatePath('/api/bibliotheque')
+    revalidateTag('bibliotheque')
+
+    console.log('✅ Brand library status updated and cache revalidated:', brand.id)
 
     return NextResponse.json(brand)
   } catch (error) {
