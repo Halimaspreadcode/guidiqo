@@ -80,7 +80,7 @@ export default function EmailVerificationPage() {
               Vérification en cours...
             </h1>
             <p className="text-gray-600">
-              Nous vérifions votre adresse email. Un instant s'il vous plaît.
+              Nous vérifions votre adresse email. Un instant s&apos;il vous plaît.
             </p>
           </motion.div>
         )}
@@ -208,7 +208,7 @@ export default function EmailVerificationPage() {
           className="mt-8 text-center"
         >
           <p className="text-sm text-gray-500">
-            Besoin d'aide ? <a href="mailto:support@guidiqo.com" className="text-black font-semibold hover:underline">Contactez-nous</a>
+            Besoin d&apos;aide ? <a href="mailto:support@guidiqo.com" className="text-black font-semibold hover:underline">Contactez-nous</a>
           </p>
         </motion.div>
       </div>
