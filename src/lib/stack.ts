@@ -19,7 +19,6 @@ export const stackServerApp = new StackServerApp({
     forgotPassword: "/handler/forgot-password",
     passwordReset: "/handler/password-reset",
     emailVerification: "/handler/email-verification",
-    afterEmailVerification: "/dashboard",
   },
 });
 
