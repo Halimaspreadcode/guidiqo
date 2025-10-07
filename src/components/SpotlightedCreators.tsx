@@ -293,7 +293,7 @@ export default function SpotlightedCreators() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-              Découvre les talents dont les créations inspirent des milliers de personnes chaque jour
+              Découvre les talents dont les créations nous inspirent chaque jour
             </motion.p>
 
             <motion.div
