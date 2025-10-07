@@ -1,30 +1,82 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@stackframe/stack';
 import { LiquidButton } from './LiquidGlassButton';
-import { WandSparkles } from 'lucide-react';
+import { WandSparkles, Users } from 'lucide-react';
 
 export default function HeroSection() {
   const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(false);
+  const [visitorCount, setVisitorCount] = useState(0);
+  const [displayedCount, setDisplayedCount] = useState(0);
   const router = useRouter();
   const user = useUser({ or: 'return-null' });
 
   // Animation d'écriture - phrases qui changent
-  const phrases = [
+  const phrases = useMemo(() => [
     "en un clic",
     "avec l'IA",
     "pour ta startup tech",
     "prêt à publier partout",
     "pour ton idée révolutionnaire",
-  ];
+  ], []);
   const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Charger le nombre de visiteurs
+  useEffect(() => {
+    const fetchVisitorCount = async () => {
+      try {
+        // Essayer d'abord l'API simple, puis l'API Vercel
+        let response = await fetch('/api/analytics/visitors-simple')
+        if (!response.ok) {
+          response = await fetch('/api/analytics/visitors')
+        }
+        
+        if (response.ok) {
+          const data = await response.json()
+          setVisitorCount(data.totalVisitors)
+          console.log('✅ Visitor count loaded:', data.totalVisitors)
+        } else {
+          throw new Error('Both APIs failed')
+        }
+      } catch (error) {
+        console.error('Error fetching visitor count:', error)
+        setVisitorCount(1250) // Fallback
+      }
+    }
+
+    fetchVisitorCount()
+  }, [])
+
+  // Animation du compteur
+  useEffect(() => {
+    if (visitorCount > 0) {
+      const duration = 2000 // 2 secondes
+      const steps = 60 // 60 étapes
+      const increment = visitorCount / steps
+      const stepDuration = duration / steps
+      
+      let currentStep = 0
+      const timer = setInterval(() => {
+        currentStep++
+        const newValue = Math.min(Math.floor(increment * currentStep), visitorCount)
+        setDisplayedCount(newValue)
+        
+        if (currentStep >= steps) {
+          clearInterval(timer)
+          setDisplayedCount(visitorCount)
+        }
+      }, stepDuration)
+      
+      return () => clearInterval(timer)
+    }
+  }, [visitorCount])
 
   useEffect(() => {
     const currentPhrase = phrases[currentPhraseIndex];
@@ -51,7 +103,7 @@ export default function HeroSection() {
     }, isDeleting ? 50 : 100); // Vitesse d'effacement plus rapide
 
     return () => clearTimeout(timeout);
-  }, [displayedText, isDeleting, currentPhraseIndex]);
+  }, [displayedText, isDeleting, currentPhraseIndex, phrases]);
 
   const handleCreateBrand = async () => {
     if (!prompt.trim()) return;
@@ -131,6 +183,8 @@ export default function HeroSection() {
               Décrivez simplement ce que vous voulez<br className="hidden sm:inline" />
               <span className="sm:hidden"> </span>et l&apos;IA créera un branding unique pour vous.
             </motion.p>
+
+           
             
             {/* Search Box - Layout horizontal unifié mobile & desktop */}
             <motion.div 
@@ -170,6 +224,8 @@ export default function HeroSection() {
                 </motion.button>
               </div>
             </motion.div>
+
+            
 
           </div>
         </div>

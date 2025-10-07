@@ -165,6 +165,7 @@ export default function BibliothequePage() {
             </motion.p>
           </motion.div>
 
+
           {/* Brands Grid */}
           {brands.length === 0 ? (
             <motion.div

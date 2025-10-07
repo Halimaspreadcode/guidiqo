@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import ExploreSection from '@/components/ExploreSection';
+import SpotlightedCreators from '@/components/SpotlightedCreators';
 import Footer from '@/components/Footer';
 
 function LoadingFallback() {
@@ -18,6 +19,7 @@ export default function Home() {
       <main className="min-h-screen bg-white">
         <Header />
         <HeroSection />
+        <SpotlightedCreators />
         <ExploreSection />
         <Footer />
       </main>
