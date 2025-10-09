@@ -448,7 +448,7 @@ downloadPDF({
                   {/* Code Demo */}
                   {currentFeature.code && (
                     <div className="mb-6">
-                      <h3 className="text-lg font-semibold mb-3 text-black dark:text-white">Exemple d'utilisation</h3>
+                      <h3 className="text-lg font-semibold mb-3 text-black dark:text-white">Exemple d&apos;utilisation</h3>
                       <div className="p-4 rounded-lg bg-gray-900 dark:bg-gray-800 overflow-x-auto">
                         <pre className="text-sm text-green-400 dark:text-green-300 font-mono">
                           <code>{currentFeature.code}</code>
