@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Moon, Palette, Download, Users, Zap, Wand2, 
   Type, Share2, Eye, Lock, Clock, Edit3, FileText,
-  Image, Grid, Layers, Settings, ChevronRight, Menu, X
+  Image as ImageIcon, Grid, Layers, Settings, ChevronRight, Menu, X
 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -108,7 +108,7 @@ downloadPDF({
 });`
     },
     {
-      icon: <Image className="w-6 h-6" />,
+      icon: <ImageIcon className="w-6 h-6" />,
       title: "Images de Couverture Personnalisées",
       description: "Ajoutez vos propres images ou laissez l'IA générer des visuels cohérents avec votre identité de marque.",
       category: "Design",
