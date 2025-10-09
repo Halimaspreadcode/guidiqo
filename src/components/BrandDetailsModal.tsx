@@ -227,3 +227,4 @@ export default function BrandDetailsModal({ brand, isOpen, onClose }: BrandDetai
     </AnimatePresence>
   )
 }
+

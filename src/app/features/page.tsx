@@ -393,7 +393,6 @@ downloadPDF({
                     </div>
                   </div>
                 </motion.aside>
-              )}
             </AnimatePresence>
 
             {/* Main Content */}
