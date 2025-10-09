@@ -182,6 +182,7 @@ export default function Header() {
             ) : (
               <LiquidButton 
                 onClick={handleSignIn}
+                
                 className="bg-gradient-to-r from-stone-900 to-gray-800 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full text-xs sm:text-sm font-medium hover:from-red-900 hover:to-red-600 transition-all duration-200"
               >
                 Se connecter
