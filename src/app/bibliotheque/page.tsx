@@ -126,18 +126,18 @@ export default function BibliothequePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
+      <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black dark:border-white"></div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden">
+    <div className="min-h-screen bg-white dark:bg-black relative overflow-hidden">
       <Header />
 
       {/* Hero Section */}
-      <section className="pt-32 md:pt-40 pb-12 md:pb-16 px-4 md:px-8">
+      <section className="pt-36 md:pt-48 pb-12 md:pb-16 px-4 md:px-8">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -146,7 +146,7 @@ export default function BibliothequePage() {
             className="mb-16 md:mb-24 text-center"
           >
             <motion.h1
-              className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold mb-6 md:mb-8 tracking-tighter text-black"
+              className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold mb-6 md:mb-8 tracking-tighter text-black dark:text-white"
               style={{ fontFamily: "'Raleway', sans-serif" }}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -172,11 +172,11 @@ export default function BibliothequePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="text-center py-12 sm:py-20 bg-gradient-to-br from-gray-50 to-white rounded-3xl border border-gray-100"
+              className="text-center py-12 sm:py-20 bg-gradient-to-br from-gray-50 to-white dark:from-black dark:to-black rounded-3xl border border-gray-100 dark:border-white/10"
             >
               <div className="relative inline-block mb-6">
-                <div className="absolute inset-0 bg-gradient-to-br from-stone-900/10 to-red-900/10 blur-2xl rounded-full" />
-                <Palette className="relative w-12 h-12 sm:w-16 sm:h-16 mx-auto text-gray-400" />
+                <div className="absolute inset-0 bg-gradient-to-br from-stone-900/10 to-red-900/10 dark:from-white/10 dark:to-white/10 blur-2xl rounded-full" />
+                <Palette className="relative w-12 h-12 sm:w-16 sm:h-16 mx-auto text-gray-400 dark:text-white/60" />
               </div>
               <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-3">
                 Aucune création pour le moment
@@ -213,7 +213,7 @@ export default function BibliothequePage() {
                   >
                     {/* Card responsive avec bandes de couleurs */}
                     <div 
-                      className="relative w-full h-80 sm:h-72 md:h-80 rounded-2xl overflow-hidden border border-gray-200"
+                      className="relative w-full h-80 sm:h-72 md:h-80 rounded-2xl overflow-hidden "
                       style={{ background: gradient }}
                     >
                       {/* Image de fond si disponible */}
@@ -227,7 +227,7 @@ export default function BibliothequePage() {
                           }}
                         />
                       ) : (
-                        <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-black/60" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-black/80 to-black/60 dark:from-black/90 dark:to-black/70" />
                       )}
 
                       {/* Bandes de couleurs - En haut sur mobile, sur le côté gauche sur desktop */}

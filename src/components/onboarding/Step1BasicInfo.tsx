@@ -68,11 +68,11 @@ export default function Step1BasicInfo({ brandData, updateBrandData, currentStep
       </div>
 
       {/* Contenu droite - 3/4 */}
-      <div className="flex-1 md:w-3/4 overflow-y-auto bg-white">
+      <div className="flex-1 md:w-3/4 overflow-y-auto bg-white dark:bg-black">
         
         <div className="min-h-screen pt-32 pb-32 px-6 sm:px-12 md:px-16 lg:px-24">
           <div className="max-w-2xl">
-            <h2 className="text-4xl sm:text-5xl font-bold text-black mb-4">
+            <h2 className="text-4xl sm:text-5xl font-bold text-black dark:text-white mb-4">
               Informations <span className="text-gray-400 text-2xl sm:text-3xl">1/4</span>
             </h2>
             <p className="text-gray-600 text-lg mb-12">
@@ -80,7 +80,7 @@ export default function Step1BasicInfo({ brandData, updateBrandData, currentStep
             </p>
 
             {/* Glassmorphism Prompt Card */}
-            <div className="relative rounded-3xl p-8 mb-12 overflow-hidden border border-black/5 backdrop-blur-md bg-white/70">
+            <div className="relative rounded-3xl p-8 mb-12 overflow-hidden border border-black/5 backdrop-blur-md bg-white dark:bg-black/70">
               <motion.div
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
                 animate={{ x: ['-100%', '100%'] }}
@@ -103,7 +103,7 @@ export default function Step1BasicInfo({ brandData, updateBrandData, currentStep
                   value={brandData.name}
                   onChange={(e) => updateBrandData({ name: e.target.value })}
                   placeholder="Ex: TechFlow, CreaSpace..."
-                  className="w-full px-6 py-4 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-black placeholder-gray-400 text-lg transition-all"
+                  className="w-full px-6 py-4 bg-white dark:bg-black border border-gray dark:border-white/20-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-black dark:text-white placeholder-gray-400 text-lg transition-all"
                 />
               </div>
 
@@ -117,7 +117,7 @@ export default function Step1BasicInfo({ brandData, updateBrandData, currentStep
                   onChange={(e) => updateBrandData({ description: e.target.value })}
                   placeholder="Décrivez votre projet, ses valeurs, sa mission..."
                   rows={6}
-                  className="w-full px-6 py-4 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-black placeholder-gray-400 resize-none transition-all"
+                  className="w-full px-6 py-4 bg-white dark:bg-black border border-gray dark:border-white/20-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-black dark:text-white placeholder-gray-400 resize-none transition-all"
                 />
               </div>
 
@@ -129,7 +129,7 @@ export default function Step1BasicInfo({ brandData, updateBrandData, currentStep
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <div className="absolute inset-0 bg-white/10" />
+                <div className="absolute inset-0 bg-white dark:bg-black/10" />
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
                   animate={{ x: ['-100%', '100%'] }}
@@ -144,7 +144,7 @@ export default function Step1BasicInfo({ brandData, updateBrandData, currentStep
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <div className="absolute inset-0 bg-white/10" />
+                <div className="absolute inset-0 bg-white dark:bg-black/10" />
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
                   animate={{ x: ['-100%', '100%'] }}
@@ -179,7 +179,7 @@ export default function Step1BasicInfo({ brandData, updateBrandData, currentStep
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
               className="fixed inset-0 z-50 flex items-center justify-center p-4"
             >
-              <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 relative">
+              <div className="bg-white dark:bg-black rounded-3xl shadow-2xl max-w-md w-full p-8 relative">
                 {/* Decorative gradient */}
                 <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-red-500 via-red-600 to-red-500 rounded-t-3xl" />
                 
@@ -195,7 +195,7 @@ export default function Step1BasicInfo({ brandData, updateBrandData, currentStep
                   </motion.div>
 
                   {/* Title */}
-                  <h3 className="text-2xl font-bold text-black mb-3">
+                  <h3 className="text-2xl font-bold text-black dark:text-white mb-3">
                     Annuler la création ?
                   </h3>
 

@@ -217,20 +217,6 @@ export default function CreerPage() {
         )}
       </AnimatePresence>
 
-      {/* Navigation Header - En haut à droite */}
-      <div className="fixed top-6 right-6 z-40">
-        <motion.button
-          onClick={() => currentStep === 1 ? setShowCancelModal(true) : handlePrevious()}
-          className={`flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-md rounded-full shadow-lg hover:bg-white transition-colors ${
-            currentStep === 1 ? 'border border-red-300 text-red-600 hover:bg-red-50' : ''
-          }`}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span className="text-sm font-medium">{currentStep === 1 ? 'Annuler' : 'Retour'}</span>
-        </motion.button>
-      </div>
 
       {/* Content */}
       <AnimatePresence mode="wait">

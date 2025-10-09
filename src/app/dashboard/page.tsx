@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Palette, Menu, X } from 'lucide-react'
 import { LiquidButton } from '@/components/LiquidGlassButton'
+import ThemeToggle from '@/components/ThemeToggle'
 import Sidebar from '@/components/Sidebar'
 import BrandCard from '@/components/BrandCard'
 
@@ -159,11 +160,11 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white" style={{ fontFamily: "'Raleway', sans-serif" }}>
+    <div className="min-h-screen bg-white dark:bg-black" style={{ fontFamily: "'Raleway', sans-serif" }}>
       {/* Mobile Menu Button */}
       <motion.button
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="lg:hidden fixed top-6 left-4 z-50 p-3 bg-white/70 backdrop-blur-md rounded-full shadow-lg border border-white/20"
+        className="lg:hidden fixed top-6 left-4 z-50 p-3 bg-white/70 dark:bg-black/70 backdrop-blur-md rounded-full shadow-lg border border-white/20 dark:border-white/10"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
       >
@@ -201,7 +202,7 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="lg:hidden mb-6 mt-12 bg-gradient-to-br from-gray-50 to-white rounded-3xl p-6 border border-gray-100"
+            className="lg:hidden mb-6 mt-12 bg-gradient-to-br from-gray-50 to-white dark:from-black dark:to-black rounded-3xl p-6 border border-gray-100 dark:border-white/10"
           >
             <div className="flex items-center justify-between mb-4">
               <div>
@@ -225,7 +226,7 @@ export default function DashboardPage() {
             {/* Create New Task Button - Mobile */}
             <LiquidButton
               onClick={handleCreateBrand}
-              className="w-full flex items-center justify-center gap-2 bg-black text-white px-6 py-4 rounded-full font-semibold text-sm"
+              className="w-full flex items-center justify-center gap-2 bg-black dark:bg-white text-white px-6 py-4 rounded-full font-semibold text-sm"
             >
               <Plus className="w-5 h-5" />
               Créer un nouveau branding
@@ -239,17 +240,17 @@ export default function DashboardPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="bg-gradient-to-br from-gray-50 to-white rounded-3xl p-8 border border-gray-100 mb-8"
+              className="bg-white dark:bg-black rounded-3xl p-8 border border-gray-100 dark:border-white/10 mb-8"
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-base text-gray-500 mb-2">
+                  <p className="text-base text-gray-500 dark:text-white mb-2">
                     {new Date().getHours() < 12 ? 'Bon matin' : new Date().getHours() < 18 ? 'Bon après-midi' : 'Bonne soirée'}
                   </p>
-                  <h1 className="text-4xl font-bold text-black mb-2">
+                  <h1 className="text-4xl font-bold text-black dark:text-white mb-2">
                     {user?.displayName || user?.primaryEmail?.split('@')[0]} !
                   </h1>
-                  <p className="text-gray-600 text-lg">
+                  <p className="text-gray-600 text-lg dark:text-white">
                     Gérez tous vos projets de branding ici
                   </p>
                 </div>
@@ -265,7 +266,7 @@ export default function DashboardPage() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="flex justify-between items-center"
             >
-              <h2 className="text-2xl font-bold text-black">
+              <h2 className="text-2xl font-bold text-black dark:text-white">
                 Mes Brandings
               </h2>
               
@@ -316,7 +317,7 @@ export default function DashboardPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="text-center py-12 sm:py-20 bg-gradient-to-br from-gray-50 to-white rounded-3xl border border-gray-100 relative overflow-hidden"
+              className="text-center py-12 sm:py-20 bg-gradient-to-br from-gray-50 to-white rounded-3xl  relative overflow-hidden"
             >
               <div className="absolute inset-0 backdrop-blur-2xl bg-white/50" />
               <div className="relative z-10">

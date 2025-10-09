@@ -6,6 +6,7 @@ import { Home, Palette, BookOpen, Settings, LogOut, Crown, User } from 'lucide-r
 import { useUser } from '@stackframe/stack'
 import { useEffect, useState } from 'react'
 import { useUserProfile } from '@/hooks/useUserProfile'
+import ThemeToggle from './ThemeToggle'
 
 interface SidebarProps {
   isOpen?: boolean
@@ -115,29 +116,32 @@ export default function Sidebar({ isOpen = false, onClose, isMobile = false }: S
     <div className="p-6 pt-8 h-full flex flex-col relative font-raleway">
 
 
-      {/* Logo */}
-      <motion.div
-        className="relative mb-8 cursor-pointer overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-white/90 to-gray-50/80 backdrop-blur-xl border border-white/30"
-        onClick={() => {
-          router.push('/')
-          onClose?.()
-        }}
-        whileHover={{ scale: 1.05, y: -2 }}
-        whileTap={{ scale: 0.98 }}
-      >
-        <div className="absolute inset-0 backdrop-blur-md" />
+      {/* Logo avec Theme Toggle */}
+      <div className="mb-8 flex items-center justify-between gap-3">
         <motion.div
-          className="absolute inset-0 to-transparent"
-          animate={{ x: ['-100%', '100%'] }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-        />
-        <motion.div
-          className="absolute -top-10 -right-10 w-32 h-32  rounded-full blur-2xl"
-          animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-          transition={{ duration: 4, repeat: Infinity }}
-        />
-        <h1 className="relative z-10 text-2xl font-bold text-black text-left tracking-tight">Guidiqo</h1>
-      </motion.div>
+          className="relative flex-1 cursor-pointer overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-white/90 to-gray-50/80 dark:from-black/90 dark:to-black/80 backdrop-blur-xl"
+          onClick={() => {
+            router.push('/')
+            onClose?.()
+          }}
+          whileHover={{ scale: 1.05, y: -2 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <div className="absolute inset-0 backdrop-blur-md" />
+          <motion.div
+            className="absolute inset-0 to-transparent"
+            animate={{ x: ['-100%', '100%'] }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+          />
+          <motion.div
+            className="absolute -top-10 -right-10 w-32 h-32 rounded-full blur-2xl"
+            animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+            transition={{ duration: 4, repeat: Infinity }}
+          />
+          <h1 className="relative z-10 text-2xl font-bold text-black dark:text-white text-left tracking-tight">Guidiqo</h1>
+        </motion.div>
+        <ThemeToggle />
+      </div>
 
       {/* Navigation */}
       <nav className="space-y-2 flex-1 relative z-10">
@@ -159,8 +163,8 @@ export default function Sidebar({ isOpen = false, onClose, isMobile = false }: S
                   "relative flex items-center gap-3 px-4 py-3 rounded-3xl overflow-hidden group backdrop-blur-sm transition-all",
                   "font-medium",
                   isActive
-                    ? "border border-black/5 bg-white/80 text-black"
-                    : "border border-white/20 text-gray-600",
+                    ? "border border-black/5 bg-white/80 dark:bg-white text-black "
+                    : "border border-white/20 text-gray-600 dark:text-white",
                   isActive
                     ? "shadow-md"
                     : "",
@@ -247,18 +251,18 @@ export default function Sidebar({ isOpen = false, onClose, isMobile = false }: S
         {/* Bouton Déconnexion */}
         <motion.button
           onClick={handleSignOut}
-          className="relative w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl overflow-hidden group backdrop-blur-sm border border-black/5"
+          className="relative w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl overflow-hidden group backdrop-blur-sm border border-black/5 dark:border-white/10"
           whileHover={{ scale: 1.02, y: -1 }}
           whileTap={{ scale: 0.98 }}
         >
-          <div className="absolute inset-0 bg-gray-50 to-transparent  hover:bg-red-900 backdrop-blur-md opacity-100 transition-opacity duration-300" />
+          <div className="absolute inset-0 bg-gray-50 dark:bg-white/10 to-transparent  hover:bg-red-900 backdrop-blur-md opacity-100 transition-opacity duration-300" />
           <motion.div
             className="absolute inset-0 "
             animate={{ x: ['-100%', '100%'] }}
             transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
           />
-          <LogOut className="relative z-10 w-5 h-5 text-gray-600 group-hover:text-white transition-colors" />
-          <span className="relative z-10 font-medium text-gray-600 group-hover:text-white transition-colors">Se déconnecter</span>
+          <LogOut className="relative z-10 w-5 h-5 text-gray-600 dark:text-white group-hover:text-white transition-colors" />
+          <span className="relative z-10 font-medium text-gray-600 dark:text-white group-hover:text-white transition-colors">Se déconnecter</span>
         </motion.button>
       </div>
     </div>
@@ -269,7 +273,7 @@ export default function Sidebar({ isOpen = false, onClose, isMobile = false }: S
       <motion.aside
         initial={{ x: -280 }}
         animate={{ x: isOpen ? 0 : -280 }}
-        className="fixed top-0 left-0 h-full w-72 bg-white/95 backdrop-blur-2xl border-r border-white/30 z-40 "
+        className="fixed top-0 left-0 h-full w-72 bg-white/95 dark:bg-black/95 backdrop-blur-2xl border-r border-white/30 dark:border-white/10 z-40 "
         transition={{ duration: 0.3 }}
       >
         {sidebarContent}
@@ -278,7 +282,7 @@ export default function Sidebar({ isOpen = false, onClose, isMobile = false }: S
   }
 
   return (
-    <aside className="fixed top-0 left-0 h-full w-72 bg-white/95 backdrop-blur-2xl border-r border-black/5 z-20 ">
+    <aside className="fixed top-0 left-0 h-full w-72 bg-white/95 dark:bg-black/95 backdrop-blur-2xl border-r border-black/5 dark:border-white/10 z-20 ">
       {sidebarContent}
     </aside>
   )

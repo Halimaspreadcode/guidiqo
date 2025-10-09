@@ -53,7 +53,7 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-black">
       <Header />
       
       <main className="pt-20 md:pt-24">
@@ -80,10 +80,10 @@ export default function ContactPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
-                <h1 className="text-7xl sm:text-8xl md:text-9xl lg:text-[12rem] font-bold tracking-tighter text-white mb-8">
+                <h1 className="text-7xl sm:text-8xl md:text-9xl lg:text-[12rem] font-bold tracking-tighter text-black dark:text-white mb-8">
                   Contact
                 </h1>
-                <p className="text-xl md:text-2xl text-white/80 max-w-2xl mx-auto font-light">
+                <p className="text-xl md:text-2xl text-black dark:text-white/80 max-w-2xl mx-auto font-light">
                   Parlons de votre projet ensemble
                 </p>
               </motion.div>
@@ -114,7 +114,7 @@ export default function ContactPage() {
 
               <div>
                 <motion.h2 
-                  className="text-5xl md:text-7xl font-bold text-black mb-4"
+                  className="text-5xl md:text-7xl font-bold text-black dark:text-black dark:text-white mb-4"
                   initial={{ opacity: 0, x: 30 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
@@ -123,7 +123,7 @@ export default function ContactPage() {
                   Halima Gueye
                 </motion.h2>
                 <motion.p 
-                  className="text-xl md:text-2xl text-gray-500 mb-6"
+                  className="text-xl md:text-2xl text-gray-500 dark:text-white/70 mb-6"
                   initial={{ opacity: 0, x: 30 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
@@ -132,7 +132,7 @@ export default function ContactPage() {
                   Owner
                 </motion.p>
                 <motion.p 
-                  className="text-lg text-gray-600 leading-relaxed mb-8"
+                  className="text-lg text-gray-600 dark:text-white/60 leading-relaxed mb-8"
                   initial={{ opacity: 0, x: 30 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
@@ -148,7 +148,7 @@ J&apos;utilise le design et l&apos;innovation comme clés pour que le digital se
                   transition={{ duration: 0.6, delay: 0.5 }}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="inline-flex items-center gap-3 px-8 py-4 bg-black text-white rounded-full font-semibold text-lg"
+                  className="inline-flex items-center gap-3 px-8 py-4 bg-black dark:bg-white text-white dark:text-black rounded-full font-semibold text-lg"
                 >
                   <Calendar className="w-5 h-5" />
                   Réserver un appel
@@ -162,7 +162,7 @@ J&apos;utilise le design et l&apos;innovation comme clés pour que le digital se
         <section className="px-4 md:px-8 mb-32 md:mb-48">
           <div className="max-w-6xl mx-auto">
             <motion.h2 
-              className="text-4xl md:text-6xl font-bold text-black mb-16 md:mb-24"
+              className="text-4xl md:text-6xl font-bold text-black dark:text-black dark:text-white mb-16 md:mb-24"
               initial={{ opacity: 0, y: 60 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-150px" }}
@@ -180,21 +180,21 @@ J&apos;utilise le design et l&apos;innovation comme clés pour que le digital se
                 className="group relative"
               >
                 <motion.div
-                  className="p-8 border border-gray-200 rounded-2xl bg-white"
+                  className="p-8 rounded-2xl bg-white dark:bg-stone-900"
                   whileHover={{ y: -4, borderColor: '#000', transition: { duration: 0.2 } }}
                 >
                   <div className="flex items-start gap-4 mb-4">
                     <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Mail className="w-6 h-6 text-black" strokeWidth={2} />
+                      <Mail className="w-6 h-6 text-black dark:text-white" strokeWidth={2} />
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold text-black mb-2">
+                      <h3 className="text-2xl font-bold text-black dark:text-white mb-2">
                         Email
                       </h3>
-                      <p className="text-gray-600 text-lg mb-2">
+                      <p className="text-gray-600 dark:text-white/60 text-lg mb-2">
                         Pour toute question
                       </p>
-                      <a href="mailto:contact@guidiqo.com" className="text-black font-semibold hover:underline">
+                      <a href="mailto:contact@guidiqo.com" className="text-black dark:text-white font-semibold hover:underline">
                         contact@guidiqo.com
                       </a>
                     </div>
@@ -210,21 +210,21 @@ J&apos;utilise le design et l&apos;innovation comme clés pour que le digital se
                 className="group relative"
               >
                 <motion.div
-                  className="p-8 border border-gray-200 rounded-2xl bg-white"
+                  className="p-8 rounded-2xl bg-white dark:bg-stone-900"
                   whileHover={{ y: -4, borderColor: '#000', transition: { duration: 0.2 } }}
                 >
                   <div className="flex items-start gap-4 mb-4">
                     <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <MessageSquare className="w-6 h-6 text-black" strokeWidth={2} />
+                      <MessageSquare className="w-6 h-6 text-black dark:text-white" strokeWidth={2} />
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold text-black mb-2">
+                      <h3 className="text-2xl font-bold text-black  dark:text-white mb-2">
                         Support
                       </h3>
-                      <p className="text-gray-600 text-lg mb-2">
+                      <p className="text-gray-600 dark:text-white/60 text-lg mb-2">
                         Réponse sous 24h
                       </p>
-                      <p className="text-black font-semibold">
+                      <p className="text-black dark:text-white  font-semibold">
                         Lun-Ven, 9h-18h CET
                       </p>
                     </div>
@@ -243,7 +243,7 @@ J&apos;utilise le design et l&apos;innovation comme clés pour que le digital se
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-150px" }}
               transition={{ duration: 0.8 }}
-              className="border border-gray-200 rounded-3xl overflow-hidden bg-white"
+              className="border border-gray-200 dark:border-white/10 rounded-3xl overflow-hidden bg-white dark:bg-black"
             >
               <iframe
                 src="https://cal.com/halima-gueye-1kppgr"
@@ -265,7 +265,7 @@ J&apos;utilise le design et l&apos;innovation comme clés pour que le digital se
               viewport={{ once: true, margin: "-150px" }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className="text-4xl md:text-6xl font-bold text-black mb-8 md:mb-12">
+              <h2 className="text-4xl md:text-6xl font-bold text-black  dark:text-white mb-8 md:mb-12">
                 Ou envoyez un message
               </h2>
 
@@ -278,7 +278,7 @@ J&apos;utilise le design et l&apos;innovation comme clés pour que le digital se
                       required
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-black focus:border-black transition-all text-lg"
+                      className="w-full px-6 py-4 bg-white dark:bg-stone-900 rounded-2xl focus:ring-2 focus:ring-black focus:border-black transition-all text-lg"
                       placeholder="Nom complet"
                     />
                   </div>
@@ -290,7 +290,7 @@ J&apos;utilise le design et l&apos;innovation comme clés pour que le digital se
                       required
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-black focus:border-black transition-all text-lg"
+                      className="w-full px-6 py-4 bg-white dark:bg-stone-900 rounded-2xl focus:ring-2 focus:ring-black focus:border-black transition-all text-lg"
                       placeholder="Email"
                     />
                   </div>
@@ -303,7 +303,7 @@ J&apos;utilise le design et l&apos;innovation comme clés pour que le digital se
                     required
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-black focus:border-black transition-all text-lg"
+                    className="w-full px-6 py-4 bg-white dark:bg-stone-900 rounded-2xl focus:ring-2 focus:ring-black focus:border-black transition-all text-lg"
                     placeholder="Sujet"
                   />
                 </div>
@@ -315,7 +315,7 @@ J&apos;utilise le design et l&apos;innovation comme clés pour que le digital se
                     rows={6}
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-black focus:border-black transition-all resize-none text-lg"
+                    className="w-full px-6 py-4 bg-white dark:bg-stone-900 rounded-2xl focus:ring-2 focus:ring-black focus:border-black transition-all resize-none text-lg"
                     placeholder="Votre message..."
                   />
                 </div>
@@ -323,7 +323,7 @@ J&apos;utilise le design et l&apos;innovation comme clés pour que le digital se
                 <motion.button
                   type="submit"
                   disabled={loading || success}
-                  className="w-full px-8 py-5 bg-black text-white rounded-full font-semibold text-lg hover:bg-gray-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                  className="w-full px-8 py-5 bg-black dark:bg-white text-white dark:text-black rounded-full font-semibold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                   whileHover={{ scale: loading || success ? 1 : 1.02 }}
                   whileTap={{ scale: loading || success ? 1 : 0.98 }}
                 >

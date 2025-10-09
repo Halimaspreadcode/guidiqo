@@ -58,7 +58,7 @@ export default function PasswordResetPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-white flex">
+    <div className="min-h-screen bg-white dark:bg-black flex">
       {/* Image gauche */}
       <div className="hidden lg:block lg:w-1/2 relative overflow-hidden">
         <img
@@ -100,7 +100,7 @@ export default function PasswordResetPage() {
           {/* Bouton retour */}
           <motion.button
             onClick={() => router.push('/auth/signin')}
-            className="flex items-center gap-2 text-gray-600 hover:text-black transition-colors mb-8"
+            className="flex items-center gap-2 text-gray-600 hover:text-black dark:text-white transition-colors mb-8"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
           >
@@ -110,17 +110,17 @@ export default function PasswordResetPage() {
 
           {/* Logo mobile */}
           <div className="lg:hidden text-center mb-8">
-            <h1 className="text-3xl font-bold text-black">Guidiqo</h1>
+            <h1 className="text-3xl font-bold text-black dark:text-white">Guidiqo</h1>
           </div>
 
           {/* Carte */}
           <motion.div
-            className="bg-white lg:border lg:border-gray-200 rounded-3xl p-8 md:p-10"
+            className="bg-white dark:bg-black lg:border lg:border-gray-200 rounded-3xl p-8 md:p-10"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
             <div className="mb-8">
-              <h2 className="text-2xl md:text-3xl font-bold text-black mb-2">
+              <h2 className="text-2xl md:text-3xl font-bold text-black dark:text-white mb-2">
                 Nouveau mot de passe
               </h2>
               <p className="text-gray-600">

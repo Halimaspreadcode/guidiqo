@@ -127,7 +127,7 @@ export default function HeroSection() {
   return (
     <section className="px-3 sm:px-4 md:px-6 lg:px-8 pt-16 sm:pt-20 md:pt-24 pb-4 sm:pb-6">
       <motion.div 
-        className="relative min-h-[85vh] sm:min-h-[80vh] md:min-h-[85vh] flex items-center justify-center overflow-hidden rounded-3xl md:rounded-[2.5rem] bg-gray-400"
+        className="relative min-h-[85vh] sm:min-h-[80vh] md:min-h-[85vh] flex items-center justify-center overflow-hidden rounded-3xl md:rounded-[2.5rem] bg-gray-400 dark:bg-black"
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
@@ -193,20 +193,20 @@ export default function HeroSection() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
             >
-              <div className="flex flex-row gap-2 bg-white/95 backdrop-blur-lg border border-white/30 rounded-full p-2 shadow-2xl items-center">
+              <div className="flex flex-row gap-2 bg-white/95 dark:bg-black backdrop-blur-lg border border-white/30 dark:border-white/20 rounded-full p-2 shadow-2xl items-center">
                 <input
                   type="text"
                   placeholder="Ex: Un branding pour une entreprise de tech..."
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleCreateBrand()}
-                  className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-transparent text-black placeholder-gray-500 focus:outline-none text-sm sm:text-lg rounded-full"
+                  className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-transparent text-black dark:text-white placeholder-gray-500 dark:placeholder-white/60 focus:outline-none text-sm sm:text-lg rounded-full"
                   style={{ fontFamily: "'Raleway', sans-serif" }}
                 />
                 <motion.button
                   onClick={handleCreateBrand}
                   disabled={loading || !prompt.trim()}
-                  className="bg-black hover:bg-gray-800 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold transition-all duration-200 text-sm sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed shadow-lg whitespace-nowrap"
+                  className="bg-black dark:bg-white hover:bg-black dark:hover:bg-white/90 text-white dark:text-black px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold transition-all duration-200 text-sm sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed shadow-lg whitespace-nowrap"
                   whileHover={{ scale: loading ? 1 : 1.05 }}
                   whileTap={{ scale: loading ? 1 : 0.95 }}
                 >

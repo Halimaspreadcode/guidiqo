@@ -7,8 +7,8 @@ import Footer from '@/components/Footer';
 
 function LoadingFallback() {
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
+    <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black dark:border-white"></div>
     </div>
   );
 }
@@ -16,7 +16,7 @@ function LoadingFallback() {
 export default function Home() {
   return (
     <Suspense fallback={<LoadingFallback />}>
-      <main className="min-h-screen bg-white">
+      <main className="min-h-screen bg-white dark:bg-black">
         <Header />
         <HeroSection />
         <SpotlightedCreators />

@@ -7,6 +7,7 @@ import { Palette, ArrowRight } from 'lucide-react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { LiquidButton } from '@/components/LiquidGlassButton'
+import Image from 'next/image'
 
 interface User {
   id: string
@@ -105,7 +106,7 @@ export default function CreateurPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden">
+    <div className="min-h-screen bg-white dark:bg-black relative overflow-hidden">
       <Header />
 
       {/* Hero Section with Creator Info */}
@@ -143,7 +144,7 @@ export default function CreateurPage() {
                 {/* Creator Name */}
                 <div className="flex items-center justify-center gap-3 mb-4">
                   <motion.h1
-                    className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter text-black"
+                    className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter text-black dark:text-white"
                     style={{ fontFamily: "'Raleway', sans-serif" }}
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -159,7 +160,7 @@ export default function CreateurPage() {
                       className="relative w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12"
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                      <Image
                         src="https://e7msojy1cjnzyvsj.public.blob.vercel-storage.com/images/1759665603040-verified-badge-profile-icon-png.webp"
                         alt="Verified"
                         className="w-full h-full"
@@ -227,7 +228,7 @@ export default function CreateurPage() {
                     whileHover={{ y: -5 }}
                   >
                     <div 
-                      className="relative w-full h-64 sm:h-72 md:h-80 rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200"
+                      className="relative w-full h-64 sm:h-72 md:h-80 rounded-xl sm:rounded-2xl overflow-hidden "
                       style={{ background: gradient }}
                     >
                       {/* Image de fond */}

@@ -122,7 +122,7 @@ export default function SignUpPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-white flex">
+    <div className="min-h-screen bg-white dark:bg-black flex">
       {/* Image gauche - 1/2 - hidden on mobile */}
       <div className="hidden lg:block lg:w-1/2 relative overflow-hidden">
         <img
@@ -168,7 +168,7 @@ export default function SignUpPage() {
           {/* Bouton retour */}
           <motion.button
             onClick={() => router.push('/')}
-            className="flex items-center gap-2 text-gray-600 hover:text-black transition-colors mb-8"
+            className="flex items-center gap-2 text-gray-600 hover:text-black dark:text-white/80 dark:hover:text-white transition-colors mb-8"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
@@ -180,7 +180,7 @@ export default function SignUpPage() {
           {/* Logo mobile */}
           <div className="lg:hidden text-center mb-8">
             <motion.h1
-              className="text-3xl font-bold text-black"
+              className="text-3xl font-bold text-black dark:text-white"
               style={{ fontFamily: "'Raleway', sans-serif" }}
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -192,7 +192,7 @@ export default function SignUpPage() {
 
           {/* Carte d'inscription */}
           <motion.div
-            className="bg-white lg:border lg:border-gray-200 rounded-3xl p-8 md:p-10"
+            className="bg-white dark:bg-black lg:border lg:border-gray-200 dark:lg:border-white/10 rounded-3xl p-8 md:p-10"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
@@ -200,7 +200,7 @@ export default function SignUpPage() {
             {/* Titre */}
             <div className="mb-8">
               <motion.h2
-                className="text-2xl md:text-3xl font-bold text-black mb-2"
+                className="text-2xl md:text-3xl font-bold text-black dark:text-white mb-2"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
@@ -208,7 +208,7 @@ export default function SignUpPage() {
                 Inscription
               </motion.h2>
               <motion.p
-                className="text-gray-600 text-base"
+                className="text-gray-600 dark:text-white/80 text-base"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
@@ -234,11 +234,11 @@ export default function SignUpPage() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.9 }}
             >
-              <p className="text-gray-600 text-sm">
+              <p className="text-gray-600 dark:text-white/80 text-sm">
                 Vous avez déjà un compte ?{' '}
                 <button
                   onClick={() => router.push('/auth/signin')}
-                  className="text-black font-semibold hover:underline"
+                  className="text-black dark:text-white font-semibold hover:underline"
                 >
                   Connectez-vous
                 </button>

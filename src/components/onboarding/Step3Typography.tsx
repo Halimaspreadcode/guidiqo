@@ -130,11 +130,11 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
       </div>
 
       {/* Contenu droite - 3/4 */}
-      <div className="flex-1 md:w-3/4 overflow-y-auto bg-white">
+      <div className="flex-1 md:w-3/4 overflow-y-auto bg-white dark:bg-black">
         
         <div className="min-h-screen pt-32 pb-32 px-6 sm:px-12 md:px-16 lg:px-24">
           <div className="max-w-3xl">
-            <h2 className="text-4xl sm:text-5xl font-bold text-black mb-4">
+            <h2 className="text-4xl sm:text-5xl font-bold text-black dark:text-white mb-4">
               Typographie <span className="text-gray-400 text-2xl sm:text-3xl">3/4</span>
             </h2>
             <p className="text-gray-600 text-lg mb-8">
@@ -164,7 +164,7 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
               {brandData.primaryFont && (
                 <motion.button
                   onClick={handleAiSuggestion}
-                  className="flex items-center gap-2 px-6 py-3 bg-gray-100 text-black rounded-full font-semibold hover:bg-gray-200 transition-all"
+                  className="flex items-center gap-2 px-6 py-3 bg-gray-100 text-black dark:text-white rounded-full font-semibold hover:bg-gray-200 transition-all"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -175,7 +175,7 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
 
               <motion.button
                 onClick={() => setShowManualInput(!showManualInput)}
-                className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 text-black rounded-full font-semibold hover:bg-gray-50 transition-all"
+                className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-black border border-gray dark:border-white/20-200 text-black dark:text-white rounded-full font-semibold hover:bg-gray-50 transition-all"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -204,14 +204,14 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="mb-8 p-6 bg-gray-50 border border-gray-200 rounded-2xl space-y-4"
+                className="mb-8 p-6 bg-gray-50 border border-gray dark:border-white/20-200 rounded-2xl space-y-4"
               >
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">Police Principale</label>
                   <select
                     value={brandData.primaryFont || ''}
                     onChange={(e) => handleManualFontChange('primary', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
+                    className="w-full px-4 py-3 border border-gray dark:border-white/20-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
                     style={{ fontFamily: brandData.primaryFont || 'inherit' }}
                   >
                     <option value="">Sélectionnez une police</option>
@@ -227,7 +227,7 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
                   <select
                     value={brandData.secondaryFont || ''}
                     onChange={(e) => handleManualFontChange('secondary', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
+                    className="w-full px-4 py-3 border border-gray dark:border-white/20-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
                     style={{ fontFamily: brandData.secondaryFont || 'inherit' }}
                   >
                     <option value="">Sélectionnez une police</option>
@@ -249,20 +249,20 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
                   className={`p-6 rounded-2xl border transition-all text-left ${
                     selectedPair === index
                       ? 'border-black'
-                      : 'border-gray-200 hover:border-gray-300'
+                      : 'border-gray dark:border-white/20-200 hover:border-gray dark:border-white/20-300'
                   }`}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
                   <div className="flex items-center justify-between mb-4">
-                    <span className="font-semibold text-black text-lg">{pair.name}</span>
+                    <span className="font-semibold text-black dark:text-white text-lg">{pair.name}</span>
                     {selectedPair === index && (
                       <div className="w-2 h-2 bg-black rounded-full" />
                     )}
                   </div>
                   <div className="space-y-4">
                     <div>
-                      <p className="text-3xl font-bold text-black mb-2" style={{ fontFamily: pair.primary }}>
+                      <p className="text-3xl font-bold text-black dark:text-white mb-2" style={{ fontFamily: pair.primary }}>
                         Aa
                       </p>
                       <p className="text-xs text-gray-500">{pair.primary}</p>
@@ -279,8 +279,8 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
             </div>
 
             {brandData.primaryFont && (
-              <div className="relative rounded-2xl p-8 overflow-hidden border border-gray-200 bg-gray-50">
-                <div className="absolute inset-0 bg-white/40" />
+              <div className="relative rounded-2xl p-8 overflow-hidden border border-gray dark:border-white/20-200 bg-gray-50">
+                <div className="absolute inset-0 bg-white dark:bg-black/40" />
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
                   animate={{ x: ['-100%', '100%'] }}
@@ -289,7 +289,7 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
                 <div className="relative z-10 space-y-8">
                   <p className="text-xs font-medium text-gray-500 mb-6 tracking-wide">APERÇU TYPOGRAPHIQUE</p>
                   <div>
-                    <h1 className="text-5xl font-bold text-black mb-3" style={{ fontFamily: brandData.primaryFont }}>
+                    <h1 className="text-5xl font-bold text-black dark:text-white mb-3" style={{ fontFamily: brandData.primaryFont }}>
                       Votre Marque
                     </h1>
                     <p className="text-sm text-gray-500">{brandData.primaryFont}</p>
@@ -309,11 +309,11 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
             <div className="flex justify-end gap-4 mt-12 pb-12">
               <motion.button
                 onClick={onPrevious}
-                className="relative overflow-hidden px-6 py-3 rounded-full border border-gray-300 hover:bg-gray-50 transition-colors"
+                className="relative overflow-hidden px-6 py-3 rounded-full border border-gray dark:border-white/20-300 hover:bg-gray-50 transition-colors"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <div className="absolute inset-0 bg-white/10" />
+                <div className="absolute inset-0 bg-white dark:bg-black/10" />
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
                   animate={{ x: ['-100%', '100%'] }}
@@ -328,7 +328,7 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <div className="absolute inset-0 bg-white/10" />
+                <div className="absolute inset-0 bg-white dark:bg-black/10" />
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
                   animate={{ x: ['-100%', '100%'] }}

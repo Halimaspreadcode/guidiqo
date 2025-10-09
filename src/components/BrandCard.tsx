@@ -59,7 +59,7 @@ export default function BrandCard({ brand, index, onDelete }: BrandCardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.05 }}
       onClick={() => router.push(`/brand/${brand.id}`)}
-      className="group bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-gray-900 transition-all duration-300 cursor-pointer"
+      className="group bg-white dark:bg-black rounded-xl overflow-hidden hover:border-gray-900 transition-all duration-300 cursor-pointer"
     >
       {/* Image de couverture OU Design généré */}
       {brand.coverImage ? (
@@ -75,8 +75,8 @@ export default function BrandCard({ brand, index, onDelete }: BrandCardProps) {
           {/* Status badge sur l'image */}
           <span className={`absolute top-3 right-3 text-xs font-medium px-2.5 py-1 rounded-md backdrop-blur-sm ${
             brand.isCompleted 
-              ? 'bg-black/80 text-white' 
-              : 'bg-white/90 text-gray-900'
+              ? 'bg-black/80 text-white dark:text-white' 
+              : 'bg-white/90 text-gray-900 dark:text-white'
           }`}>
             {brand.isCompleted ? 'Terminé' : `${brand.currentStep}/4`}
           </span>
@@ -87,7 +87,7 @@ export default function BrandCard({ brand, index, onDelete }: BrandCardProps) {
           style={{
             background: brand.primaryColor 
               ? `linear-gradient(135deg, ${brand.primaryColor} 0%, ${brand.secondaryColor || brand.primaryColor} 50%, ${brand.accentColor || brand.primaryColor} 100%)`
-              : 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)'
+              : 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%) dark:from-black/80 dark:to-black/60'
           }}
         >
           {/* Motif décoratif */}
@@ -112,7 +112,7 @@ export default function BrandCard({ brand, index, onDelete }: BrandCardProps) {
           {/* Status badge */}
           <span className={`absolute top-3 right-3 text-xs font-medium px-2.5 py-1 rounded-md backdrop-blur-sm ${
             brand.isCompleted 
-              ? 'bg-white/90 text-gray-900' 
+              ? 'bg-white/90 text-gray-900 dark:text-white' 
               : 'bg-black/80 text-white'
           }`}>
             {brand.isCompleted ? 'Terminé' : `${brand.currentStep}/4`}
@@ -121,14 +121,14 @@ export default function BrandCard({ brand, index, onDelete }: BrandCardProps) {
       )}
 
       {/* Header simple avec couleurs */}
-      <div className="p-4 md:p-6 border-b border-gray-100">
+      <div className="p-4 md:p-6 border border-gray-100 dark:border-white/10">
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex-1 min-w-0">
-            <h3 className="text-base md:text-xl font-semibold text-gray-900 truncate mb-1">
+            <h3 className="text-base md:text-xl font-semibold text-gray-900 truncate mb-1 dark:text-white">
               {brand.name}
             </h3>
             {brand.description && (
-              <p className="hidden md:block text-sm text-gray-500 truncate">
+              <p className="hidden md:block text-sm text-gray-500 truncate dark:text-white">
                 {brand.description.length > 60 
                   ? `${brand.description.substring(0, 60)}...` 
                   : brand.description}
@@ -140,8 +140,8 @@ export default function BrandCard({ brand, index, onDelete }: BrandCardProps) {
           {!brand.coverImage && (
             <span className={`shrink-0 text-[10px] md:text-xs font-medium px-2 md:px-2.5 py-1 rounded-md ${
               brand.isCompleted 
-                ? 'bg-gray-900 text-white' 
-                : 'bg-gray-100 text-gray-600'
+                ? 'bg-gray-900 text-white dark:text-black' 
+                : 'bg-gray-100 text-gray-600 dark:text-white'
             }`}>
               {brand.isCompleted ? 'Terminé' : `${brand.currentStep}/4`}
             </span>
@@ -155,7 +155,7 @@ export default function BrandCard({ brand, index, onDelete }: BrandCardProps) {
             .map((color, idx) => (
               <div
                 key={idx}
-                className="w-6 h-6 md:w-8 md:h-8 rounded-md border border-gray-200"
+                className="w-6 h-6 md:w-8 md:h-8 rounded-md border border-gray-200 dark:border-white/10"
                 style={{ backgroundColor: color! }}
               />
             ))}
@@ -163,17 +163,17 @@ export default function BrandCard({ brand, index, onDelete }: BrandCardProps) {
       </div>
 
       {/* Contenu */}
-      <div className="p-4 md:p-6">
+      <div className="p-4 md:p-6 border border-gray-100 dark:border-white/10">
         {/* Tags - Desktop only */}
         {(brand.brandPersonality || brand.targetAudience) && (
           <div className="hidden md:flex flex-wrap gap-2 mb-4">
             {brand.brandPersonality && (
-              <span className="text-xs px-2.5 py-1 border border-gray-200 text-gray-700 rounded-md">
+              <span className="text-xs px-2.5 py-1 border border-gray-200 text-gray-700 rounded-md dark:text-white">
                 {brand.brandPersonality}
               </span>
             )}
             {brand.targetAudience && (
-              <span className="text-xs px-2.5 py-1 border border-gray-200 text-gray-700 rounded-md">
+              <span className="text-xs px-2.5 py-1 border border-gray-200 text-gray-700 rounded-md dark:text-white">
                 {brand.targetAudience}
               </span>
             )}
@@ -186,7 +186,7 @@ export default function BrandCard({ brand, index, onDelete }: BrandCardProps) {
             onClick={handleTogglePublic}
             className={`w-full flex items-center justify-between p-3 rounded-lg  transition-all ${
               brand.isPublic
-                ? 'bg-blue-50 '
+                ? 'bg-blue-50 dark:bg-blue-900 '
                 : 'bg-orange-50 '
             }`}
           >
@@ -196,7 +196,7 @@ export default function BrandCard({ brand, index, onDelete }: BrandCardProps) {
               </span>
               <div className="text-left">
                 <p className={`text-sm font-semibold ${
-                  brand.isPublic ? 'text-blue-700' : 'text-orange-700'
+                  brand.isPublic ? 'text-blue-700 dark:text-blue-300' : 'text-orange-700 dark:text-orange-300'
                 }`}>
                   {brand.isPublic ? 'Public' : 'Privé'}
                 </p>

@@ -27,10 +27,10 @@ export default function AuthCallbackPage() {
   }, [user, router])
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center">
+    <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
       <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto mb-4"></div>
-        <p className="text-gray-600">Finalisation de la connexion...</p>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black dark:border-white mx-auto mb-4"></div>
+        <p className="text-gray-600 dark:text-white/80">Finalisation de la connexion...</p>
       </div>
     </div>
   )

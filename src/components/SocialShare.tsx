@@ -73,7 +73,7 @@ export default function SocialShare({ brandId, brandName, brandDescription, bran
       {/* Bouton principal - style circulaire comme les autres boutons */}
       <motion.button
         onClick={handleToggleMenu}
-        className="p-4 bg-white border border-black/10 rounded-full hover:bg-black hover:text-white transition-colors"
+        className="p-4 bg-white dark:bg-black border border-black/10 dark:border-white rounded-full hover:bg-black hover:text-white transition-colors"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
         title="Partager sur les réseaux"
@@ -100,13 +100,13 @@ export default function SocialShare({ brandId, brandName, brandDescription, bran
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="absolute top-full right-0 mt-2 bg-white border border-gray-200 rounded-2xl shadow-lg p-2 z-20 min-w-[200px]"
+              className="absolute top-full right-0 mt-2 bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-2xl shadow-lg p-2 z-20 min-w-[200px]"
             >
               <div className="space-y-1">
                 {/* Twitter */}
                 <motion.button
                   onClick={() => handleShare('twitter')}
-                  className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50 rounded-xl transition-colors"
+                  className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-50 dark:hover:bg-white/10  text-black dark:text-white rounded-xl transition-colors"
                   whileHover={{ x: 4 }}
                 >
                   <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">

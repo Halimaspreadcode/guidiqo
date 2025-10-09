@@ -17,6 +17,7 @@
     "@stackframe/stack": "^2.5.0",
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
+    "clsx": "^2.1.1",
     "framer-motion": "^11.3.19",
     "groq-sdk": "^0.33.0",
     "html2canvas": "^1.4.1",
@@ -26,6 +27,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "resend": "^6.1.2",
+    "tailwind-merge": "^3.3.1",
     "zod": "^3.23.8"
   },
   "devDependencies": {

@@ -231,11 +231,11 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
       </div>
 
       {/* Contenu droite - 3/4 */}
-      <div className="flex-1 md:w-3/4 overflow-y-auto bg-white">
+      <div className="flex-1 md:w-3/4 overflow-y-auto bg-white dark:bg-black">
         
         <div className="min-h-screen pt-32 pb-32 px-6 sm:px-12 md:px-16 lg:px-24">
           <div className="max-w-3xl">
-            <h2 className="text-4xl sm:text-5xl font-bold text-black mb-4">
+            <h2 className="text-4xl sm:text-5xl font-bold text-black dark:text-white mb-4">
               Personnalité <span className="text-gray-400 text-2xl sm:text-3xl">4/4</span>
             </h2>
             <p className="text-gray-600 text-lg mb-12">
@@ -256,13 +256,13 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
                       className={`p-5 rounded-2xl border transition-all text-left ${
                         brandData.brandPersonality === personality.value
                           ? 'border-black bg-gray-50'
-                          : 'border-gray-200 hover:border-gray-300'
+                          : 'border-gray dark:border-white/20-200 hover:border-gray dark:border-white/20-300'
                       }`}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <p className="font-semibold text-black">{personality.label}</p>
+                        <p className="font-semibold text-black dark:text-white">{personality.label}</p>
                         {brandData.brandPersonality === personality.value && (
                           <div className="w-2 h-2 bg-black rounded-full" />
                         )}
@@ -286,13 +286,13 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
                       className={`p-5 rounded-2xl border transition-all ${
                         brandData.targetAudience === audience.value
                           ? 'border-black bg-gray-50'
-                          : 'border-gray-200 hover:border-gray-300'
+                          : 'border-gray dark:border-white/20-200 hover:border-gray dark:border-white/20-300'
                       }`}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
                       <div className="flex items-center justify-between">
-                        <p className="font-medium text-black text-sm">{audience.label}</p>
+                        <p className="font-medium text-black dark:text-white text-sm">{audience.label}</p>
                         {brandData.targetAudience === audience.value && (
                           <div className="w-2 h-2 bg-black rounded-full" />
                         )}
@@ -322,7 +322,7 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
                       <motion.button
                         onClick={handleRefreshImages}
                         disabled={loadingImages}
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-full hover:bg-gray-50 disabled:opacity-50 transition-all"
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 bg-white dark:bg-black border border-gray dark:border-white/20-300 rounded-full hover:bg-gray-50 disabled:opacity-50 transition-all"
                         whileHover={{ scale: loadingImages ? 1 : 1.05 }}
                         whileTap={{ scale: loadingImages ? 1 : 0.95 }}
                       >
@@ -333,7 +333,7 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
                   </div>
 
                   {loadingImages ? (
-                    <div className="flex items-center justify-center py-16 border border-gray-200 rounded-2xl bg-gradient-to-br from-gray-50 to-white">
+                    <div className="flex items-center justify-center py-16 border border-gray dark:border-white/20-200 rounded-2xl bg-gradient-to-br from-gray-50 to-white">
                       <div className="text-center">
                         <Loader2 className="w-10 h-10 text-gray-400 animate-spin mx-auto mb-4" />
                         <p className="text-sm font-medium text-gray-700">Recherche d&apos;images de qualité...</p>
@@ -354,7 +354,7 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
                             className={`relative aspect-video rounded-2xl overflow-hidden border-4 transition-all w-full ${
                               brandData.coverImage === imageUrl
                                 ? 'border-black shadow-xl ring-2 ring-black ring-offset-2'
-                                : 'border-gray-200 hover:border-gray-400 hover:shadow-lg'
+                                : 'border-gray dark:border-white/20-200 hover:border-gray dark:border-white/20-400 hover:shadow-lg'
                             }`}
                             whileHover={{ scale: brandData.coverImage === imageUrl ? 1.02 : 1.03 }}
                             whileTap={{ scale: 0.98 }}
@@ -369,7 +369,7 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
                             
                             {brandData.coverImage === imageUrl ? (
                               <div className="absolute inset-0 bg-black/20 flex items-center justify-center backdrop-blur-[2px]">
-                                <div className="bg-white rounded-full p-3 shadow-xl">
+                                <div className="bg-white dark:bg-black rounded-full p-3 shadow-xl">
                                   <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
                                     <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -378,7 +378,7 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
                                 </div>
                               </div>
                             ) : (
-                              <div className="absolute bottom-3 right-3 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-medium text-gray-700">
+                              <div className="absolute bottom-3 right-3 px-3 py-1 bg-white dark:bg-black/90 backdrop-blur-sm rounded-full text-xs font-medium text-gray-700">
                                 {index + 1}
                               </div>
                             )}
@@ -400,11 +400,11 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
                         value={customImageUrl}
                         onChange={(e) => handleCustomUrlChange(e.target.value)}
                         placeholder="https://exemple.com/mon-image.jpg"
-                        className={`w-full px-6 py-4 bg-white border rounded-2xl focus:outline-none focus:ring-2 transition-all ${
+                        className={`w-full px-6 py-4 bg-white dark:bg-black border rounded-2xl focus:outline-none focus:ring-2 transition-all ${
                           !isValidUrl 
                             ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
-                            : 'border-gray-200 focus:ring-black focus:border-transparent'
-                        } text-black placeholder-gray-400 text-sm`}
+                            : 'border-gray dark:border-white/20-200 focus:ring-black focus:border-transparent'
+                        } text-black dark:text-white placeholder-gray-400 text-sm`}
                       />
                       {customImageUrl && (
                         <button
@@ -440,8 +440,8 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
             </div>
 
             {brandData.brandPersonality && brandData.targetAudience && (
-              <div className="mt-12 relative rounded-2xl p-8 overflow-hidden border border-gray-200 bg-gray-50">
-                <div className="absolute inset-0 bg-white/40" />
+              <div className="mt-12 relative rounded-2xl p-8 overflow-hidden border border-gray dark:border-white/20-200 bg-gray-50">
+                <div className="absolute inset-0 bg-white dark:bg-black/40" />
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
                   animate={{ x: ['-100%', '100%'] }}
@@ -452,13 +452,13 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
                   <div className="space-y-4">
                     <div className="flex items-baseline gap-3">
                       <span className="text-sm font-medium text-gray-900 min-w-[100px]">Personnalité</span>
-                      <span className="text-lg text-black">
+                      <span className="text-lg text-black dark:text-white">
                         {personalities.find(p => p.value === brandData.brandPersonality)?.label}
                       </span>
                     </div>
                     <div className="flex items-baseline gap-3">
                       <span className="text-sm font-medium text-gray-900 min-w-[100px]">Audience</span>
-                      <span className="text-lg text-black">
+                      <span className="text-lg text-black dark:text-white">
                         {audiences.find(a => a.value === brandData.targetAudience)?.label}
                       </span>
                     </div>
@@ -477,11 +477,11 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
             <div className="flex justify-end gap-4 mt-12 pb-12">
               <motion.button
                 onClick={onPrevious}
-                className="relative overflow-hidden px-6 py-3 rounded-full border border-gray-300 hover:bg-gray-50 transition-colors"
+                className="relative overflow-hidden px-6 py-3 rounded-full border border-gray dark:border-white/20-300 hover:bg-gray-50 transition-colors"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <div className="absolute inset-0 bg-white/10" />
+                <div className="absolute inset-0 bg-white dark:bg-black/10" />
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
                   animate={{ x: ['-100%', '100%'] }}
@@ -497,7 +497,7 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
                 whileHover={{ scale: brandData.brandPersonality && brandData.targetAudience ? 1.02 : 1 }}
                 whileTap={{ scale: brandData.brandPersonality && brandData.targetAudience ? 0.98 : 1 }}
               >
-                <div className="absolute inset-0 bg-white/10" />
+                <div className="absolute inset-0 bg-white dark:bg-black/10" />
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
                   animate={{ x: ['-100%', '100%'] }}

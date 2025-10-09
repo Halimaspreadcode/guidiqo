@@ -61,7 +61,7 @@ export default function EmailVerificationPage() {
   // Si on a un code, afficher le composant Stack Auth avec design custom
   if (code) {
     return (
-      <div className="min-h-screen bg-white flex">
+      <div className="min-h-screen bg-white dark:bg-black flex">
         {/* Section gauche - Image/Branding */}
         <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
           {/* Image de fond en plein écran */}
@@ -111,7 +111,7 @@ export default function EmailVerificationPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <h1 className="text-black text-4xl md:text-5xl font-bold text-center">
+              <h1 className="text-black dark:text-white text-4xl md:text-5xl font-bold text-center">
                 Guidiqo
               </h1>
             </motion.div>
@@ -119,7 +119,7 @@ export default function EmailVerificationPage() {
             {/* Bouton retour */}
             <motion.button
               onClick={() => router.push('/auth/signin')}
-              className="mb-6 flex items-center gap-2 text-gray-600 hover:text-black transition-colors"
+              className="mb-6 flex items-center gap-2 text-gray-600 hover:text-black dark:text-white transition-colors"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
@@ -130,7 +130,7 @@ export default function EmailVerificationPage() {
 
             {/* Carte */}
             <motion.div
-              className="bg-white lg:border lg:border-gray-200 rounded-3xl p-8 md:p-10"
+              className="bg-white dark:bg-black lg:border lg:border-gray-200 rounded-3xl p-8 md:p-10"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
@@ -138,7 +138,7 @@ export default function EmailVerificationPage() {
               {/* Titre */}
               <div className="mb-8">
                 <motion.h2
-                  className="text-2xl md:text-3xl font-bold text-black mb-2"
+                  className="text-2xl md:text-3xl font-bold text-black dark:text-white mb-2"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.2 }}
@@ -177,7 +177,7 @@ export default function EmailVerificationPage() {
                 Besoin d&apos;aide ?{' '}
                 <a
                   href="mailto:workwithhalima@gmail.com"
-                  className="text-black font-semibold hover:underline"
+                  className="text-black dark:text-white font-semibold hover:underline"
                 >
                   Contactez-nous
                 </a>
@@ -276,7 +276,7 @@ export default function EmailVerificationPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-3xl shadow-xl p-8 md:p-12 text-center"
+            className="bg-white dark:bg-black rounded-3xl shadow-xl p-8 md:p-12 text-center"
           >
             <motion.div
               animate={{ rotate: 360 }}
@@ -286,7 +286,7 @@ export default function EmailVerificationPage() {
               <div className="w-24 h-24 border-4 border-gray-200 border-t-black rounded-full"></div>
             </motion.div>
             
-            <h1 className="text-3xl md:text-4xl font-bold text-black mb-4">
+            <h1 className="text-3xl md:text-4xl font-bold text-black dark:text-white mb-4">
               Vérification en cours...
             </h1>
             <p className="text-gray-600 text-lg mb-8">
@@ -296,7 +296,7 @@ export default function EmailVerificationPage() {
             <div className="pt-6 border-t border-gray-200">
               <p className="text-sm text-gray-500">
                 Besoin d&apos;aide ?{' '}
-                <a href="mailto:workwithhalima@gmail.com" className="text-black font-semibold hover:underline">
+                <a href="mailto:workwithhalima@gmail.com" className="text-black dark:text-white font-semibold hover:underline">
                   Contactez-nous
                 </a>
               </p>
@@ -309,7 +309,7 @@ export default function EmailVerificationPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-3xl shadow-xl p-8 md:p-12"
+            className="bg-white dark:bg-black rounded-3xl shadow-xl p-8 md:p-12"
           >
             <motion.div
               initial={{ scale: 0 }}
@@ -320,7 +320,7 @@ export default function EmailVerificationPage() {
               <CheckCircle className="w-16 h-16 text-green-600" />
             </motion.div>
             
-            <h1 className="text-3xl md:text-4xl font-bold text-black mb-4 text-center">
+            <h1 className="text-3xl md:text-4xl font-bold text-black dark:text-white mb-4 text-center">
               Email vérifié ! 🎉
             </h1>
             <p className="text-gray-600 text-lg mb-8 text-center">
@@ -342,7 +342,7 @@ export default function EmailVerificationPage() {
             <div className="mt-8 pt-6 border-t border-gray-200 text-center">
               <p className="text-sm text-gray-500">
                 Besoin d&apos;aide ?{' '}
-                <a href="mailto:workwithhalima@gmail.com" className="text-black font-semibold hover:underline">
+                <a href="mailto:workwithhalima@gmail.com" className="text-black dark:text-white font-semibold hover:underline">
                   Contactez-nous
                 </a>
               </p>
@@ -355,7 +355,7 @@ export default function EmailVerificationPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-3xl shadow-xl p-8 md:p-12"
+            className="bg-white dark:bg-black rounded-3xl shadow-xl p-8 md:p-12"
           >
             <motion.div
               initial={{ scale: 0 }}
@@ -366,7 +366,7 @@ export default function EmailVerificationPage() {
               <Mail className="w-16 h-16 text-blue-600" />
             </motion.div>
             
-            <h1 className="text-3xl md:text-4xl font-bold text-black mb-4 text-center">
+            <h1 className="text-3xl md:text-4xl font-bold text-black dark:text-white mb-4 text-center">
               Email déjà vérifié
             </h1>
             <p className="text-gray-600 text-lg mb-8 text-center">
@@ -388,7 +388,7 @@ export default function EmailVerificationPage() {
             <div className="mt-8 pt-6 border-t border-gray-200 text-center">
               <p className="text-sm text-gray-500">
                 Besoin d&apos;aide ?{' '}
-                <a href="mailto:workwithhalima@gmail.com" className="text-black font-semibold hover:underline">
+                <a href="mailto:workwithhalima@gmail.com" className="text-black dark:text-white font-semibold hover:underline">
                   Contactez-nous
                 </a>
               </p>
@@ -401,7 +401,7 @@ export default function EmailVerificationPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-3xl shadow-xl p-8 md:p-12"
+            className="bg-white dark:bg-black rounded-3xl shadow-xl p-8 md:p-12"
           >
             <motion.div
               initial={{ scale: 0 }}
@@ -412,7 +412,7 @@ export default function EmailVerificationPage() {
               <AlertCircle className="w-16 h-16 text-red-600" />
             </motion.div>
             
-            <h1 className="text-3xl md:text-4xl font-bold text-black mb-4 text-center">
+            <h1 className="text-3xl md:text-4xl font-bold text-black dark:text-white mb-4 text-center">
               Erreur de vérification
             </h1>
             <p className="text-gray-600 text-lg mb-8 text-center">
@@ -433,7 +433,7 @@ export default function EmailVerificationPage() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => router.push('/auth/signin')}
-                className="w-full py-4 bg-white text-black border border-gray-300 rounded-full font-semibold hover:bg-gray-50 transition-colors"
+                className="w-full py-4 bg-white dark:bg-black text-black dark:text-white border border-gray-300 rounded-full font-semibold hover:bg-gray-50 transition-colors"
               >
                 Se connecter
               </motion.button>
@@ -442,7 +442,7 @@ export default function EmailVerificationPage() {
             <div className="mt-8 pt-6 border-t border-gray-200 text-center">
               <p className="text-sm text-gray-500">
                 Besoin d&apos;aide ?{' '}
-                <a href="mailto:workwithhalima@gmail.com" className="text-black font-semibold hover:underline">
+                <a href="mailto:workwithhalima@gmail.com" className="text-black dark:text-white font-semibold hover:underline">
                   Contactez-nous
                 </a>
               </p>

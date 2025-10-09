@@ -171,7 +171,7 @@ export default function PreviewPage() {
 
   if (!brandData) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
       </div>
     )
@@ -182,7 +182,7 @@ export default function PreviewPage() {
   const gradient3 = `linear-gradient(135deg, ${brandData.accentColor || '#666'}, ${brandData.primaryColor || '#000'})`
 
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden">
+    <div className="min-h-screen bg-white dark:bg-black relative overflow-hidden">
       <Header />
 
       {/* Hero Section */}
@@ -193,20 +193,20 @@ export default function PreviewPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="fixed inset-0 z-40 bg-white/30 backdrop-blur-sm flex items-center justify-center"
+            className="fixed inset-0 z-40 bg-white dark:bg-black/30 backdrop-blur-sm flex items-center justify-center"
             onClick={() => router.push('/auth/signin')}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-white rounded-3xl p-8 md:p-12 shadow-2xl max-w-md mx-4 text-center"
+              className="bg-white dark:bg-black rounded-3xl p-8 md:p-12 shadow-2xl max-w-md mx-4 text-center"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="text-2xl md:text-3xl font-bold text-black mb-4">
+              <h3 className="text-2xl md:text-3xl font-bold text-black dark:text-white mb-4">
                 Connectez-vous pour sauvegarder
               </h3>
-              <p className="text-gray-600 mb-8">
+              <p className="text-gray dark:text-white/70-600 mb-8">
                 Créez un compte pour sauvegarder votre branding et y accéder depuis votre dashboard
               </p>
               <div className="flex flex-col gap-3">
@@ -236,7 +236,7 @@ export default function PreviewPage() {
                     }
                     router.push('/auth/signin')
                   }}
-                  className="w-full py-4  text-black  rounded-full font-semibold hover:bg-gray-50 transition-colors"
+                  className="w-full py-4  text-black dark:text-white  rounded-full font-semibold hover:bg-gray-50 transition-colors"
                 >
                   Se connecter
                 </motion.button>
@@ -253,7 +253,7 @@ export default function PreviewPage() {
             className="mb-16 md:mb-24"
           >
             <motion.h1
-              className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold mb-6 md:mb-8 tracking-tighter text-black"
+              className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold mb-6 md:mb-8 tracking-tighter text-black dark:text-white"
               style={{ fontFamily: brandData.primaryFont || 'sans-serif' }}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -264,7 +264,7 @@ export default function PreviewPage() {
 
             {brandData.description && (
               <motion.p
-                className="text-lg md:text-xl lg:text-2xl text-gray-600 max-w-3xl"
+                className="text-lg md:text-xl lg:text-2xl text-gray dark:text-white/70-600 max-w-3xl"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
@@ -306,8 +306,8 @@ export default function PreviewPage() {
               </div>
 
               {brandData.primaryColor && (
-                <div className="absolute bottom-4 md:bottom-6 right-4 md:right-6 px-3 md:px-4 py-2 rounded-full bg-white/90 backdrop-blur-xl">
-                  <p className="text-gray-800 text-xs md:text-sm font-mono">
+                <div className="absolute bottom-4 md:bottom-6 right-4 md:right-6 px-3 md:px-4 py-2 rounded-full bg-white dark:bg-black/90 backdrop-blur-xl">
+                  <p className="text-gray dark:text-white/70-800 text-xs md:text-sm font-mono">
                     {brandData.primaryColor}
                   </p>
                 </div>
@@ -320,10 +320,10 @@ export default function PreviewPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-50px' }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="col-span-4 md:col-span-6 h-[300px] md:h-[400px] rounded-2xl md:rounded-3xl bg-white border border-gray-200 p-6 md:p-8"
+              className="col-span-4 md:col-span-6 h-[300px] md:h-[400px] rounded-2xl md:rounded-3xl bg-white dark:bg-black border border-gray-200 p-6 md:p-8"
               whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
             >
-              <p className="text-xs font-bold text-gray-400 mb-6 md:mb-8 uppercase tracking-widest">
+              <p className="text-xs font-bold text-gray dark:text-white/70-400 mb-6 md:mb-8 uppercase tracking-widest">
                 Palette Chromatique
               </p>
 
@@ -353,10 +353,10 @@ export default function PreviewPage() {
                         }}
                       />
                       <div className="flex-1 min-w-0">
-                        <p className="text-gray-400 text-xs md:text-sm mb-1">
+                        <p className="text-gray dark:text-white/70-400 text-xs md:text-sm mb-1">
                           {item.label}
                         </p>
-                        <p className="text-black font-mono text-sm md:text-base truncate">
+                        <p className="text-black dark:text-white font-mono text-sm md:text-base truncate">
                           {item.color}
                         </p>
                         <motion.div
@@ -405,8 +405,8 @@ export default function PreviewPage() {
                     >
                       Aa
                     </motion.p>
-                    <div className="px-3 md:px-4 py-2 rounded-full bg-white/90 backdrop-blur-xl inline-block">
-                      <p className="text-gray-800 text-xs md:text-sm">
+                    <div className="px-3 md:px-4 py-2 rounded-full bg-white dark:bg-black/90 backdrop-blur-xl inline-block">
+                      <p className="text-gray dark:text-white/70-800 text-xs md:text-sm">
                         {brandData.primaryFont}
                       </p>
                     </div>
@@ -453,14 +453,14 @@ export default function PreviewPage() {
                   {brandData.targetAudience && (
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                       <motion.div
-                        className="h-px w-full sm:flex-1 bg-white/30"
+                        className="h-px w-full sm:flex-1 bg-white dark:bg-black/30"
                         initial={{ width: 0 }}
                         whileInView={{ width: '100%' }}
                         viewport={{ once: true }}
                         transition={{ duration: 1, delay: 0.3 }}
                       />
-                      <div className="px-4 md:px-6 py-2 md:py-3 rounded-full bg-white/90 backdrop-blur-xl">
-                        <p className="text-black text-sm md:text-base lg:text-lg capitalize whitespace-nowrap">
+                      <div className="px-4 md:px-6 py-2 md:py-3 rounded-full bg-white dark:bg-black/90 backdrop-blur-xl">
+                        <p className="text-black dark:text-white text-sm md:text-base lg:text-lg capitalize whitespace-nowrap">
                           {brandData.targetAudience}
                         </p>
                       </div>
@@ -498,11 +498,11 @@ export default function PreviewPage() {
                       {brandData.name}
                     </motion.p>
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-                      <div className="px-4 md:px-6 py-2 md:py-3 rounded-full bg-white/90 backdrop-blur-xl">
-                        <p className="text-black text-xs md:text-sm">{brandData.secondaryFont}</p>
+                      <div className="px-4 md:px-6 py-2 md:py-3 rounded-full bg-white dark:bg-black/90 backdrop-blur-xl">
+                        <p className="text-black dark:text-white text-xs md:text-sm">{brandData.secondaryFont}</p>
                       </div>
                       <motion.div
-                        className="h-px w-full sm:flex-1 bg-white/30"
+                        className="h-px w-full sm:flex-1 bg-white dark:bg-black/30"
                         initial={{ width: 0 }}
                         whileInView={{ width: '100%' }}
                         viewport={{ once: true }}
@@ -538,8 +538,8 @@ export default function PreviewPage() {
                     Couleur d&apos;Accent
                   </p>
 
-                  <div className="px-4 md:px-6 py-2 md:py-3 rounded-full bg-white/90 backdrop-blur-xl">
-                    <p className="text-gray-800 font-mono text-xs md:text-sm">
+                  <div className="px-4 md:px-6 py-2 md:py-3 rounded-full bg-white dark:bg-black/90 backdrop-blur-xl">
+                    <p className="text-gray dark:text-white/70-800 font-mono text-xs md:text-sm">
                       {brandData.accentColor}
                     </p>
                   </div>
@@ -636,7 +636,7 @@ export default function PreviewPage() {
       >
         <div className="max-w-4xl mx-auto text-center">
           <motion.h2
-            className=" text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-black mb-6 md:mb-8"
+            className=" text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-black dark:text-white mb-6 md:mb-8"
            
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -647,7 +647,7 @@ export default function PreviewPage() {
           </motion.h2>
 
           <motion.p
-            className="text-base md:text-lg lg:text-xl text-gray-600 mb-10 md:mb-12 max-w-2xl mx-auto"
+            className="text-base md:text-lg lg:text-xl text-gray dark:text-white/70-600 mb-10 md:mb-12 max-w-2xl mx-auto"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}

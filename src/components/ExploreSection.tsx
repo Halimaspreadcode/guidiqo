@@ -45,7 +45,7 @@ export default function ExploreSection () {
     fetchSpotlightedBrands()
   }, [])
   return (
-    <section className='py-12 sm:py-16 md:py-20 px-3 sm:px-4 md:px-6 bg-white'>
+    <section className='py-12 sm:py-16 md:py-20 px-3 sm:px-4 md:px-6 bg-white dark:bg-black'>
       <div className='max-w-7xl mx-auto'>
         <motion.div
           className='text-center mb-12 sm:mb-16'
@@ -54,10 +54,10 @@ export default function ExploreSection () {
           transition={{ duration: 0.8, ease: 'easeOut' }}
           viewport={{ once: true }}
         >
-          <h2 className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 text-black'>
+          <h2 className='text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 text-black dark:text-white'>
             Explorez et inspirez-vous
           </h2>
-          <p className='text-gray-600 text-sm sm:text-base md:text-lg max-w-xl sm:max-w-2xl mx-auto px-4'>
+          <p className='text-gray-600 dark:text-white/80 text-sm sm:text-base md:text-lg max-w-xl sm:max-w-2xl mx-auto px-4'>
             Découvrez des millions de créations réalisées par notre communauté
             créative. Trouvez l&apos;inspiration pour votre prochaine création.
           </p>
@@ -65,10 +65,10 @@ export default function ExploreSection () {
 
         {loading ? (
           <div className="text-center py-20">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-black dark:border-white"></div>
           </div>
         ) : brands.length === 0 ? (
-          <div className="text-center py-20 text-gray-500">
+          <div className="text-center py-20 text-gray-500 dark:text-white/60">
             Aucun brand mis en avant pour le moment
           </div>
         ) : (
@@ -103,7 +103,7 @@ export default function ExploreSection () {
                   onClick={() => router.push(`/brand/${brand.id}`)}
                 >
                   <div 
-                    className='relative w-full h-64 sm:h-72 md:h-80 rounded-xl sm:rounded-2xl overflow-hidden border border-gray-200'
+                    className='relative w-full h-64 sm:h-72 md:h-80 rounded-xl sm:rounded-2xl overflow-hidden'
                     style={{ background: gradient }}
                   >
                     {/* Image de fond */}

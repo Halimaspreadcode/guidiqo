@@ -237,8 +237,8 @@ export default function ModifierPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
+      <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black dark:border-white"></div>
       </div>
     )
   }
@@ -246,7 +246,7 @@ export default function ModifierPage() {
   if (!brand) return null
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-black">
       <Header />
 
       <section className="pt-32 md:pt-40 pb-12 md:pb-16 px-4 md:px-8">
@@ -254,7 +254,7 @@ export default function ModifierPage() {
           {/* Bouton retour */}
           <motion.button
             onClick={() => router.push(`/brand/${brand.id}`)}
-            className="flex items-center gap-2 text-gray-600 hover:text-black transition-colors mb-8"
+            className="flex items-center gap-2 text-gray-600 hover:text-black dark:text-white dark:hover:text-white/80 transition-colors mb-8"
             whileHover={{ x: -5 }}
           >
             <ArrowLeft className="w-5 h-5" />
@@ -267,10 +267,10 @@ export default function ModifierPage() {
             animate={{ opacity: 1, y: 0 }}
             className="mb-12"
           >
-            <h1 className="text-4xl md:text-5xl font-bold text-black mb-4">
+            <h1 className="text-4xl md:text-5xl font-bold text-black dark:text-white mb-4">
               Modifier {brand.name}
             </h1>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-gray-600 dark:text-white/80">
               Que souhaitez-vous modifier ?
             </p>
           </motion.div>
@@ -285,12 +285,12 @@ export default function ModifierPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                   onClick={() => setSelectedOption(option.id)}
-                  className="p-6 bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-2xl hover:border-gray-300 hover:shadow-lg transition-all text-left"
+                  className="p-6 bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-2xl hover:border-gray-300 dark:hover:border-white/20 hover:shadow-lg transition-all text-left"
                   whileHover={{ y: -5 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <h3 className="text-xl font-bold text-black mb-2">{option.title}</h3>
-                  <p className="text-gray-600 text-sm">{option.description}</p>
+                  <h3 className="text-xl font-bold text-black dark:text-white mb-2">{option.title}</h3>
+                  <p className="text-gray-600 text-sm dark:text-white/80">{option.description}</p>
                 </motion.button>
               ))}
             </div>
@@ -303,9 +303,9 @@ export default function ModifierPage() {
                 className="space-y-6"
               >
                 {/* Selected Option */}
-                <div className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-2xl p-6">
+                <div className="bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-2xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-2xl font-bold text-black">
+                    <h3 className="text-2xl font-bold text-black dark:text-white">
                       {modificationOptions.find(opt => opt.id === selectedOption)?.title}
                     </h3>
                     <button
@@ -314,25 +314,25 @@ export default function ModifierPage() {
                         setAiInput('')
                         setAiSuggestion(null)
                       }}
-                      className="text-gray-500 hover:text-black transition-colors"
+                        className="text-gray-500 hover:text-black dark:text-white/80 dark:hover:text-white transition-colors"
                     >
                       Changer
                     </button>
                   </div>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 dark:text-white/80">
                     {modificationOptions.find(opt => opt.id === selectedOption)?.question}
                   </p>
                 </div>
 
                 {/* Sélecteur de mode - masqué pour l'image de couverture */}
                 {selectedOption !== 'cover' && (
-                  <div className="flex gap-2 bg-gray-100 rounded-full p-1">
+                  <div className="flex gap-2 bg-gray-100 dark:bg-white/10 rounded-full p-1">
                     <button
                       onClick={() => setEditMode('ai')}
                       className={`flex-1 px-6 py-3 rounded-full font-semibold transition-all ${
                         editMode === 'ai'
-                          ? 'bg-black text-white'
-                          : 'text-gray-600 hover:text-black'
+                          ? 'bg-black text-white dark:bg-white dark:text-black'
+                          : 'text-gray-600 hover:text-black dark:text-white/80 dark:hover:text-white'
                       }`}
                     >
                       Générer avec IA
@@ -341,8 +341,8 @@ export default function ModifierPage() {
                       onClick={() => setEditMode('manual')}
                       className={`flex-1 px-6 py-3 rounded-full font-semibold transition-all ${
                         editMode === 'manual'
-                          ? 'bg-black text-white'
-                          : 'text-gray-600 hover:text-black'
+                          ? 'bg-black text-white dark:bg-white dark:text-black'
+                          : 'text-gray-600 hover:text-black dark:text-white/80 dark:hover:text-white'
                       }`}
                     >
                       Saisie manuelle
@@ -366,23 +366,25 @@ export default function ModifierPage() {
                             ? "Ex: TechFlow, Nova Design, etc."
                             : "Ex: Moderne, accessible, innovante..."
                         }
-                        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-stone-900 focus:border-transparent resize-none transition-colors ${
-                          !aiInput.trim() ? 'border-gray-300' : 'border-stone-900'
+                        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-stone-900 focus:border-transparent resize-none transition-colors bg-white dark:bg-black text-black dark:text-white ${
+                          !aiInput.trim() ? 'border-gray-300 dark:border-white/10' : 'border-stone-900 dark:border-white/10'
                         }`}
                     rows={4}
                   />
                       {!aiInput.trim() && (
-                        <p className="text-xs text-gray-500 mt-2">
+                        <p className="text-xs text-gray-500 dark:text-white/60 mt-2">
                           Décrivez ce que vous souhaitez pour obtenir une suggestion de l&apos;IA
                         </p>
                       )}
                     </div>
 
                     <div className="flex justify-center">
-                    <LiquidButton
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       onClick={handleAISuggestion}
                       disabled={!aiInput.trim() || generating}
-                        className="px-8 py-3 bg-gradient-to-r from-stone-900 to-gray-800 text-white rounded-full font-semibold hover:from-red-900 hover:to-red-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-8 py-3 bg-black text-white dark:bg-white dark:text-black rounded-full font-semibold hover:from-red-900 hover:to-red-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {generating ? (
                         <span className="flex items-center justify-center gap-2">
@@ -395,7 +397,7 @@ export default function ModifierPage() {
                             Générer avec IA
                           </span>
                       )}
-                    </LiquidButton>
+                    </motion.button>
                     </div>
                   </div>
                 ) : (
@@ -403,14 +405,14 @@ export default function ModifierPage() {
                     {/* Inputs manuels selon l'option sélectionnée */}
                     {selectedOption === 'name' && (
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
                           Nom de la marque
                         </label>
                         <input
                           type="text"
                           value={manualInput.name || ''}
                           onChange={(e) => setManualInput({ ...manualInput, name: e.target.value })}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-stone-900 focus:border-transparent"
+                          className="w-full px-4 py-3 border border-gray-300 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-stone-900 focus:border-transparent bg-white dark:bg-black text-black dark:text-white"
                           placeholder="Entrez le nouveau nom"
                         />
                       </div>
@@ -419,7 +421,7 @@ export default function ModifierPage() {
                     {selectedOption === 'colors' && (
                       <div className="space-y-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
                             Couleur Principale
                           </label>
                           <div className="flex gap-3">
@@ -427,19 +429,19 @@ export default function ModifierPage() {
                               type="color"
                               value={manualInput.primaryColor || '#000000'}
                               onChange={(e) => setManualInput({ ...manualInput, primaryColor: e.target.value })}
-                              className="w-16 h-12 border border-gray-300 rounded-lg cursor-pointer"
+                              className="w-16 h-12 border border-gray-300 dark:border-white/10 rounded-lg cursor-pointer"
                             />
                             <input
                               type="text"
                               value={manualInput.primaryColor || ''}
                               onChange={(e) => setManualInput({ ...manualInput, primaryColor: e.target.value })}
-                              className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-stone-900 focus:border-transparent font-mono"
+                              className="flex-1 px-4 py-3 border border-gray-300 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-stone-900 focus:border-transparent font-mono bg-white dark:bg-black text-black dark:text-white"
                               placeholder="#000000"
                             />
                           </div>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
                             Couleur Secondaire
                           </label>
                           <div className="flex gap-3">
@@ -453,13 +455,13 @@ export default function ModifierPage() {
                               type="text"
                               value={manualInput.secondaryColor || ''}
                               onChange={(e) => setManualInput({ ...manualInput, secondaryColor: e.target.value })}
-                              className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-stone-900 focus:border-transparent font-mono"
+                              className="flex-1 px-4 py-3 border border-gray-300 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-stone-900 focus:border-transparent font-mono bg-white dark:bg-black text-black dark:text-white"
                               placeholder="#333333"
                             />
                           </div>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
                             Couleur d&apos;Accent
                           </label>
                           <div className="flex gap-3">
@@ -473,7 +475,7 @@ export default function ModifierPage() {
                               type="text"
                               value={manualInput.accentColor || ''}
                               onChange={(e) => setManualInput({ ...manualInput, accentColor: e.target.value })}
-                              className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-stone-900 focus:border-transparent font-mono"
+                              className="flex-1 px-4 py-3 border border-gray-300 dark:border-white/10 rounded-xl focus:ring-2 focus:ring-stone-900 focus:border-transparent font-mono bg-white dark:bg-black text-black dark:text-white"
                               placeholder="#666666"
                             />
                           </div>
@@ -484,7 +486,7 @@ export default function ModifierPage() {
                     {selectedOption === 'typography' && (
                       <div className="space-y-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
                             Police Principale
                           </label>
                           <input
@@ -496,7 +498,7 @@ export default function ModifierPage() {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
                             Police Secondaire
                           </label>
                           <input
@@ -513,7 +515,7 @@ export default function ModifierPage() {
                     {selectedOption === 'cover' && (
                       <div className="space-y-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
                             URL de l&apos;image de couverture
                           </label>
                           <input
@@ -523,13 +525,13 @@ export default function ModifierPage() {
                             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-stone-900 focus:border-transparent"
                             placeholder="https://exemple.com/image.jpg"
                           />
-                          <p className="text-xs text-gray-500 mt-2">
+                          <p className="text-xs text-gray-500 dark:text-white/60 mt-2">
                             Collez l&apos;URL d&apos;une image ou laissez vide pour utiliser un design généré
                           </p>
                         </div>
                         {/* Prévisualisation */}
                         {manualInput.coverImage && (
-                          <div className="relative aspect-video rounded-xl overflow-hidden border border-gray-200">
+                          <div className="relative aspect-video rounded-xl overflow-hidden border border-gray-200 dark:border-white/10">
                             <img 
                               src={manualInput.coverImage} 
                               alt="Prévisualisation" 
@@ -561,7 +563,7 @@ export default function ModifierPage() {
                     <div className="flex justify-center">
                       <LiquidButton
                         onClick={handleApplyManual}
-                        className="px-8 py-3 bg-black text-white rounded-full font-semibold hover:bg-gray-800 transition-colors"
+                        className="px-8 py-3 bg-black dark:bg-white text-white dark:text-black rounded-full font-semibold hover:bg-gray-800 transition-colors"
                       >
                         Appliquer les modifications
                       </LiquidButton>
@@ -574,9 +576,9 @@ export default function ModifierPage() {
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-gradient-to-br from-purple-50 to-white border border-purple-200 rounded-2xl p-6"
+                    className="bg-gradient-to-br from-purple-50 to-white dark:from-purple-900/20 dark:to-black border border-purple-200 dark:border-purple-800/30 rounded-2xl p-6"
                   >
-                    <h4 className="text-lg font-bold text-black mb-4">Suggestion IA</h4>
+                    <h4 className="text-lg font-bold text-black dark:text-white mb-4">Suggestion IA</h4>
                     
                     {selectedOption === 'colors' && (
                       <div className="space-y-4">
@@ -586,15 +588,15 @@ export default function ModifierPage() {
                             .map((color, idx) => (
                               <div key={idx} className="flex-1">
                                 <div
-                                  className="w-full h-20 rounded-xl border border-gray-200"
+                                  className="w-full h-20 rounded-xl border border-gray-200 dark:border-white/10"
                                   style={{ backgroundColor: color }}
                                 />
-                                <p className="text-xs font-mono text-gray-600 mt-2">{color}</p>
+                                <p className="text-xs font-mono text-gray-600 dark:text-white/80 mt-2">{color}</p>
                               </div>
                             ))}
                         </div>
                         {aiSuggestion.explanation && (
-                          <p className="text-sm text-gray-600">{aiSuggestion.explanation}</p>
+                          <p className="text-sm text-gray-600 dark:text-white/80">{aiSuggestion.explanation}</p>
                         )}
                       </div>
                     )}
@@ -603,36 +605,36 @@ export default function ModifierPage() {
                       <div className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <p className="text-sm text-gray-500 mb-2">Police Principale</p>
+                            <p className="text-sm text-gray-500 dark:text-white/60 mb-2">Police Principale</p>
                             <p className="text-2xl font-bold" style={{ fontFamily: aiSuggestion.primaryFont }}>
                               {aiSuggestion.primaryFont}
                             </p>
                           </div>
                           <div>
-                            <p className="text-sm text-gray-500 mb-2">Police Secondaire</p>
+                            <p className="text-sm text-gray-500 dark:text-white/60 mb-2">Police Secondaire</p>
                             <p className="text-2xl font-bold" style={{ fontFamily: aiSuggestion.secondaryFont }}>
                               {aiSuggestion.secondaryFont}
                             </p>
                           </div>
                         </div>
                         {aiSuggestion.explanation && (
-                          <p className="text-sm text-gray-600">{aiSuggestion.explanation}</p>
+                          <p className="text-sm text-gray-600 dark:text-white/80">{aiSuggestion.explanation}</p>
                         )}
                       </div>
                     )}
 
                     {(selectedOption === 'name' || selectedOption === 'personality') && aiSuggestion.value && (
                       <div className="space-y-4">
-                        <div className="bg-white rounded-xl p-4 border border-gray-200">
-                          <p className="text-sm text-gray-500 mb-2">
+                        <div className="bg-white dark:bg-black rounded-xl p-4 border border-gray-200 dark:border-white/10">
+                          <p className="text-sm text-gray-500 dark:text-white/60 mb-2">
                             {selectedOption === 'name' ? 'Nouveau nom' : 'Nouvelle personnalité'}
                           </p>
-                          <p className="text-xl font-bold text-black">
+                          <p className="text-xl font-bold text-black dark:text-white">
                             {aiSuggestion.value}
                           </p>
                         </div>
                         {aiSuggestion.explanation && (
-                          <p className="text-sm text-gray-600">{aiSuggestion.explanation}</p>
+                          <p className="text-sm text-gray-600 dark:text-white/80">{aiSuggestion.explanation}</p>
                         )}
                       </div>
                     )}

@@ -12,7 +12,7 @@ export default function AboutPage() {
   const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0.5])
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-black">
       <Header />
       
       <main className="pt-20 md:pt-24">
@@ -39,7 +39,7 @@ export default function AboutPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
-                <h1 className="text-7xl sm:text-8xl md:text-9xl lg:text-[12rem] font-bold tracking-tighter text-white mb-8">
+                <h1 className="text-7xl sm:text-8xl md:text-9xl lg:text-[12rem] font-bold tracking-tighter text-black dark:text-white dark:text-white mb-8">
                   Guidiqo
                 </h1>
                 
@@ -60,7 +60,7 @@ export default function AboutPage() {
             >
               <div>
                 <motion.h2 
-                  className="text-5xl md:text-7xl font-bold text-black mb-8"
+                  className="text-5xl md:text-7xl font-bold text-black dark:text-white dark:text-white mb-8"
                   initial={{ opacity: 0, x: -30 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
@@ -69,7 +69,7 @@ export default function AboutPage() {
                   Guide + IQ
                 </motion.h2>
                 <motion.p 
-                  className="text-xl md:text-2xl text-gray-500 leading-relaxed"
+                  className="text-xl md:text-2xl text-gray-500 dark:text-white/70 leading-relaxed"
                   initial={{ opacity: 0, x: -30 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
@@ -89,10 +89,10 @@ export default function AboutPage() {
                 >
                   <div className="flex items-start gap-4 mb-4">
                     <div className="w-12 h-12  rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Compass className="w-6 h-6 text-black" strokeWidth={2} />
+                      <Compass className="w-6 h-6 text-black dark:text-white dark:text-white" strokeWidth={2} />
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold text-black mb-2">
+                      <h3 className="text-2xl font-bold text-black dark:text-white mb-2">
                         Structure
                       </h3>
                       <p className="text-gray-600 text-lg">
@@ -118,10 +118,10 @@ export default function AboutPage() {
                 >
                   <div className="flex items-start gap-4 mb-4">
                     <div className="w-12 h-12  rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Zap className="w-6 h-6 text-black" strokeWidth={2} />
+                      <Zap className="w-6 h-6 text-black dark:text-white" strokeWidth={2} />
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold text-black mb-2">
+                      <h3 className="text-2xl font-bold text-black dark:text-white mb-2">
                         Intelligence
                       </h3>
                       <p className="text-gray-600 text-lg">
@@ -154,7 +154,7 @@ export default function AboutPage() {
            
 
             <motion.h2 
-              className="text-5xl md:text-7xl font-bold text-black mb-8"
+              className="text-5xl md:text-7xl font-bold text-black dark:text-white mb-8"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -176,7 +176,7 @@ export default function AboutPage() {
             </motion.p>
 
             <motion.p 
-              className="text-xl md:text-2xl text-black font-medium max-w-3xl mx-auto"
+              className="text-xl md:text-2xl text-black dark:text-white font-medium max-w-3xl mx-auto"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -191,7 +191,7 @@ export default function AboutPage() {
         <section className="px-4 md:px-8 mb-32 md:mb-48">
           <div className="max-w-6xl mx-auto">
             <motion.h2 
-              className="text-4xl md:text-6xl font-bold text-black mb-16 md:mb-24"
+              className="text-4xl md:text-6xl font-bold text-black dark:text-white mb-16 md:mb-24"
               initial={{ opacity: 0, y: 60 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-150px" }}
@@ -218,7 +218,7 @@ export default function AboutPage() {
                   className="group relative"
                 >
                   <motion.div
-                    className="p-8 border border-gray-200 rounded-2xl bg-white"
+                    className="p-8 border border-gray-200 dark:border-white/10 rounded-2xl bg-white dark:bg-black"
                     whileHover={{ y: -4, borderColor: '#000', transition: { duration: 0.2 } }}
                   >
                     <div className="flex items-start gap-3">
@@ -226,9 +226,9 @@ export default function AboutPage() {
                         className="w-6 h-6 border-2 border-gray-300 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5"
                         whileHover={{ borderColor: '#000' }}
                       >
-                        <Check className="w-4 h-4 text-black opacity-0 group-hover:opacity-100 transition-opacity" strokeWidth={3} />
+                        <Check className="w-4 h-4 text-black dark:text-white opacity-0 group-hover:opacity-100 transition-opacity" strokeWidth={3} />
                       </motion.div>
-                      <p className="text-lg md:text-xl text-black font-medium">
+                      <p className="text-lg md:text-xl text-black dark:text-white font-medium">
                         {feature}
                       </p>
                     </div>
@@ -246,7 +246,7 @@ export default function AboutPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-150px" }}
             transition={{ duration: 0.8 }}
-            className="relative overflow-hidden rounded-3xl bg-black p-16 md:p-32 text-center"
+            className="relative overflow-hidden rounded-3xl bg-black dark:bg-stone-900 p-16 md:p-32 text-center"
           >
             <div className="relative z-10 max-w-4xl mx-auto">
               <motion.h2 
@@ -256,12 +256,12 @@ export default function AboutPage() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, delay: 0.2 }}
               >
-                Et si tout commençait ici ?
+                Crée ton branding maintenant
               </motion.h2>
 
               <motion.button
                 onClick={() => window.location.href = '/'}
-                className="group px-12 py-5 bg-white text-black rounded-full font-semibold text-lg inline-flex items-center gap-3"
+                className="group px-12 py-5 bg-white dark:bg-black text-black dark:text-white border border-gray-200 dark:border-white/10 rounded-full font-semibold text-lg inline-flex items-center gap-3"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}

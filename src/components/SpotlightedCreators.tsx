@@ -32,7 +32,7 @@ const LiquidButton = ({ children, className = '', onClick }: any) => {
       whileTap={{ scale: 0.95 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="absolute inset-0 bg-white/10 backdrop-blur-xl" />
+      <div className="absolute inset-0 bg-white/10 dark:bg-black/10 backdrop-blur-xl" />
       <motion.div
         className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
         initial={{ x: '-100%' }}
@@ -113,7 +113,7 @@ const Card3D = ({ creator, index }: { creator: SpotlightedCreator; index: number
 
         {/* Main card */}
         <div
-          className="absolute inset-0 bg-white/90 backdrop-blur-xl rounded-full overflow-hidden"
+          className="absolute inset-0 bg-white/90 dark:bg-black/90 backdrop-blur-xl rounded-full overflow-hidden"
           style={{ 
             transform: 'translateZ(0px)',
             transformStyle: 'preserve-3d',
@@ -154,7 +154,7 @@ const Card3D = ({ creator, index }: { creator: SpotlightedCreator; index: number
               <div className="flex items-center gap-3 mb-3 mt-5 ml-5">
                 <div className="relative">
                   <div 
-                    className="w-16 h-16 rounded-full bg-black flex items-center justify-center overflow-hidden "
+                    className="w-16 h-16 rounded-full bg-black dark:bg-white flex items-center justify-center overflow-hidden "
                     style={{ 
                       transform: 'translateZ(20px)',
                       transformStyle: 'preserve-3d',
@@ -167,13 +167,13 @@ const Card3D = ({ creator, index }: { creator: SpotlightedCreator; index: number
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <span className="text-white text-lg font-bold">
+                      <span className="text-white text-lg font-bold dark:text-black">
                         {displayName.substring(0, 2).toUpperCase()}
                       </span>
                     )}
                   </div>
                   {creator.isVerified && (
-                    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-blue-500 rounded-full border-2 border-white flex items-center justify-center">
+                    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-blue-500 rounded-full border-2 border-white dark:border-black flex items-center justify-center">
                       <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
@@ -246,17 +246,17 @@ export default function SpotlightedCreators() {
     <section ref={sectionRef} className="relative py-20 md:py-32 px-4 md:px-8 overflow-hidden">
       {/* Background animated gradient */}
       <motion.div 
-        className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-100 -z-10"
+        className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-black dark:via-black dark:to-black -z-10"
         style={{ opacity }}
       />
       
       {/* Floating shapes with parallax */}
       <motion.div 
-        className="absolute top-20 right-10 w-64 h-64 bg-gradient-to-br from-stone-200/30 to-gray-200/30 rounded-full blur-3xl -z-10"
+        className="absolute top-20 right-10 w-64 h-64 bg-gradient-to-br from-stone-200/30 to-gray-200/30 dark:from-white/5 dark:to-white/5 rounded-full blur-3xl -z-10"
         style={{ y: y1 }}
       />
       <motion.div 
-        className="absolute bottom-20 left-10 w-96 h-96 bg-gradient-to-tr from-stone-100/40 to-gray-100/40 rounded-full blur-3xl -z-10"
+        className="absolute bottom-20 left-10 w-96 h-96 bg-gradient-to-tr from-stone-100/40 to-gray-100/40 dark:from-white/5 dark:to-white/5 rounded-full blur-3xl -z-10"
         style={{ y: y2 }}
       />
 
@@ -281,7 +281,7 @@ export default function SpotlightedCreators() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <span className="bg-gradient-to-r from-stone-900 to-gray-400 font-medium bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-stone-900 to-gray-400 dark:from-white dark:to-white/70 font-medium bg-clip-text text-transparent">
                 Les créateurs qui façonnent notre communauté
               </span>
             </motion.h2>
@@ -304,7 +304,7 @@ export default function SpotlightedCreators() {
             >
               <LiquidButton
                 onClick={() => router.push('/bibliotheque')}
-                className="bg-black text-white border border-gray-200"
+                className="bg-black dark:bg-white text-white dark:text-black border border-gray-200 dark:border-white/10"
               >
                 Explorer tous les créateurs
                 <ArrowRight className="w-5 h-5" strokeWidth={2} />

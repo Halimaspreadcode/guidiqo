@@ -232,7 +232,7 @@ export default function SuperAdminPage() {
 
   if (!user || !isAdmin) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
       </div>
     )
@@ -240,14 +240,14 @@ export default function SuperAdminPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden">
+    <div className="min-h-screen bg-white dark:bg-black relative overflow-hidden">
       <Header />
 
       {/* Hero Section */}
@@ -262,7 +262,7 @@ export default function SuperAdminPage() {
             <div className="flex items-center gap-4 mb-6">
               
               <div>
-                <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-black">
+                <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-black dark:text-white">
                   Super Admin
                 </h1>
                 <p className="text-gray-600 text-lg">
@@ -274,34 +274,34 @@ export default function SuperAdminPage() {
             {/* Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
               <motion.div
-                className="bg-gradient-to-br from-white to-gray-50 border border-gray-100 rounded-2xl p-6"
+                className="bg-white border border-gray-100 dark:bg-stone-900 dark:border-white/10 rounded-2xl p-6"
                 whileHover={{ y: -4 }}
               >
                 <div className="flex items-center gap-3 mb-2">
                   
                   <span className="text-sm font-medium text-gray-600">Utilisateurs</span>
                 </div>
-                <p className="text-3xl font-bold text-black">{users.length}</p>
+                <p className="text-3xl font-bold text-black dark:text-white">{users.length}</p>
               </motion.div>
 
               <motion.div
-                className="bg-gradient-to-br from-white to-gray-50 border border-gray-100 rounded-2xl p-6"
+                className="bg-white border border-gray-100 dark:bg-stone-900 dark:border-white/10 rounded-2xl p-6"
                 whileHover={{ y: -4 }}
               >
                 <div className="flex items-center gap-3 mb-2">
                   <span className="text-sm font-medium text-gray-600">Créations</span>
                 </div>
-                <p className="text-3xl font-bold text-black">{brands.length}</p>
+                <p className="text-3xl font-bold text-black dark:text-white">{brands.length}</p>
               </motion.div>
 
               <motion.div
-                className="bg-gradient-to-br from-white to-gray-50 border border-gray-100 rounded-2xl p-6"
+                className="bg-white border border-gray-100 dark:bg-stone-900 dark:border-white/10 rounded-2xl p-6"
                 whileHover={{ y: -4 }}
               >
                 <div className="flex items-center gap-3 mb-2">
                   <span className="text-sm font-medium text-gray-600">En Bibliothèque</span>
                 </div>
-                <p className="text-3xl font-bold text-black">
+                <p className="text-3xl font-bold text-black dark:text-white">
                   {brands.filter(b => b.isInLibrary).length}
                 </p>
               </motion.div>
@@ -377,7 +377,7 @@ export default function SuperAdminPage() {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="bg-gradient-to-br from-white to-gray-50 border border-gray-100 rounded-2xl p-6 hover:shadow-lg transition-all duration-300"
+                  className="bg-white border border-gray-100 dark:bg-stone-900 dark:border-white/10 rounded-2xl p-6 hover:shadow-lg transition-all duration-300"
                   whileHover={{ y: -4 }}
                 >
                   <div className="mb-4">
@@ -387,7 +387,7 @@ export default function SuperAdminPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <h3 className="font-bold text-black truncate">
+                          <h3 className="font-bold text-black dark:text-white truncate">
                             {user.name || user.email.split('@')[0]}
                           </h3>
                           {user.isVerified && (
@@ -440,7 +440,7 @@ export default function SuperAdminPage() {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="bg-gradient-to-br from-white to-gray-50 border border-gray-100 rounded-2xl p-6 hover:shadow-lg transition-all duration-300"
+                  className="bg-white border border-gray-100 dark:bg-stone-900 dark:border-white/10 rounded-2xl p-6 hover:shadow-lg transition-all duration-300"
                   whileHover={{ y: -4 }}
                 >
                   {/* Color Preview */}
@@ -465,7 +465,7 @@ export default function SuperAdminPage() {
                     )}
                   </div>
 
-                  <h3 className="font-bold text-black mb-2">{brand.name}</h3>
+                  <h3 className="font-bold text-black dark:text-white mb-2">{brand.name}</h3>
                   {brand.description && (
                     <p className="text-sm text-gray-600 mb-4 line-clamp-2">{brand.description}</p>
                   )}
@@ -540,7 +540,7 @@ export default function SuperAdminPage() {
                     
                     <motion.button
                       onClick={() => openBrandDetails(brand)}
-                      className="p-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-all"
+                      className="p-2 bg-black dark:bg-white text-white dark:text-black rounded-lg hover:bg-gray-800 transition-all"
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       title="Voir les détails"
@@ -575,7 +575,7 @@ export default function SuperAdminPage() {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: index * 0.05 }}
-                        className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all"
+                        className="bg-white dark:bg-stone-900 rounded-2xl border border-gray-200 dark:border-white/10 overflow-hidden hover:shadow-xl transition-all"
                       >
                         {/* Image de couverture ou gradient */}
                         <div 
@@ -654,7 +654,7 @@ export default function SuperAdminPage() {
                       request.status === 'PENDING' 
                         ? 'bg-red-50 border-red-200' 
                         : request.status === 'CANCELLED'
-                        ? 'bg-gray-50 border-gray-200'
+                        ? 'bg-gray-50 border-gray-200 dark:border-white/10'
                         : 'bg-green-50 border-green-200'
                     }`}
                   >
@@ -664,7 +664,7 @@ export default function SuperAdminPage() {
                           {(request.user.name || request.user.email).charAt(0).toUpperCase()}
                         </div>
                         <div>
-                          <h3 className="font-bold text-black">
+                          <h3 className="font-bold text-black dark:text-white">
                             {request.user.name || request.user.email.split('@')[0]}
                           </h3>
                           <p className="text-sm text-gray-600">{request.user.email}</p>
@@ -705,13 +705,13 @@ export default function SuperAdminPage() {
                     </div>
 
                     {request.reason && (
-                      <div className="bg-white/50 rounded-lg p-4 mb-4">
+                      <div className="bg-white dark:bg-black/50 rounded-lg p-4 mb-4">
                         <p className="text-xs text-gray-600 mb-2">Raison :</p>
                         <p className="text-sm text-gray-900 italic">{request.reason}</p>
                       </div>
                     )}
 
-                    <div className="border-t border-gray-200 pt-4">
+                    <div className="border-t border-gray-200 dark:border-white/10 pt-4">
                       <p className="text-xs text-gray-600 mb-2">Projets de l&apos;utilisateur :</p>
                       {request.user.brands.length === 0 ? (
                         <p className="text-sm text-gray-500">Aucun projet</p>
@@ -720,7 +720,7 @@ export default function SuperAdminPage() {
                           {request.user.brands.map((brand) => (
                             <span
                               key={brand.id}
-                              className="px-3 py-1 bg-white border border-gray-200 rounded-full text-xs text-gray-700"
+                              className="px-3 py-1 bg-white dark:bg-black border border-gray-200 dark:border-white/10 rounded-full text-xs text-gray-700"
                             >
                               {brand.name}
                             </span>

@@ -8,6 +8,7 @@ import { LogOut, User, Menu, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import ThemeToggle from './ThemeToggle';
 
 export default function Header() {
   const router = useRouter();
@@ -15,6 +16,7 @@ export default function Header() {
   const { profile } = useUserProfile();
   const [isAdmin, setIsAdmin] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [bannerDismissed, setBannerDismissed] = useState(false);
 
   useEffect(() => {
     const checkAdmin = async () => {
@@ -37,6 +39,31 @@ export default function Header() {
 
     checkAdmin();
   }, [user]);
+
+  // Vérifier si la banner a été fermée
+  useEffect(() => {
+    const checkBannerStatus = () => {
+      const dismissed = localStorage.getItem('stickyBannerDismissed');
+      setBannerDismissed(dismissed === 'true');
+    };
+
+    checkBannerStatus();
+    
+    // Écouter les changements de localStorage
+    const handleStorageChange = () => {
+      checkBannerStatus();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Vérifier périodiquement (pour les changements dans le même onglet)
+    const interval = setInterval(checkBannerStatus, 100);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
 
   const handleSignIn = () => {
     router.push('/auth/signin');
@@ -78,13 +105,15 @@ export default function Header() {
   return (
     <>
       <motion.header 
-        className="fixed top-0 left-0 right-0 z-50 flex justify-center px-3 sm:px-4 md:px-6 py-3 sm:py-4"
+        className={`fixed left-0 right-0 z-[55] flex justify-center px-3 sm:px-4 md:px-6 py-3 sm:py-4 transition-all duration-300 ${
+          bannerDismissed ? 'top-0' : 'top-12'
+        }`}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
         <motion.div 
-          className="flex items-center justify-between gap-3 sm:gap-6 md:gap-8 rounded-full px-4 sm:px-6 py-2 sm:py-3 bg-white/70 backdrop-blur-md border border-white/20 shadow-sm"
+          className="flex items-center justify-between gap-3 sm:gap-6 md:gap-8 rounded-full px-4 sm:px-6 py-2 sm:py-3 bg-white/70 dark:bg-black/70 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-sm"
           style={{ fontFamily: "'Raleway', sans-serif" }}
           whileHover={{ scale: 1.02 }}
           transition={{ duration: 0.2 }}
@@ -92,29 +121,30 @@ export default function Header() {
           {/* Logo */}
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push('/')}>
            
-            <span className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-black">Guidiqo</span>
+            <span className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-black dark:text-white">Guidiqo</span>
           </div>
           
           {/* Menu Hamburger - Visible seulement sur mobile */}
           <motion.button
-            className="sm:hidden p-2 hover:bg-gray-100 rounded-full transition-colors"
+            className="sm:hidden p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             whileTap={{ scale: 0.95 }}
           >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {mobileMenuOpen ? <X className="w-5 h-5 text-black dark:text-white" /> : <Menu className="w-5 h-5 text-black dark:text-white" />}
           </motion.button>
 
           {/* Navigation Desktop */}
           <nav className="hidden sm:flex items-center gap-4 md:gap-6 lg:gap-8 text-xs sm:text-sm">
-            <a href="/" className="text-gray-600 hover:text-red-900 transition-colors duration-200">Accueil</a>
-            <a href="/bibliotheque" className="text-gray-600 hover:text-red-900 transition-colors duration-200">Bibliothèque</a>
+            <a href="/" className="text-gray-600 dark:text-white hover:text-red-900 dark:hover:text-gray-300 transition-colors duration-200">Accueil</a>
+            <a href="/bibliotheque" className="text-gray-600 dark:text-white hover:text-red-900 dark:hover:text-gray-300 transition-colors duration-200">Bibliothèque</a>
             {isAdmin && (
-              <a href="/superadmin" className="text-gray-600 hover:text-red-900 transition-colors duration-200">Admin</a>
+              <a href="/superadmin" className="text-gray-600 dark:text-white hover:text-red-900 dark:hover:text-gray-300 transition-colors duration-200">Admin</a>
             )}
           </nav>
           
-          {/* User/Login Button */}
-          <div className="hidden sm:block">
+          {/* Theme Toggle & User/Login Button */}
+          <div className="hidden sm:flex items-center gap-2">
+            <ThemeToggle />
             {user ? (
               <div className="flex items-center gap-2">
                 <div className="relative">
@@ -204,23 +234,25 @@ export default function Header() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="fixed top-20 left-3 right-3 z-40 sm:hidden"
+            className={`fixed left-3 right-3 z-40 sm:hidden transition-all duration-300 ${
+              bannerDismissed ? 'top-20' : 'top-32'
+            }`}
           >
             <motion.div 
-              className="bg-white/95 backdrop-blur-md border border-white/20 shadow-lg rounded-3xl p-6"
+              className="bg-white/95 dark:bg-black/95 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg rounded-3xl p-6"
               style={{ fontFamily: "'Raleway', sans-serif" }}
             >
               <nav className="flex flex-col gap-4">
                 <a 
                   href="/" 
-                  className="text-gray-600 hover:text-red-900 transition-colors duration-200 py-2 text-base font-medium"
+                  className="text-gray-600 dark:text-white hover:text-red-900 dark:hover:text-gray-300 transition-colors duration-200 py-2 text-base font-medium"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Accueil
                 </a>
                 <a 
                   href="/bibliotheque" 
-                  className="text-gray-600 hover:text-red-900 transition-colors duration-200 py-2 text-base font-medium"
+                  className="text-gray-600 dark:text-white hover:text-red-900 dark:hover:text-gray-300 transition-colors duration-200 py-2 text-base font-medium"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Bibliothèque
@@ -228,15 +260,21 @@ export default function Header() {
                 {isAdmin && (
                   <a 
                     href="/superadmin" 
-                    className="text-gray-600 hover:text-red-900 transition-colors duration-200 py-2 text-base font-medium"
+                    className="text-gray-600 dark:text-white hover:text-red-900 dark:hover:text-gray-300 transition-colors duration-200 py-2 text-base font-medium"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Admin
                   </a>
                 )}
                 
+                {/* Theme Toggle pour mobile */}
+                <div className="flex items-center justify-between py-2">
+                  <span className="text-gray-600 dark:text-white text-base font-medium">Mode sombre</span>
+                  <ThemeToggle />
+                </div>
+                
                 {/* Séparateur */}
-                <div className="h-px bg-gray-200 my-2" />
+                <div className="h-px bg-gray-200 dark:bg-white/20 my-2" />
                 
                 {/* Bouton de connexion/dashboard pour mobile */}
                 {!user && (

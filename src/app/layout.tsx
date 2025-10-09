@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "./providers";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import DeletionBanner from "@/components/DeletionBanner";
+import { StickyBanner } from "@/components/StickyBanner";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Guidiqo - Créez votre branding IA | Brand Guidelines Professionnels",
@@ -65,10 +68,13 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body>
-        <Providers>
-          <DeletionBanner />
-          {children}
-        </Providers>
+        <ThemeProvider>
+          <Providers>
+            <StickyBanner hiddenPaths={['/dashboard', '/modifier', '/onboarding']} />
+            <DeletionBanner />
+            {children}
+          </Providers>
+        </ThemeProvider>
         <Analytics />
         <SpeedInsights />
       </body>

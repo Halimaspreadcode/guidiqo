@@ -166,7 +166,7 @@ export default function BrandPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
       </div>
     )
@@ -181,7 +181,7 @@ export default function BrandPage() {
   const gradient3 = `linear-gradient(135deg, ${brand.accentColor || '#666'}, ${brand.primaryColor || '#000'})`
 
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden">
+    <div className="min-h-screen bg-white dark:bg-black relative overflow-hidden">
       <Header />
 
       {/* Hero Section */}
@@ -190,7 +190,7 @@ export default function BrandPage() {
         <div className="max-w-7xl mx-auto mb-8">
           <motion.button
             onClick={() => router.push(isOwner ? '/dashboard' : '/bibliotheque')}
-            className="flex items-center gap-2 text-gray-600 hover:text-black transition-colors"
+            className="flex items-center gap-2 text-gray-600 hover:text-black dark:text-white transition-colors"
             whileHover={{ x: -5 }}
           >
             <ArrowLeft className="w-5 h-5" />
@@ -207,7 +207,7 @@ export default function BrandPage() {
           >
             <div>
               <motion.h1
-                className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold mb-6 md:mb-8 tracking-tighter text-black"
+                className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold mb-6 md:mb-8 tracking-tighter text-black dark:text-white"
                 style={{ fontFamily: brand.primaryFont || 'sans-serif' }}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -219,7 +219,7 @@ export default function BrandPage() {
               {brand.description && (
                 <div className="max-w-3xl">
                   <motion.p
-                    className="text-lg md:text-xl lg:text-2xl text-gray-600"
+                    className="text-lg md:text-xl lg:text-2xl text-gray-600 dark:text-white"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.8, delay: 0.4 }}
@@ -231,7 +231,7 @@ export default function BrandPage() {
                   {brand.description.length > 150 && (
                     <motion.button
                       onClick={() => setShowFullDescription(!showFullDescription)}
-                      className="mt-2 text-sm font-semibold text-black hover:text-gray-600 transition-colors underline"
+                      className="mt-2 text-sm font-semibold text-black hover:text-gray-600 dark:text-white transition-colors underline"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.6, delay: 0.6 }}
@@ -258,7 +258,7 @@ export default function BrandPage() {
                 <>
                   <motion.button
                     onClick={() => router.push(`/modifier/${brand.id}`)}
-                    className="p-4 bg-white border border-black/10 rounded-full hover:bg-black hover:text-white transition-colors"
+                    className="p-4 bg-white dark:bg-black border border-black/10 dark:border-white rounded-full hover:bg-black hover:text-white transition-colors"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                     title="Modifier le branding"
@@ -267,7 +267,7 @@ export default function BrandPage() {
                   </motion.button>
                   <motion.button
                     onClick={() => setShowPreviewModal(true)}
-                    className="p-4 bg-black text-white rounded-full hover:bg-gray-800 transition-colors"
+                    className="p-4 bg-black text-white dark:bg-white dark:text-black rounded-full hover:bg-gray-800 transition-colors"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                     title="Télécharger en PDF"
@@ -294,7 +294,7 @@ export default function BrandPage() {
             >
               <div className="absolute inset-0 flex items-center justify-center p-8">
                 <h2
-                  className="text-7xl md:text-8xl font-bold text-white text-center"
+                  className="text-7xl md:text-8xl font-bold text-white dark:text-black text-center"
                   style={{ fontFamily: brand.primaryFont || 'sans-serif' }}
                 >
                   {brand.name}
@@ -817,7 +817,7 @@ export default function BrandPage() {
 
       {/* Card créateur */}
       {brand && brand.user && (
-        <section className="py-12 px-4 sm:px-6 bg-gray-50">
+        <section className="py-12 px-4 sm:px-6 bg-gray-50 dark:bg-black">
           <div className="max-w-4xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
