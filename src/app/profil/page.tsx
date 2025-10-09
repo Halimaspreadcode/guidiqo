@@ -85,8 +85,8 @@ export default function ProfilPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
+      <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black dark:border-white"></div>
       </div>
     )
   }
@@ -104,15 +104,15 @@ export default function ProfilPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white" style={{ fontFamily: "'Raleway', sans-serif" }}>
+    <div className="min-h-screen bg-white dark:bg-black" style={{ fontFamily: "'Raleway', sans-serif" }}>
       {/* Mobile Menu Button */}
       <motion.button
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="lg:hidden fixed top-6 left-4 z-50 p-3 bg-white/70 backdrop-blur-md rounded-full shadow-lg border border-white/20"
+        className="lg:hidden fixed top-6 left-4 z-50 p-3 bg-white/70 dark:bg-black/70 backdrop-blur-md rounded-full shadow-lg border border-white/20 dark:border-white/10"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
       >
-        {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        {sidebarOpen ? <X className="w-5 h-5 text-black dark:text-white" /> : <Menu className="w-5 h-5 text-black dark:text-white" />}
       </motion.button>
 
       {/* Sidebar Overlay pour mobile */}
@@ -123,7 +123,7 @@ export default function ProfilPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden fixed inset-0 bg-black/50 z-30 backdrop-blur-sm"
+            className="lg:hidden fixed inset-0 bg-black z-30 backdrop-blur-sm"
           />
         )}
       </AnimatePresence>
@@ -148,10 +148,10 @@ export default function ProfilPage() {
             transition={{ duration: 0.6 }}
             className="mb-8 lg:mb-12 mt-12 lg:mt-0"
           >
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-3">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black dark:text-white mb-3">
               Mon Profil
             </h1>
-            <p className="text-gray-600 text-base sm:text-lg">
+            <p className="text-gray-600 dark:text-white/70 text-base sm:text-lg">
               Gérez vos informations personnelles et votre compte
             </p>
           </motion.div>
@@ -161,10 +161,10 @@ export default function ProfilPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-3xl p-6 sm:p-8 mb-6"
+            className="bg-gradient-to-br from-gray-50 to-white dark:from-black dark:to-black border border-gray-200 dark:border-white/10 rounded-3xl p-6 sm:p-8 mb-6"
           >
             {/* Avatar & Basic Info */}
-            <div className="flex items-center gap-6 mb-8 pb-8 border-b border-gray-200">
+            <div className="flex items-center gap-6 mb-8 pb-8 border-b border-gray-200 dark:border-white/10">
               <AvatarUpload
                 currentImage={user?.profileImageUrl || undefined}
                 onImageChange={(imageUrl) => {
@@ -172,14 +172,14 @@ export default function ProfilPage() {
                 }}
               />
               <div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-black mb-2">
+                <h2 className="text-2xl sm:text-3xl font-bold text-black dark:text-white mb-2">
                   {user.displayName || 'Utilisateur'}
                 </h2>
-                <p className="text-gray-600 flex items-center gap-2">
+                <p className="text-gray-600 dark:text-white/70 flex items-center gap-2">
                   <Mail className="w-4 h-4" />
                   {user.primaryEmail}
                 </p>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-sm text-gray-500 dark:text-white/60 mt-1">
                   Cliquez sur votre photo pour la modifier
                 </p>
               </div>
@@ -188,30 +188,30 @@ export default function ProfilPage() {
             {/* Edit Form */}
             <div className="space-y-6 mb-8">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
                   Nom d&apos;affichage
                 </label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-stone-900 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-white/20 rounded-xl focus:ring-2 focus:ring-stone-900 dark:focus:ring-white focus:border-transparent transition-all bg-white dark:bg-black text-black dark:text-white placeholder-gray-500 dark:placeholder-white/60"
                   placeholder="Votre nom"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-white mb-2">
                   Email
                 </label>
                 <input
                   type="email"
                   value={email}
                   disabled
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-500 cursor-not-allowed"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-white/20 rounded-xl bg-gray-50 dark:bg-white/5 text-gray-500 dark:text-white/60 cursor-not-allowed"
                   placeholder="votre@email.com"
                 />
-                <p className="text-xs text-gray-500 mt-2">
+                <p className="text-xs text-gray-500 dark:text-white/60 mt-2">
                   L&apos;email ne peut pas être modifié pour des raisons de sécurité
                 </p>
               </div>
@@ -224,10 +224,10 @@ export default function ProfilPage() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="flex items-center gap-2 p-4 bg-green-50 border border-green-200 rounded-xl mb-6"
+                  className="flex items-center gap-2 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl mb-6"
                 >
                   <Check className="w-5 h-5 text-green-600" />
-                  <p className="text-green-800 font-medium">{successMessage}</p>
+                  <p className="text-green-800 dark:text-green-200 font-medium">{successMessage}</p>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -254,17 +254,17 @@ export default function ProfilPage() {
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-orange-50 border border-orange-200 rounded-3xl p-6 sm:p-8 mb-6"
+              className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-3xl p-6 sm:p-8 mb-6"
             >
               <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
-                  <AlertTriangle className="w-5 h-5 text-orange-600" />
+                <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center flex-shrink-0">
+                  <AlertTriangle className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold text-orange-900 mb-2">
+                  <h3 className="text-xl font-bold text-orange-900 dark:text-orange-200 mb-2">
                     Demande de suppression enregistrée
                   </h3>
-                  <p className="text-orange-700 text-sm leading-relaxed mb-4">
+                  <p className="text-orange-700 dark:text-orange-300 text-sm leading-relaxed mb-4">
                     Votre compte sera supprimé le <strong>{deletionDate}</strong>. 
                     Un email de confirmation vous a été envoyé.
                   </p>
@@ -284,17 +284,17 @@ export default function ProfilPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="bg-red-50 border border-red-200 rounded-3xl p-6 sm:p-8"
+            className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-3xl p-6 sm:p-8"
           >
             <div className="flex items-start gap-4 mb-6">
-              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
-                <AlertTriangle className="w-5 h-5 text-red-600" />
+              <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0">
+                <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-red-900 mb-2">
+                <h3 className="text-xl font-bold text-red-900 dark:text-red-200 mb-2">
                   Zone de danger
                 </h3>
-                <p className="text-red-700 text-sm leading-relaxed">
+                <p className="text-red-700 dark:text-red-300 text-sm leading-relaxed">
                   La suppression de votre compte est irréversible. Tous vos brandings et données seront définitivement supprimés.
                 </p>
               </div>
@@ -333,7 +333,7 @@ export default function ProfilPage() {
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
               className="fixed inset-0 z-50 flex items-center justify-center p-4"
             >
-              <div className="bg-white rounded-3xl shadow-2xl max-w-lg w-full p-8 relative">
+              <div className="bg-white dark:bg-black rounded-3xl shadow-2xl max-w-lg w-full p-8 relative border border-white/20 dark:border-white/10">
                 {/* Decorative gradient */}
                 <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-red-600 to-red-800 rounded-t-3xl" />
                 
@@ -343,25 +343,25 @@ export default function ProfilPage() {
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                    className="mx-auto w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-6"
+                    className="mx-auto w-20 h-20 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mb-6"
                   >
-                    <AlertTriangle className="w-10 h-10 text-red-600" />
+                    <AlertTriangle className="w-10 h-10 text-red-600 dark:text-red-400" />
                   </motion.div>
 
                   {/* Title */}
-                  <h3 className="text-2xl font-bold text-black mb-3">
+                  <h3 className="text-2xl font-bold text-black dark:text-white mb-3">
                     Demande de suppression de compte
                   </h3>
 
                   {/* Description */}
                   <div className="text-left mb-6">
-                    <p className="text-gray-600 mb-4 leading-relaxed">
-                      Votre compte sera supprimé dans <span className="font-bold text-red-600">7 jours ouvrés</span>. 
+                    <p className="text-gray-600 dark:text-white/70 mb-4 leading-relaxed">
+                      Votre compte sera supprimé dans <span className="font-bold text-red-600 dark:text-red-400">7 jours ouvrés</span>. 
                       Vous recevrez un email de confirmation avec un lien pour annuler si vous changez d&apos;avis.
                     </p>
 
                     {/* Raison (optionnelle) */}
-                    <label className="block text-sm font-medium text-gray-900 mb-2">
+                    <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
                       Pourquoi quittez-vous Guidiqo ? (optionnel)
                     </label>
                     <textarea
@@ -369,7 +369,7 @@ export default function ProfilPage() {
                       onChange={(e) => setDeleteReason(e.target.value)}
                       placeholder="Cela nous aide à améliorer notre service..."
                       rows={4}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-white/20 rounded-2xl focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent resize-none bg-white dark:bg-black text-black dark:text-white placeholder-gray-500 dark:placeholder-white/60"
                     />
                   </div>
 
@@ -381,7 +381,7 @@ export default function ProfilPage() {
                         setDeleteReason('')
                       }}
                       disabled={deleting}
-                      className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-full font-semibold hover:bg-gray-200 transition-colors disabled:opacity-50"
+                      className="flex-1 px-6 py-3 bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-white rounded-full font-semibold hover:bg-gray-200 dark:hover:bg-white/20 transition-colors disabled:opacity-50"
                       whileHover={{ scale: deleting ? 1 : 1.02 }}
                       whileTap={{ scale: deleting ? 1 : 0.98 }}
                     >
