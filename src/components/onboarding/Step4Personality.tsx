@@ -497,13 +497,13 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
                 whileHover={{ scale: brandData.brandPersonality && brandData.targetAudience ? 1.02 : 1 }}
                 whileTap={{ scale: brandData.brandPersonality && brandData.targetAudience ? 0.98 : 1 }}
               >
-                <div className="absolute inset-0 bg-white dark:bg-black/10" />
+                <div className="absolute inset-0 bg-white dark:bg-black/10 text-black dark:text-white" />
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
                   animate={{ x: ['-100%', '100%'] }}
                   transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
                 />
-                <span className="relative z-10">Terminer</span>
+                <span className="relative z-10 text-black dark:text-white">Terminer</span>
               </motion.button>
             </div>
             </div>

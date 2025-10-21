@@ -145,13 +145,13 @@ export default function Step1BasicInfo({ brandData, updateBrandData, currentStep
                 whileHover={{ scale: !brandData.name || brandData.name.trim().length === 0 ? 1 : 1.02 }}
                 whileTap={{ scale: !brandData.name || brandData.name.trim().length === 0 ? 1 : 0.98 }}
               >
-                <div className="absolute inset-0 bg-white dark:bg-black/10" />
+                <div className="absolute inset-0 bg-white dark:bg-black/10 text-black dark:text-white" />
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
                   animate={{ x: ['-100%', '100%'] }}
                   transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
                 />
-                <span className="relative z-10">Suivant</span>
+                <span className="relative z-10 text-black dark:text-white">Suivant</span>
               </motion.button>
             </div>
             </div>
