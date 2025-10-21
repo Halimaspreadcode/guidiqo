@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, ArrowRight, Check } from 'lucide-react'
 
 // Import des étapes
 import Step1BasicInfo from '@/components/onboarding/Step1BasicInfo'
@@ -23,6 +22,7 @@ interface BrandData {
   secondaryFont?: string
   brandPersonality?: string
   targetAudience?: string
+  coverImage?: string
   currentStep: number
   isTemp: boolean
 }
