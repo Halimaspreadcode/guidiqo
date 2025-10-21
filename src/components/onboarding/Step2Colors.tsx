@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { useState } from 'react'
 import Footer from '@/components/Footer'
-import { Sparkles, RefreshCw, Palette } from 'lucide-react'
+import { RefreshCw, Palette } from 'lucide-react'
 import { LiquidButton } from '@/components/LiquidGlassButton'
 
 interface BrandData {
@@ -172,7 +172,7 @@ export default function Step2Colors({ brandData, updateBrandData, currentStep, t
 
               <motion.button
                 onClick={() => setShowManualInput(!showManualInput)}
-                className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-black border border-gray dark:border-white/20-200 text-black dark:text-white rounded-full font-semibold hover:bg-gray-50 transition-all"
+                className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-black border border-gray-200 dark:border-white/20 text-black dark:text-white rounded-full font-semibold hover:bg-gray-50 transition-all"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -201,7 +201,7 @@ export default function Step2Colors({ brandData, updateBrandData, currentStep, t
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="mb-8 p-6 bg-gray-50 border border-gray dark:border-white/20-200 rounded-2xl space-y-4"
+                className="mb-8 p-6 bg-gray-50 border border-gray-200 dark:border-white/20 rounded-2xl space-y-4"
               >
                 <div className="flex items-center gap-4">
                   <label className="text-sm font-medium text-gray-700 w-32">Couleur Primaire</label>
@@ -209,14 +209,14 @@ export default function Step2Colors({ brandData, updateBrandData, currentStep, t
                     type="color"
                     value={brandData.primaryColor || '#000000'}
                     onChange={(e) => handleManualColorChange('primary', e.target.value)}
-                    className="w-16 h-12 rounded-lg cursor-pointer border border-gray dark:border-white/20-300"
+                    className="w-16 h-12 rounded-lg cursor-pointer border border-gray-300 dark:border-white/30"
                   />
                   <input
                     type="text"
                     value={brandData.primaryColor || ''}
                     onChange={(e) => handleManualColorChange('primary', e.target.value)}
                     placeholder="#000000"
-                    className="flex-1 px-4 py-2 border border-gray dark:border-white/20-300 rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-white/30 rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div className="flex items-center gap-4">
@@ -225,14 +225,14 @@ export default function Step2Colors({ brandData, updateBrandData, currentStep, t
                     type="color"
                     value={brandData.secondaryColor || '#666666'}
                     onChange={(e) => handleManualColorChange('secondary', e.target.value)}
-                    className="w-16 h-12 rounded-lg cursor-pointer border border-gray dark:border-white/20-300"
+                    className="w-16 h-12 rounded-lg cursor-pointer border border-gray-300 dark:border-white/30"
                   />
                   <input
                     type="text"
                     value={brandData.secondaryColor || ''}
                     onChange={(e) => handleManualColorChange('secondary', e.target.value)}
                     placeholder="#666666"
-                    className="flex-1 px-4 py-2 border border-gray dark:border-white/20-300 rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-white/30 rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div className="flex items-center gap-4">
@@ -241,14 +241,14 @@ export default function Step2Colors({ brandData, updateBrandData, currentStep, t
                     type="color"
                     value={brandData.accentColor || '#999999'}
                     onChange={(e) => handleManualColorChange('accent', e.target.value)}
-                    className="w-16 h-12 rounded-lg cursor-pointer border border-gray dark:border-white/20-300"
+                    className="w-16 h-12 rounded-lg cursor-pointer border border-gray-300 dark:border-white/30"
                   />
                   <input
                     type="text"
                     value={brandData.accentColor || ''}
                     onChange={(e) => handleManualColorChange('accent', e.target.value)}
                     placeholder="#999999"
-                    className="flex-1 px-4 py-2 border border-gray dark:border-white/20-300 rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-white/30 rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
               </motion.div>
@@ -262,7 +262,7 @@ export default function Step2Colors({ brandData, updateBrandData, currentStep, t
                   className={`p-6 rounded-2xl border transition-all ${
                     selectedPalette === index
                       ? 'border-red-900'
-                      : 'border-gray dark:border-white/20-200 hover:border-gray dark:border-white/20-300'
+                      : 'border-gray-200 dark:border-white/20 hover:border-gray-300 dark:hover:border-white/30'
                   }`}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -292,7 +292,7 @@ export default function Step2Colors({ brandData, updateBrandData, currentStep, t
             </div>
 
             {brandData.primaryColor && (
-              <div className="relative rounded-2xl p-8 overflow-hidden border border-gray dark:border-white/20-200 bg-gray-50">
+              <div className="relative rounded-2xl p-8 overflow-hidden border border-gray-200 dark:border-white/20 bg-gray-50">
                 <div className="absolute inset-0 bg-white dark:bg-black/40" />
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
@@ -344,7 +344,7 @@ export default function Step2Colors({ brandData, updateBrandData, currentStep, t
             <div className="flex justify-end gap-4 mt-12 pb-12">
               <motion.button
                 onClick={onPrevious}
-                className="relative overflow-hidden px-6 py-3 rounded-full border border-gray dark:border-white/20-300 hover:bg-gray-50 transition-colors"
+                className="relative overflow-hidden px-6 py-3 rounded-full border border-gray-300 dark:border-white/30 hover:bg-gray-50 transition-colors"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >

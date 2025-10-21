@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { useState } from 'react'
 import Footer from '@/components/Footer'
-import { Sparkles, RefreshCw, Type } from 'lucide-react'
+import { RefreshCw, Type } from 'lucide-react'
 import { LiquidButton } from '@/components/LiquidGlassButton'
 
 interface BrandData {
@@ -175,7 +175,7 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
 
               <motion.button
                 onClick={() => setShowManualInput(!showManualInput)}
-                className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-black border border-gray dark:border-white/20-200 text-black dark:text-white rounded-full font-semibold hover:bg-gray-50 transition-all"
+                className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-black border border-gray-200 dark:border-white/20 text-black dark:text-white rounded-full font-semibold hover:bg-gray-50 transition-all"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -204,14 +204,14 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="mb-8 p-6 bg-gray-50 border border-gray dark:border-white/20-200 rounded-2xl space-y-4"
+                className="mb-8 p-6 bg-gray-50 border border-gray-200 dark:border-white/20 rounded-2xl space-y-4"
               >
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">Police Principale</label>
                   <select
                     value={brandData.primaryFont || ''}
                     onChange={(e) => handleManualFontChange('primary', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray dark:border-white/20-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-white/30 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
                     style={{ fontFamily: brandData.primaryFont || 'inherit' }}
                   >
                     <option value="">Sélectionnez une police</option>
@@ -227,7 +227,7 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
                   <select
                     value={brandData.secondaryFont || ''}
                     onChange={(e) => handleManualFontChange('secondary', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray dark:border-white/20-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-white/30 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
                     style={{ fontFamily: brandData.secondaryFont || 'inherit' }}
                   >
                     <option value="">Sélectionnez une police</option>
@@ -249,7 +249,7 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
                   className={`p-6 rounded-2xl border transition-all text-left ${
                     selectedPair === index
                       ? 'border-black'
-                      : 'border-gray dark:border-white/20-200 hover:border-gray dark:border-white/20-300'
+                      : 'border-gray-200 dark:border-white/20 hover:border-gray-300 dark:hover:border-white/30'
                   }`}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -279,7 +279,7 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
             </div>
 
             {brandData.primaryFont && (
-              <div className="relative rounded-2xl p-8 overflow-hidden border border-gray dark:border-white/20-200 bg-gray-50">
+              <div className="relative rounded-2xl p-8 overflow-hidden border border-gray-200 dark:border-white/20 bg-gray-50">
                 <div className="absolute inset-0 bg-white dark:bg-black/40" />
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
@@ -309,7 +309,7 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
             <div className="flex justify-end gap-4 mt-12 pb-12">
               <motion.button
                 onClick={onPrevious}
-                className="relative overflow-hidden px-6 py-3 rounded-full border border-gray dark:border-white/20-300 hover:bg-gray-50 transition-colors"
+                className="relative overflow-hidden px-6 py-3 rounded-full border border-gray-300 dark:border-white/30 hover:bg-gray-50 transition-colors"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >

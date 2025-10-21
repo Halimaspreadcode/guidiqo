@@ -256,7 +256,7 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
                       className={`p-5 rounded-2xl border transition-all text-left ${
                         brandData.brandPersonality === personality.value
                           ? 'border-black bg-gray-50'
-                          : 'border-gray dark:border-white/20-200 hover:border-gray dark:border-white/20-300'
+                          : 'border-gray-200 dark:border-white/20 hover:border-gray-300 dark:hover:border-white/30'
                       }`}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
@@ -286,7 +286,7 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
                       className={`p-5 rounded-2xl border transition-all ${
                         brandData.targetAudience === audience.value
                           ? 'border-black bg-gray-50'
-                          : 'border-gray dark:border-white/20-200 hover:border-gray dark:border-white/20-300'
+                          : 'border-gray-200 dark:border-white/20 hover:border-gray-300 dark:hover:border-white/30'
                       }`}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
@@ -322,7 +322,7 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
                       <motion.button
                         onClick={handleRefreshImages}
                         disabled={loadingImages}
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 bg-white dark:bg-black border border-gray dark:border-white/20-300 rounded-full hover:bg-gray-50 disabled:opacity-50 transition-all"
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 bg-white dark:bg-black border border-gray-300 dark:border-white/30 rounded-full hover:bg-gray-50 disabled:opacity-50 transition-all"
                         whileHover={{ scale: loadingImages ? 1 : 1.05 }}
                         whileTap={{ scale: loadingImages ? 1 : 0.95 }}
                       >
@@ -333,7 +333,7 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
                   </div>
 
                   {loadingImages ? (
-                    <div className="flex items-center justify-center py-16 border border-gray dark:border-white/20-200 rounded-2xl bg-gradient-to-br from-gray-50 to-white">
+                    <div className="flex items-center justify-center py-16 border border-gray-200 dark:border-white/20 rounded-2xl bg-gradient-to-br from-gray-50 to-white">
                       <div className="text-center">
                         <Loader2 className="w-10 h-10 text-gray-400 animate-spin mx-auto mb-4" />
                         <p className="text-sm font-medium text-gray-700">Recherche d&apos;images de qualité...</p>
@@ -352,9 +352,9 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
                           <motion.button
                             onClick={() => handleSelectImage(imageUrl)}
                             className={`relative aspect-video rounded-2xl overflow-hidden border-4 transition-all w-full ${
-                              brandData.coverImage === imageUrl
-                                ? 'border-black shadow-xl ring-2 ring-black ring-offset-2'
-                                : 'border-gray dark:border-white/20-200 hover:border-gray dark:border-white/20-400 hover:shadow-lg'
+                            brandData.coverImage === imageUrl
+                              ? 'border-black shadow-xl ring-2 ring-black ring-offset-2'
+                              : 'border-gray-200 dark:border-white/20 hover:border-gray-300 dark:hover:border-white/40 hover:shadow-lg'
                             }`}
                             whileHover={{ scale: brandData.coverImage === imageUrl ? 1.02 : 1.03 }}
                             whileTap={{ scale: 0.98 }}
@@ -403,7 +403,7 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
                         className={`w-full px-6 py-4 bg-white dark:bg-black border rounded-2xl focus:outline-none focus:ring-2 transition-all ${
                           !isValidUrl 
                             ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
-                            : 'border-gray dark:border-white/20-200 focus:ring-black focus:border-transparent'
+                            : 'border-gray-200 dark:border-white/20 focus:ring-black focus:border-transparent'
                         } text-black dark:text-white placeholder-gray-400 text-sm`}
                       />
                       {customImageUrl && (
@@ -440,7 +440,7 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
             </div>
 
             {brandData.brandPersonality && brandData.targetAudience && (
-              <div className="mt-12 relative rounded-2xl p-8 overflow-hidden border border-gray dark:border-white/20-200 bg-gray-50">
+              <div className="mt-12 relative rounded-2xl p-8 overflow-hidden border border-gray-200 dark:border-white/20 bg-gray-50">
                 <div className="absolute inset-0 bg-white dark:bg-black/40" />
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
@@ -477,7 +477,7 @@ export default function Step4Personality({ brandData, updateBrandData, currentSt
             <div className="flex justify-end gap-4 mt-12 pb-12">
               <motion.button
                 onClick={onPrevious}
-                className="relative overflow-hidden px-6 py-3 rounded-full border border-gray dark:border-white/20-300 hover:bg-gray-50 transition-colors"
+                className="relative overflow-hidden px-6 py-3 rounded-full border border-gray-300 dark:border-white/30 hover:bg-gray-50 transition-colors"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >

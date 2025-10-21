@@ -103,7 +103,7 @@ export default function Step1BasicInfo({ brandData, updateBrandData, currentStep
                   value={brandData.name}
                   onChange={(e) => updateBrandData({ name: e.target.value })}
                   placeholder="Ex: TechFlow, CreaSpace..."
-                  className="w-full px-6 py-4 bg-white dark:bg-black border border-gray dark:border-white/20-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-black dark:text-white placeholder-gray-400 text-lg transition-all"
+                  className="w-full px-6 py-4 bg-white dark:bg-black border border-gray-200 dark:border-white/20 rounded-2xl focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-black dark:text-white placeholder-gray-400 text-lg transition-all"
                 />
               </div>
 
@@ -117,7 +117,7 @@ export default function Step1BasicInfo({ brandData, updateBrandData, currentStep
                   onChange={(e) => updateBrandData({ description: e.target.value })}
                   placeholder="Décrivez votre projet, ses valeurs, sa mission..."
                   rows={6}
-                  className="w-full px-6 py-4 bg-white dark:bg-black border border-gray dark:border-white/20-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-black dark:text-white placeholder-gray-400 resize-none transition-all"
+                  className="w-full px-6 py-4 bg-white dark:bg-black border border-gray-200 dark:border-white/20 rounded-2xl focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-black dark:text-white placeholder-gray-400 resize-none transition-all"
                 />
               </div>
 
@@ -140,9 +140,10 @@ export default function Step1BasicInfo({ brandData, updateBrandData, currentStep
 
               <motion.button
                 onClick={onNext}
-                className="relative overflow-hidden px-8 py-3 rounded-full bg-black text-white hover:bg-gray-800 transition-colors"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                disabled={!brandData.name || brandData.name.trim().length === 0}
+                className="relative overflow-hidden px-8 py-3 rounded-full bg-black text-white hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                whileHover={{ scale: !brandData.name || brandData.name.trim().length === 0 ? 1 : 1.02 }}
+                whileTap={{ scale: !brandData.name || brandData.name.trim().length === 0 ? 1 : 0.98 }}
               >
                 <div className="absolute inset-0 bg-white dark:bg-black/10" />
                 <motion.div
@@ -152,6 +153,7 @@ export default function Step1BasicInfo({ brandData, updateBrandData, currentStep
                 />
                 <span className="relative z-10">Suivant</span>
               </motion.button>
+            </div>
             </div>
           </div>
         </div>
@@ -230,7 +232,6 @@ export default function Step1BasicInfo({ brandData, updateBrandData, currentStep
           </>
         )}
       </AnimatePresence>
-    </div>
     </div>
   )
 }
