@@ -235,8 +235,6 @@ export async function POST(req: NextRequest) {
         { error: 'Impossible d\'envoyer la newsletter.' },
         { status: 500 },
       )
-    } finally {
-      await prisma.$disconnect()
     }
 
     return NextResponse.json({
@@ -259,8 +257,10 @@ export async function POST(req: NextRequest) {
 
     console.error('❌ Unexpected error sending newsletter:', error)
     return NextResponse.json(
-      { error: 'Erreur serveur lors de l’envoi de la newsletter.' },
+      { error: 'Erreur serveur lors de l\'envoi de la newsletter.' },
       { status: 500 },
     )
+  } finally {
+    await prisma.$disconnect()
   }
 }
