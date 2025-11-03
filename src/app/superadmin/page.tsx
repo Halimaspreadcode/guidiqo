@@ -1171,7 +1171,7 @@ export default function SuperAdminPage() {
                   </div>
                   {/* Toggle entre texte et HTML upload */}
                   <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-white/5 rounded-2xl mb-4">
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Mode d'envoi</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Mode d&apos;envoi</span>
                     <div className="flex gap-2">
                       <button
                         type="button"
