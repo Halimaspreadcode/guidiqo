@@ -19,7 +19,7 @@
     "@vercel/speed-insights": "^1.2.0",
     "clsx": "^2.1.1",
     "framer-motion": "^11.3.19",
-    "groq-sdk": "^0.33.0",
+    "groq-sdk": "^0.34.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.3",
     "lucide-react": "^0.427.0",

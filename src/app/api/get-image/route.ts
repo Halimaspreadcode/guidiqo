@@ -4,8 +4,8 @@ import crypto from 'crypto';
 /** =========================
  *  ENV
  *  ========================= */
-const PEXELS_KEY = process.env.PEXELS_API_KEY || 'votre_cle_ici'; // 200 req/h
-const UNSPLASH_KEY = process.env.UNSPLASH_ACCESS_KEY || '';       // optionnel
+const PEXELS_KEY = process.env.PEXELS_API_KEY; // 200 req/h
+const UNSPLASH_KEY = process.env.UNSPLASH_ACCESS_KEY;       // optionnel
 
 /** =========================
  *  SIMPLE RATE LIMIT (IP)
@@ -138,9 +138,13 @@ async function searchPexels(params: {
   if (color) url.searchParams.set('color', color.replace('#',''));
   if (locale) url.searchParams.set('locale', locale);
 
+  if (!PEXELS_KEY) {
+    throw new Error('PEXELS_API_KEY is not configured');
+  }
+
   const r = await fetch(url.toString(), {
     headers: { Authorization: PEXELS_KEY },
-    // dédupe CDN + edge; ce fetch n’est PAS mis en cache par Next (route handler)
+    // dédupe CDN + edge; ce fetch n'est PAS mis en cache par Next (route handler)
   });
   if (!r.ok) throw new Error(`Pexels ${r.status}`);
   const data = await r.json();
@@ -207,6 +211,15 @@ async function handle(req: NextRequest) {
   const query = (body.query || '').trim();
   if (!query) {
     return NextResponse.json({ error: 'query is required' }, { status: 400, headers: corsHeaders() });
+  }
+
+  // Vérifier qu'au moins une clé API est disponible
+  if (!PEXELS_KEY && !UNSPLASH_KEY) {
+    console.error('❌ No API keys available for image search');
+    return NextResponse.json(
+      { error: 'Configuration API manquante pour la recherche d\'images' },
+      { status: 500, headers: corsHeaders() }
+    );
   }
 
   const provider = body.provider || 'auto';

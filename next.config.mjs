@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  i18n: {
+    locales: ['fr', 'en'],
+    defaultLocale: 'fr',
+  },
   images: {
     domains: ['images.unsplash.com', 'images.pexels.com', 'e7msojy1cjnzyvsj.public.blob.vercel-storage.com'],
     remotePatterns: [

@@ -1,65 +1,117 @@
 import { NextResponse } from 'next/server'
-import Groq from 'groq-sdk'
 
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY
-})
+type FontSuggestion = {
+  primaryFont: string
+  secondaryFont: string
+  explanation: string
+}
+
+const fontPairByPersonality: Record<
+  string,
+  { pair: Omit<FontSuggestion, 'explanation'>; rationale: string }
+> = {
+  professionnel: {
+    pair: { primaryFont: 'Inter', secondaryFont: 'Source Sans Pro' },
+    rationale:
+      'Inter + Source Sans Pro : duo sans-serif très lisible, idéal pour la crédibilité corporate.'
+  },
+  moderne: {
+    pair: { primaryFont: 'Space Grotesk', secondaryFont: 'DM Sans' },
+    rationale:
+      'Space Grotesk + DM Sans : géométrie travaillée pour des interfaces design et contemporaines.'
+  },
+  amical: {
+    pair: { primaryFont: 'Poppins', secondaryFont: 'Nunito' },
+    rationale:
+      'Poppins + Nunito : courbes généreuses pour un ton chaleureux et accessible.'
+  },
+  luxe: {
+    pair: { primaryFont: 'Playfair Display', secondaryFont: 'Raleway' },
+    rationale:
+      'Playfair Display + Raleway : contraste serif / sans-serif chic pour un positionnement premium.'
+  },
+  dynamique: {
+    pair: { primaryFont: 'Montserrat', secondaryFont: 'Roboto' },
+    rationale:
+      'Montserrat + Roboto : combinaison énergique et très lisible pour soutenir des messages impactants.'
+  },
+  minimaliste: {
+    pair: { primaryFont: 'Work Sans', secondaryFont: 'Karla' },
+    rationale:
+      'Work Sans + Karla : sans-serif épurées pour un rendu discret et minimal.'
+  }
+}
+
+const audienceTweaks: Record<
+  string,
+  { override?: Partial<Omit<FontSuggestion, 'explanation'>>; note: string }
+> = {
+  b2b: {
+    note: 'Maintient un ton professionnel et structuré, adapté aux décideurs.'
+  },
+  b2c: {
+    override: { secondaryFont: 'Open Sans' },
+    note: 'Secondaire plus souple pour fluidifier la lecture côté consommateurs.'
+  },
+  jeunes: {
+    override: { primaryFont: 'Urbanist', secondaryFont: 'Plus Jakarta Sans' },
+    note: 'Duo trendy inspiré du digital pour parler aux jeunes audiences.'
+  },
+  professionnels: {
+    note: 'Met l’accent sur la lisibilité et la rigueur pour des experts métiers.'
+  },
+  creatifs: {
+    override: { primaryFont: 'Raleway', secondaryFont: 'Montserrat' },
+    note: 'Mix plus expressif pour soutenir des marques créatives.'
+  },
+  tech: {
+    override: { primaryFont: 'IBM Plex Sans', secondaryFont: 'IBM Plex Mono' },
+    note: 'Couple technique rappelant l’univers interface / code.'
+  }
+}
+
+const defaultSuggestion: FontSuggestion = {
+  primaryFont: 'Inter',
+  secondaryFont: 'Roboto',
+  explanation:
+    'Duo sans-serif polyvalent et hautement lisible. Sélectionnez une personnalité pour des recommandations ciblées.'
+}
 
 export async function POST(request: Request) {
   try {
     const { description, personality, targetAudience } = await request.json()
 
     if (!description) {
-      return NextResponse.json({ error: 'Description manquante' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Description manquante' },
+        { status: 400 }
+      )
     }
 
-    const prompt = `Tu es un expert en typographie et branding. Suggère 2 polices Google Fonts pour un branding avec les caractéristiques suivantes:
-
-Description: ${description}
-${personality ? `Personnalité: ${personality}` : ''}
-${targetAudience ? `Audience cible: ${targetAudience}` : ''}
-
-Choisis UNIQUEMENT parmi ces polices Google Fonts populaires:
-- Raleway, Montserrat, Roboto, Open Sans, Lato, Poppins, Nunito, Playfair Display, Merriweather, Bebas Neue, Oswald, Source Sans Pro, Inter, Work Sans, Space Grotesk, DM Sans, Manrope, Urbanist, Outfit, Plus Jakarta Sans
-
-Retourne UNIQUEMENT un objet JSON avec cette structure exacte (sans markdown, sans backticks):
-{
-  "primaryFont": "Nom de la police principale",
-  "secondaryFont": "Nom de la police secondaire",
-  "explanation": "Courte explication du choix typographique (2 phrases max)"
-}`
-
-    const completion = await groq.chat.completions.create({
-      messages: [
-        {
-          role: 'system',
-          content: 'Tu es un expert en typographie et design de marque. Tu réponds toujours en JSON valide sans markdown. Tu choisis uniquement parmi les polices listées.'
-        },
-        {
-          role: 'user',
-          content: prompt
-        }
-      ],
-      model: 'llama-3.3-70b-versatile',
-      temperature: 0.7,
-      max_tokens: 500,
-      response_format: { type: 'json_object' }
-    })
-
-    const response = completion.choices[0]?.message?.content
-    if (!response) {
-      throw new Error('Aucune réponse de l\'IA')
+    if (!personality || !fontPairByPersonality[personality]) {
+      return NextResponse.json(defaultSuggestion)
     }
 
-    const fonts = JSON.parse(response)
-    
-    return NextResponse.json(fonts)
+    const base = fontPairByPersonality[personality]
+    const suggestion: FontSuggestion = {
+      ...base.pair,
+      explanation: base.rationale
+    }
+
+    if (targetAudience && audienceTweaks[targetAudience]) {
+      const tweak = audienceTweaks[targetAudience]
+      suggestion.primaryFont =
+        tweak.override?.primaryFont ?? suggestion.primaryFont
+      suggestion.secondaryFont =
+        tweak.override?.secondaryFont ?? suggestion.secondaryFont
+      suggestion.explanation = `${base.rationale} ${tweak.note}`
+    } else {
+      suggestion.explanation = `${base.rationale} Duo équilibré pour rester polyvalent quel que soit le support.`
+    }
+
+    return NextResponse.json(suggestion)
   } catch (error) {
     console.error('❌ Error generating font suggestions:', error)
-    return NextResponse.json(
-      { error: 'Erreur lors de la génération des polices' },
-      { status: 500 }
-    )
+    return NextResponse.json(defaultSuggestion)
   }
 }
-

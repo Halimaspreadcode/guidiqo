@@ -2,10 +2,11 @@
 
 import { motion } from 'framer-motion'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import Footer from '@/components/Footer'
 import { RefreshCw, Type } from 'lucide-react'
 import { LiquidButton } from '@/components/LiquidGlassButton'
+import { useTranslations } from '@/contexts/LanguageContext'
 
 interface BrandData {
   name?: string
@@ -25,16 +26,16 @@ interface Step3Props {
   onPrevious: () => void
 }
 
-const fontPairs = [
-  { name: 'Moderne', primary: 'Inter', secondary: 'Roboto' },
-  { name: 'Élégant', primary: 'Playfair Display', secondary: 'Source Sans Pro' },
-  { name: 'Tech', primary: 'Space Grotesk', secondary: 'IBM Plex Mono' },
-  { name: 'Classique', primary: 'Lora', secondary: 'Open Sans' },
-  { name: 'Créatif', primary: 'Raleway', secondary: 'Nunito' },
-  { name: 'Minimal', primary: 'Work Sans', secondary: 'Karla' },
+const fontPairConfigs = [
+  { id: 'modern', primary: 'Inter', secondary: 'Roboto' },
+  { id: 'elegant', primary: 'Playfair Display', secondary: 'Source Sans Pro' },
+  { id: 'tech', primary: 'Space Grotesk', secondary: 'IBM Plex Mono' },
+  { id: 'classic', primary: 'Lora', secondary: 'Open Sans' },
+  { id: 'creative', primary: 'Raleway', secondary: 'Nunito' },
+  { id: 'minimal', primary: 'Work Sans', secondary: 'Karla' },
 ]
 
-// Liste complète des polices disponibles
+// Full font list available in the UI pickers
 const availableFonts = [
   'Raleway', 'Montserrat', 'Roboto', 'Open Sans', 'Lato', 'Poppins', 'Nunito', 
   'Playfair Display', 'Merriweather', 'Bebas Neue', 'Oswald', 'Source Sans Pro', 
@@ -47,6 +48,24 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
   const [loading, setLoading] = useState(false)
   const [aiSuggestion, setAiSuggestion] = useState<any>(null)
   const [showManualInput, setShowManualInput] = useState(false)
+  const t = useTranslations()
+  const safeCurrentStep = Math.max(currentStep, 1)
+  const safeTotalSteps = Math.max(totalSteps, safeCurrentStep)
+  const stepIndicator = t('onboarding.stepIndicator', { current: safeCurrentStep, total: safeTotalSteps })
+  const fontsSelected = Boolean(brandData.primaryFont && brandData.secondaryFont)
+  const fontPairs = useMemo(
+    () =>
+      fontPairConfigs.map((pair) => ({
+        ...pair,
+        name: t(`onboarding.step3.fontPairs.${pair.id}.name`),
+      })),
+    [t]
+  )
+  const aiTexts = useMemo(() => ({
+    suggestion: t('onboarding.step3.ai.suggestion'),
+    generating: t('onboarding.step3.ai.generating'),
+    error: t('onboarding.step3.ai.error'),
+  }), [t])
 
   const handleFontSelect = (index: number) => {
     setSelectedPair(index)
@@ -81,7 +100,7 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
       }
     } catch (error) {
       console.error('Error getting AI suggestion:', error)
-      alert('Erreur lors de la génération IA. Veuillez réessayer.')
+      alert(aiTexts.error)
     } finally {
       setLoading(false)
     }
@@ -104,6 +123,7 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
           src="https://images.unsplash.com/photo-1575041051612-323e644ca1b8?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           alt="Typography"
           fill
+          sizes="(min-width: 768px) 25vw"
           className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -134,11 +154,14 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
         
         <div className="min-h-screen pt-32 pb-32 px-6 sm:px-12 md:px-16 lg:px-24">
           <div className="max-w-3xl">
-            <h2 className="text-4xl sm:text-5xl font-bold text-black dark:text-white mb-4">
-              Typographie <span className="text-gray-400 text-2xl sm:text-3xl">3/4</span>
-            </h2>
+            <div className="flex items-baseline justify-between gap-4 mb-4">
+              <h2 className="text-4xl sm:text-5xl font-bold text-black dark:text-white">
+                {t('onboarding.step3.title')}
+              </h2>
+              <span className="text-gray-400 text-2xl sm:text-3xl">{stepIndicator}</span>
+            </div>
             <p className="text-gray-600 text-lg mb-8">
-              Choisissez les polices qui définissent votre identité
+              {t('onboarding.step3.subtitle')}
             </p>
 
             {/* Boutons IA et Manuel */}
@@ -147,16 +170,15 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
                 onClick={handleAiSuggestion}
                 disabled={loading}
                 className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-red-900 to-red-950 text-white rounded-full font-semibold hover:from-red-700 hover:to-red-700 transition-all disabled:opacity-50"
-               
               >
                 {loading ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    <span>Génération...</span>
+                    <span>{aiTexts.generating}</span>
                   </>
                 ) : (
                   <>
-                    <span>Suggérer avec IA</span>
+                    <span>{aiTexts.suggestion}</span>
                   </>
                 )}
               </LiquidButton>
@@ -169,7 +191,7 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
                   whileTap={{ scale: 0.95 }}
                 >
                   <RefreshCw className="w-4 h-4" />
-                  <span>Régénérer</span>
+                  <span>{t('actions.regenerate')}</span>
                 </motion.button>
               )}
 
@@ -180,7 +202,7 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
                 whileTap={{ scale: 0.95 }}
               >
                 <Type className="w-4 h-4" />
-                <span>{showManualInput ? 'Masquer' : 'Personnaliser'}</span>
+                <span>{showManualInput ? t('onboarding.step3.toggleManual.hide') : t('onboarding.step3.toggleManual.show')}</span>
               </motion.button>
             </div>
 
@@ -192,7 +214,7 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
                 className="mb-8 p-4 bg-purple-50 border border-purple-200 rounded-xl"
               >
                 <p className="text-sm text-purple-900">
-                  <span className="font-semibold">Suggestion IA : </span>
+                  <span className="font-semibold">{t('onboarding.step3.aiExplanationPrefix')}</span>
                   {aiSuggestion.explanation}
                 </p>
               </motion.div>
@@ -206,15 +228,17 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
                 exit={{ opacity: 0, height: 0 }}
                 className="mb-8 p-6 bg-gray-50 border border-gray-200 dark:border-white/20 rounded-2xl space-y-4"
               >
+                <h3 className="text-sm font-semibold text-gray-700">{t('onboarding.step3.manualTitle')}</h3>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Police Principale</label>
+                  <label className="text-sm font-medium text-gray-700" htmlFor="primary-font-select">{t('onboarding.step3.primaryFontLabel')}</label>
                   <select
+                    id="primary-font-select"
                     value={brandData.primaryFont || ''}
                     onChange={(e) => handleManualFontChange('primary', e.target.value)}
                     className="w-full px-4 py-3 border border-gray-300 dark:border-white/30 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
                     style={{ fontFamily: brandData.primaryFont || 'inherit' }}
                   >
-                    <option value="">Sélectionnez une police</option>
+                    <option value="">{t('onboarding.step3.selectPlaceholder')}</option>
                     {availableFonts.map((font) => (
                       <option key={font} value={font} style={{ fontFamily: font }}>
                         {font}
@@ -223,14 +247,15 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Police Secondaire</label>
+                  <label className="text-sm font-medium text-gray-700" htmlFor="secondary-font-select">{t('onboarding.step3.secondaryFontLabel')}</label>
                   <select
+                    id="secondary-font-select"
                     value={brandData.secondaryFont || ''}
                     onChange={(e) => handleManualFontChange('secondary', e.target.value)}
                     className="w-full px-4 py-3 border border-gray-300 dark:border-white/30 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
                     style={{ fontFamily: brandData.secondaryFont || 'inherit' }}
                   >
-                    <option value="">Sélectionnez une police</option>
+                    <option value="">{t('onboarding.step3.selectPlaceholder')}</option>
                     {availableFonts.map((font) => (
                       <option key={font} value={font} style={{ fontFamily: font }}>
                         {font}
@@ -248,7 +273,7 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
                   onClick={() => handleFontSelect(index)}
                   className={`p-6 rounded-2xl border transition-all text-left ${
                     selectedPair === index
-                      ? 'border-black'
+                      ? 'border-black shadow-sm'
                       : 'border-gray-200 dark:border-white/20 hover:border-gray-300 dark:hover:border-white/30'
                   }`}
                   whileHover={{ scale: 1.02 }}
@@ -287,20 +312,21 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
                   transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
                 />
                 <div className="relative z-10 space-y-8">
-                  <p className="text-xs font-medium text-gray-500 mb-6 tracking-wide">APERÇU TYPOGRAPHIQUE</p>
-                  <div>
-                    <h1 className="text-5xl font-bold text-black dark:text-white mb-3" style={{ fontFamily: brandData.primaryFont }}>
-                      Votre Marque
-                    </h1>
-                    <p className="text-sm text-gray-500">{brandData.primaryFont}</p>
-                  </div>
-                  <div>
-                    <p className="text-xl text-gray-700 leading-relaxed" style={{ fontFamily: brandData.secondaryFont }}>
-                      Ceci est un exemple de texte utilisant votre police secondaire. 
-                      Elle sera utilisée pour tous les contenus de votre branding.
-                    </p>
-                    <p className="text-sm text-gray-500 mt-3">{brandData.secondaryFont}</p>
-                  </div>
+                  <p className="text-xs font-medium text-gray-500 mb-6 tracking-wide">
+                    {t('onboarding.step3.previewBadge')}
+                  </p>
+                    <div>
+                      <h1 className="text-5xl font-bold text-black dark:text-white mb-3" style={{ fontFamily: brandData.primaryFont }}>
+                        {t('onboarding.step3.previewTitle')}
+                      </h1>
+                      <p className="text-sm text-gray-500">{brandData.primaryFont}</p>
+                    </div>
+                    <div>
+                      <p className="text-xl text-gray-700 leading-relaxed" style={{ fontFamily: brandData.secondaryFont }}>
+                        {t('onboarding.step3.previewBody')}
+                      </p>
+                      <p className="text-sm text-gray-500 mt-3">{brandData.secondaryFont}</p>
+                    </div>
                 </div>
               </div>
             )}
@@ -319,29 +345,23 @@ export default function Step3Typography({ brandData, updateBrandData, currentSte
                   animate={{ x: ['-100%', '100%'] }}
                   transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
                 />
-                <span className="relative z-10">Précédent</span>
+                <span className="relative z-10">{t('actions.previous')}</span>
               </motion.button>
 
               <motion.button
                 onClick={onNext}
-                className="relative overflow-hidden px-8 py-3 rounded-full bg-black hover:bg-gray-800 transition-colors text-black dark:text-white"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                disabled={!fontsSelected}
+                className="relative overflow-hidden px-8 py-3 rounded-full bg-black hover:bg-gray-800 transition-colors text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                whileHover={{ scale: fontsSelected ? 1.02 : 1 }}
+                whileTap={{ scale: fontsSelected ? 0.98 : 1 }}
               >
-                <div className="absolute inset-0 bg-white dark:bg-black/10 text-black dark:text-white" />
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                  animate={{ x: ['-100%', '100%'] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-                />
-                <span className="relative z-10 text-black dark:text-white">Suivant</span>
+                <span className="relative z-10 text-white dark:text-black">{t('actions.next')}</span>
               </motion.button>
             </div>
             </div>
         </div>
-        <Footer />
+        <Footer hideLinks={true} />
       </div>
     </div>
   )
 }
-

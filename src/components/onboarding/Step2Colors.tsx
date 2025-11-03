@@ -2,10 +2,11 @@
 
 import { motion } from 'framer-motion'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import Footer from '@/components/Footer'
 import { RefreshCw, Palette } from 'lucide-react'
 import { LiquidButton } from '@/components/LiquidGlassButton'
+import { useTranslations } from '@/contexts/LanguageContext'
 
 interface BrandData {
   name?: string
@@ -26,13 +27,13 @@ interface Step2Props {
   onPrevious: () => void
 }
 
-const colorPalettes = [
-  { name: 'Tech Modern', primary: '#000000', secondary: '#6B7280', accent: '#3B82F6' },
-  { name: 'Nature', primary: '#10B981', secondary: '#059669', accent: '#34D399' },
-  { name: 'Sunset', primary: '#F59E0B', secondary: '#EF4444', accent: '#F97316' },
-  { name: 'Ocean', primary: '#0EA5E9', secondary: '#0284C7', accent: '#06B6D4' },
-  { name: 'Purple Dream', primary: '#8B5CF6', secondary: '#7C3AED', accent: '#A78BFA' },
-  { name: 'Rose Gold', primary: '#EC4899', secondary: '#DB2777', accent: '#F472B6' },
+const paletteConfigs = [
+  { id: 'techModern', primary: '#000000', secondary: '#6B7280', accent: '#3B82F6' },
+  { id: 'nature', primary: '#10B981', secondary: '#059669', accent: '#34D399' },
+  { id: 'sunset', primary: '#F59E0B', secondary: '#EF4444', accent: '#F97316' },
+  { id: 'ocean', primary: '#0EA5E9', secondary: '#0284C7', accent: '#06B6D4' },
+  { id: 'purpleDream', primary: '#8B5CF6', secondary: '#7C3AED', accent: '#A78BFA' },
+  { id: 'roseGold', primary: '#EC4899', secondary: '#DB2777', accent: '#F472B6' },
 ]
 
 export default function Step2Colors({ brandData, updateBrandData, currentStep, totalSteps, onNext, onPrevious }: Step2Props) {
@@ -40,6 +41,24 @@ export default function Step2Colors({ brandData, updateBrandData, currentStep, t
   const [loading, setLoading] = useState(false)
   const [aiSuggestion, setAiSuggestion] = useState<any>(null)
   const [showManualInput, setShowManualInput] = useState(false)
+  const safeCurrentStep = Math.max(currentStep, 1)
+  const safeTotalSteps = Math.max(totalSteps, safeCurrentStep)
+  const t = useTranslations()
+  const colorPalettes = useMemo(
+    () =>
+      paletteConfigs.map((palette) => ({
+        ...palette,
+        name: t(`onboarding.step2.palettes.${palette.id}.name`),
+      })),
+    [t]
+  )
+  const stepIndicator = t('onboarding.stepIndicator', { current: safeCurrentStep, total: safeTotalSteps })
+  const hasPaletteSelection = Boolean(brandData.primaryColor && brandData.secondaryColor && brandData.accentColor)
+  const aiTexts = {
+    suggestion: t('onboarding.step2.ai.suggestion'),
+    generating: t('onboarding.step2.ai.generating'),
+    error: t('onboarding.step2.ai.error'),
+  }
 
   const handlePaletteSelect = (index: number) => {
     setSelectedPalette(index)
@@ -76,7 +95,7 @@ export default function Step2Colors({ brandData, updateBrandData, currentStep, t
       }
     } catch (error) {
       console.error('Error getting AI suggestion:', error)
-      alert('Erreur lors de la génération IA. Veuillez réessayer.')
+      alert(aiTexts.error)
     } finally {
       setLoading(false)
     }
@@ -101,6 +120,7 @@ export default function Step2Colors({ brandData, updateBrandData, currentStep, t
           src="https://images.unsplash.com/photo-1575041051612-323e644ca1b8?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           alt="Colors"
           fill
+          sizes="(min-width: 768px) 25vw"
           className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -131,11 +151,14 @@ export default function Step2Colors({ brandData, updateBrandData, currentStep, t
         
         <div className="min-h-screen pt-32 pb-32 px-6 sm:px-12 md:px-16 lg:px-24">
           <div className="max-w-3xl">
-            <h2 className="text-4xl sm:text-5xl font-bold text-black dark:text-white mb-4">
-              Couleurs <span className="text-gray-400 text-2xl sm:text-3xl">2/4</span>
-            </h2>
+            <div className="flex items-baseline justify-between gap-4 mb-4">
+              <h2 className="text-4xl sm:text-5xl font-bold text-black dark:text-white">
+                {t('onboarding.step2.title')}
+              </h2>
+              <span className="text-gray-400 text-2xl sm:text-3xl">{stepIndicator}</span>
+            </div>
             <p className="text-gray-600 text-lg mb-8">
-              Sélectionnez la palette qui représente votre marque
+              {t('onboarding.step2.subtitle')}
             </p>
 
             {/* Boutons IA et Manuel */}
@@ -149,11 +172,11 @@ export default function Step2Colors({ brandData, updateBrandData, currentStep, t
                 {loading ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    <span>Génération...</span>
+                    <span>{aiTexts.generating}</span>
                   </>
                 ) : (
                   <>
-                    <span>Suggérer avec IA</span>
+                    <span>{aiTexts.suggestion}</span>
                   </>
                 )}
               </LiquidButton>
@@ -166,7 +189,7 @@ export default function Step2Colors({ brandData, updateBrandData, currentStep, t
                   whileTap={{ scale: 0.95 }}
                 >
                   <RefreshCw className="w-4 h-4" />
-                  <span>Régénérer</span>
+                  <span>{t('onboarding.step2.regenerate')}</span>
                 </motion.button>
               )}
 
@@ -177,7 +200,7 @@ export default function Step2Colors({ brandData, updateBrandData, currentStep, t
                 whileTap={{ scale: 0.95 }}
               >
                 <Palette className="w-4 h-4" />
-                <span>{showManualInput ? 'Masquer' : 'Personnaliser'}</span>
+                <span>{showManualInput ? t('onboarding.step2.toggleManual.hide') : t('onboarding.step2.toggleManual.show')}</span>
               </motion.button>
             </div>
 
@@ -189,70 +212,71 @@ export default function Step2Colors({ brandData, updateBrandData, currentStep, t
                 className="mb-8 p-4 bg-purple-50 border border-purple-200 rounded-xl"
               >
                 <p className="text-sm text-purple-900">
-                  <span className="font-semibold">Suggestion IA : </span>
+                  <span className="font-semibold">{t('onboarding.step2.aiExplanationPrefix')}</span>
                   {aiSuggestion.explanation}
                 </p>
               </motion.div>
             )}
 
             {/* Manual Color Input */}
-            {showManualInput && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="mb-8 p-6 bg-gray-50 border border-gray-200 dark:border-white/20 rounded-2xl space-y-4"
-              >
-                <div className="flex items-center gap-4">
-                  <label className="text-sm font-medium text-gray-700 w-32">Couleur Primaire</label>
-                  <input
-                    type="color"
-                    value={brandData.primaryColor || '#000000'}
-                    onChange={(e) => handleManualColorChange('primary', e.target.value)}
-                    className="w-16 h-12 rounded-lg cursor-pointer border border-gray-300 dark:border-white/30"
+              {showManualInput && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mb-8 p-6 bg-gray-50 border border-gray-200 dark:border-white/20 rounded-2xl space-y-4"
+                >
+                  <h3 className="text-sm font-semibold text-gray-700">{t('onboarding.step2.manualTitle')}</h3>
+                  <div className="flex items-center gap-4">
+                    <label className="text-sm font-medium text-gray-700 w-32">{t('onboarding.step2.primaryLabel')}</label>
+                    <input
+                      type="color"
+                      value={brandData.primaryColor || '#000000'}
+                      onChange={(e) => handleManualColorChange('primary', e.target.value)}
+                      className="w-16 h-12 rounded-lg cursor-pointer border border-gray-300 dark:border-white/30"
                   />
                   <input
                     type="text"
-                    value={brandData.primaryColor || ''}
-                    onChange={(e) => handleManualColorChange('primary', e.target.value)}
-                    placeholder="#000000"
-                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-white/30 rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-                <div className="flex items-center gap-4">
-                  <label className="text-sm font-medium text-gray-700 w-32">Couleur Secondaire</label>
-                  <input
-                    type="color"
-                    value={brandData.secondaryColor || '#666666'}
-                    onChange={(e) => handleManualColorChange('secondary', e.target.value)}
-                    className="w-16 h-12 rounded-lg cursor-pointer border border-gray-300 dark:border-white/30"
-                  />
-                  <input
-                    type="text"
-                    value={brandData.secondaryColor || ''}
-                    onChange={(e) => handleManualColorChange('secondary', e.target.value)}
-                    placeholder="#666666"
-                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-white/30 rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-                <div className="flex items-center gap-4">
-                  <label className="text-sm font-medium text-gray-700 w-32">Couleur Accent</label>
-                  <input
-                    type="color"
-                    value={brandData.accentColor || '#999999'}
-                    onChange={(e) => handleManualColorChange('accent', e.target.value)}
-                    className="w-16 h-12 rounded-lg cursor-pointer border border-gray-300 dark:border-white/30"
+                      value={brandData.primaryColor || ''}
+                      onChange={(e) => handleManualColorChange('primary', e.target.value)}
+                      placeholder={t('onboarding.step2.hexPlaceholder')}
+                      className="flex-1 px-4 py-2 border border-gray-300 dark:border-white/30 rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <label className="text-sm font-medium text-gray-700 w-32">{t('onboarding.step2.secondaryLabel')}</label>
+                    <input
+                      type="color"
+                      value={brandData.secondaryColor || '#666666'}
+                      onChange={(e) => handleManualColorChange('secondary', e.target.value)}
+                      className="w-16 h-12 rounded-lg cursor-pointer border border-gray-300 dark:border-white/30"
                   />
                   <input
                     type="text"
-                    value={brandData.accentColor || ''}
-                    onChange={(e) => handleManualColorChange('accent', e.target.value)}
-                    placeholder="#999999"
-                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-white/30 rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      value={brandData.secondaryColor || ''}
+                      onChange={(e) => handleManualColorChange('secondary', e.target.value)}
+                      placeholder={t('onboarding.step2.hexPlaceholder')}
+                      className="flex-1 px-4 py-2 border border-gray-300 dark:border-white/30 rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <label className="text-sm font-medium text-gray-700 w-32">{t('onboarding.step2.accentLabel')}</label>
+                    <input
+                      type="color"
+                      value={brandData.accentColor || '#999999'}
+                      onChange={(e) => handleManualColorChange('accent', e.target.value)}
+                      className="w-16 h-12 rounded-lg cursor-pointer border border-gray-300 dark:border-white/30"
                   />
-                </div>
-              </motion.div>
-            )}
+                  <input
+                    type="text"
+                      value={brandData.accentColor || ''}
+                      onChange={(e) => handleManualColorChange('accent', e.target.value)}
+                      placeholder={t('onboarding.step2.hexPlaceholder')}
+                      className="flex-1 px-4 py-2 border border-gray-300 dark:border-white/30 rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                </motion.div>
+              )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
               {colorPalettes.map((palette, index) => (
@@ -287,6 +311,11 @@ export default function Step2Colors({ brandData, updateBrandData, currentStep, t
                       style={{ backgroundColor: palette.accent }}
                     />
                   </div>
+                  <div className="mt-4 flex items-center justify-between text-[11px] font-mono text-gray-500 uppercase tracking-wide">
+                    <span>{palette.primary}</span>
+                    <span>{palette.secondary}</span>
+                    <span>{palette.accent}</span>
+                  </div>
                 </motion.button>
               ))}
             </div>
@@ -300,14 +329,16 @@ export default function Step2Colors({ brandData, updateBrandData, currentStep, t
                   transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
                 />
                 <div className="relative z-10">
-                  <p className="text-xs font-medium text-gray-500 mb-6 tracking-wide">APERÇU DE LA PALETTE</p>
+                  <p className="text-xs font-medium text-gray-500 mb-6 tracking-wide uppercase">
+                    {t('onboarding.step2.previewTitle')}
+                  </p>
                   <div className="flex gap-6">
                     <div className="flex-1 space-y-3">
                       <div
                         className="h-24 rounded-xl flex items-center justify-center text-white font-medium shadow-sm"
-                        style={{ backgroundColor: brandData.primaryColor }}
+                        style={{ backgroundColor: brandData.primaryColor || '#000000' }}
                       >
-                        Primaire
+                        {t('onboarding.step2.primarySwatch')}
                       </div>
                       <p className="text-xs text-gray-600 text-center font-mono">
                         {brandData.primaryColor}
@@ -316,9 +347,9 @@ export default function Step2Colors({ brandData, updateBrandData, currentStep, t
                     <div className="flex-1 space-y-3">
                       <div
                         className="h-24 rounded-xl flex items-center justify-center text-white font-medium shadow-sm"
-                        style={{ backgroundColor: brandData.secondaryColor }}
+                        style={{ backgroundColor: brandData.secondaryColor || '#6B7280' }}
                       >
-                        Secondaire
+                        {t('onboarding.step2.secondarySwatch')}
                       </div>
                       <p className="text-xs text-gray-600 text-center font-mono">
                         {brandData.secondaryColor}
@@ -327,9 +358,9 @@ export default function Step2Colors({ brandData, updateBrandData, currentStep, t
                     <div className="flex-1 space-y-3">
                       <div
                         className="h-24 rounded-xl flex items-center justify-center text-white font-medium shadow-sm"
-                        style={{ backgroundColor: brandData.accentColor }}
+                        style={{ backgroundColor: brandData.accentColor || '#A855F7' }}
                       >
-                        Accent
+                        {t('onboarding.step2.accentSwatch')}
                       </div>
                       <p className="text-xs text-gray-600 text-center font-mono">
                         {brandData.accentColor}
@@ -354,29 +385,23 @@ export default function Step2Colors({ brandData, updateBrandData, currentStep, t
                   animate={{ x: ['-100%', '100%'] }}
                   transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
                 />
-                <span className="relative z-10">Précédent</span>
+                <span className="relative z-10">{t('actions.previous')}</span>
               </motion.button>
 
               <motion.button
                 onClick={onNext}
-                className="relative overflow-hidden px-8 py-3 rounded-full bg-black text-white hover:bg-gray-800 transition-colors"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                disabled={!hasPaletteSelection}
+                className="relative overflow-hidden px-8 py-3 rounded-full bg-black text-white hover:bg-gray-800 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                whileHover={{ scale: hasPaletteSelection ? 1.02 : 1 }}
+                whileTap={{ scale: hasPaletteSelection ? 0.98 : 1 }}
               >
-                <div className="absolute inset-0 bg-white dark:bg-black/10 text-black dark:text-white" />
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                  animate={{ x: ['-100%', '100%'] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-                />
-                <span className="relative z-10 text-black dark:text-white">Suivant</span>
+                <span className="relative z-10 text-white dark:text-black">{t('actions.next')}</span>
               </motion.button>
             </div>
           </div>
         </div>
-        <Footer />
+        <Footer hideLinks={true} />
       </div>
     </div>
   )
 }
-

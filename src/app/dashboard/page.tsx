@@ -17,6 +17,8 @@ interface Brand {
   primaryColor: string | null
   secondaryColor: string | null
   accentColor: string | null
+  primaryFont: string | null
+  secondaryFont: string | null
   brandPersonality: string | null
   targetAudience: string | null
   coverImage: string | null

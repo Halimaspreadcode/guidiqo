@@ -1,13 +1,22 @@
 'use client'
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useEffect, useMemo } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
 import { PasswordReset } from '@stackframe/stack'
 
 export default function PasswordResetPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const resetParams = useMemo(() => {
+    if (!searchParams) return {}
+    const entries = Array.from(searchParams.entries())
+    return entries.reduce<Record<string, string>>((acc, [key, value]) => {
+      acc[key] = value
+      return acc
+    }, {})
+  }, [searchParams])
 
   // Traduire automatiquement en français
   useEffect(() => {
@@ -185,13 +194,8 @@ export default function PasswordResetPage() {
                   cursor: pointer;
                 }
               `}</style>
-              {/* 
-                Correction : 
-                - Suppression de l'attribut searchParams={undefined} qui provoquait une erreur de typage.
-                - Le composant PasswordReset doit recevoir un objet searchParams de type Record<string, string>.
-                - Si vous n'avez pas de searchParams à passer, transmettez un objet vide.
-              */}
-              <PasswordReset searchParams={{}} />
+              {/* On transmet les paramètres de la requête pour que Stack puisse valider le jeton de réinitialisation */}
+              <PasswordReset searchParams={resetParams} />
             </motion.div>
           </motion.div>
         </div>

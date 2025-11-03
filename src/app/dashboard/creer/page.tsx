@@ -68,6 +68,11 @@ export default function CreerPage() {
   const autoSave = async (data: BrandData) => {
     if (!user) return
 
+    // Ne pas sauvegarder si le nom n'a pas été modifié (valeur par défaut)
+    if (!brandId && data.name === 'Mon Nouveau Branding' && !data.prompt.trim()) {
+      return // Ne pas créer de brand avec le nom par défaut et sans prompt
+    }
+
     setSaving(true)
     try {
       if (brandId) {
@@ -89,6 +94,11 @@ export default function CreerPage() {
         // Protection contre les créations multiples
         if (isCreatingRef.current) {
           return // Une création est déjà en cours
+        }
+
+        // Ne pas créer si le nom est toujours le nom par défaut
+        if (data.name === 'Mon Nouveau Branding') {
+          return
         }
 
         isCreatingRef.current = true

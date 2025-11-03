@@ -163,6 +163,7 @@ export default function HeroSection() {
             >
               Crée ton branding<br className="hidden sm:inline" />
               <span className="sm:hidden"> </span>
+              {/* <span className="inline-block relative font-light" style={{ fontFamily: "'Playfair Display', serif" }}> */}
               <span className="inline-block relative">
                 {displayedText}
                 <motion.span

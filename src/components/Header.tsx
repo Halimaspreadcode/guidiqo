@@ -5,10 +5,12 @@ import { useRouter } from 'next/navigation';
 import { useUser } from '@stackframe/stack';
 import { LiquidButton } from './LiquidGlassButton';
 import { LogOut, User, Menu, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import ThemeToggle from './ThemeToggle';
+import { useLanguage } from '@/contexts/LanguageContext';
+import type { Locale } from '@/i18n/translations';
 
 export default function Header() {
   const router = useRouter();
@@ -17,6 +19,7 @@ export default function Header() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useState(false);
+  const { locale, setLocale, availableLocales, t } = useLanguage();
 
   useEffect(() => {
     const checkAdmin = async () => {
@@ -42,25 +45,32 @@ export default function Header() {
 
   // Vérifier si la banner a été fermée
   useEffect(() => {
-    const checkBannerStatus = () => {
-      const dismissed = localStorage.getItem('stickyBannerDismissed');
-      setBannerDismissed(dismissed === 'true');
+    const updateBannerStatus = () => {
+      const enabled = localStorage.getItem('stickyBannerEnabled') !== 'false';
+      if (!enabled) {
+        setBannerDismissed(true);
+        return;
+      }
+
+      const version = localStorage.getItem('stickyBannerVersion');
+      const dismissedVersion = localStorage.getItem('stickyBannerDismissed');
+      const isDismissed = Boolean(version && dismissedVersion && version === dismissedVersion);
+      setBannerDismissed(isDismissed);
     };
 
-    checkBannerStatus();
-    
-    // Écouter les changements de localStorage
-    const handleStorageChange = () => {
-      checkBannerStatus();
-    };
+    updateBannerStatus();
+
+    const handleStorageChange = () => updateBannerStatus();
+    const handleCustomEvent = () => updateBannerStatus();
 
     window.addEventListener('storage', handleStorageChange);
-    
-    // Vérifier périodiquement (pour les changements dans le même onglet)
-    const interval = setInterval(checkBannerStatus, 100);
+    window.addEventListener('sticky-banner-change', handleCustomEvent as EventListener);
+
+    const interval = setInterval(updateBannerStatus, 500);
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('sticky-banner-change', handleCustomEvent as EventListener);
       clearInterval(interval);
     };
   }, []);
@@ -102,6 +112,26 @@ export default function Header() {
     return displayName.substring(0, 2).toUpperCase();
   };
 
+  const languageButtons = useMemo(() => (
+    <div className="flex items-center gap-1">
+      {availableLocales.map((code) => (
+        <button
+          key={code}
+          type="button"
+          onClick={() => setLocale(code as Locale)}
+          className={`px-2 py-1 rounded-full text-xs font-semibold transition-colors border ${
+            locale === code
+              ? 'bg-black text-white border-black'
+              : 'bg-transparent text-gray-500 dark:text-gray-300 border-gray-200 dark:border-white/20 hover:bg-gray-100 dark:hover:bg-white/10'
+          }`}
+          aria-label={code === 'fr' ? t('language.switchToFrench') : t('language.switchToEnglish')}
+        >
+          {code === 'fr' ? t('language.shortFrench') : t('language.shortEnglish')}
+        </button>
+      ))}
+    </div>
+  ), [availableLocales, locale, setLocale, t]);
+
   return (
     <>
       <motion.header 
@@ -135,15 +165,22 @@ export default function Header() {
 
           {/* Navigation Desktop */}
           <nav className="hidden sm:flex items-center gap-4 md:gap-6 lg:gap-8 text-xs sm:text-sm">
-            <a href="/" className="text-gray-600 dark:text-white hover:text-red-900 dark:hover:text-gray-300 transition-colors duration-200">Accueil</a>
-            <a href="/bibliotheque" className="text-gray-600 dark:text-white hover:text-red-900 dark:hover:text-gray-300 transition-colors duration-200">Bibliothèque</a>
+            <a href="/" className="text-gray-600 dark:text-white hover:text-red-900 dark:hover:text-gray-300 transition-colors duration-200">
+              {t('header.home')}
+            </a>
+            <a href="/bibliotheque" className="text-gray-600 dark:text-white hover:text-red-900 dark:hover:text-gray-300 transition-colors duration-200">
+              {t('header.library')}
+            </a>
             {isAdmin && (
-              <a href="/superadmin" className="text-gray-600 dark:text-white hover:text-red-900 dark:hover:text-gray-300 transition-colors duration-200">Admin</a>
+              <a href="/superadmin" className="text-gray-600 dark:text-white hover:text-red-900 dark:hover:text-gray-300 transition-colors duration-200">
+                {t('header.admin')}
+              </a>
             )}
           </nav>
           
           {/* Theme Toggle & User/Login Button */}
           <div className="hidden sm:flex items-center gap-2">
+            {/* {languageButtons} */}
             <ThemeToggle />
             {user ? (
               <div className="flex items-center gap-2">
@@ -153,7 +190,7 @@ export default function Header() {
                     className="w-10 h-10 rounded-full overflow-hidden hover:from-red-900 hover:to-red-600 transition-all duration-200"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
-                    title={user.displayName || user.primaryEmail || 'Mon compte'}
+                    title={user.displayName || user.primaryEmail || t('header.account')}
                   >
                     {profile?.profileImage ? (
                       <img
@@ -180,12 +217,11 @@ export default function Header() {
                 </div>
               </div>
             ) : (
-              <LiquidButton 
+              <LiquidButton
                 onClick={handleSignIn}
-                
                 className="bg-gradient-to-r from-stone-900 to-gray-800 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full text-xs sm:text-sm font-medium hover:from-red-900 hover:to-red-600 transition-all duration-200"
               >
-                Se connecter
+                {t('actions.signIn')}
               </LiquidButton>
             )}
           </div>
@@ -198,7 +234,7 @@ export default function Header() {
                 className="w-10 h-10 rounded-full overflow-hidden hover:from-red-900 hover:to-red-600 transition-all duration-200"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
-                title={user.displayName || user.primaryEmail || 'Mon compte'}
+                title={user.displayName || user.primaryEmail || t('header.account')}
               >
                 {profile?.profileImage ? (
                   <img
@@ -249,14 +285,14 @@ export default function Header() {
                   className="text-gray-600 dark:text-white hover:text-red-900 dark:hover:text-gray-300 transition-colors duration-200 py-2 text-base font-medium"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Accueil
+                  {t('header.home')}
                 </a>
                 <a 
                   href="/bibliotheque" 
                   className="text-gray-600 dark:text-white hover:text-red-900 dark:hover:text-gray-300 transition-colors duration-200 py-2 text-base font-medium"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Bibliothèque
+                  {t('header.library')}
                 </a>
                 {isAdmin && (
                   <a 
@@ -264,13 +300,18 @@ export default function Header() {
                     className="text-gray-600 dark:text-white hover:text-red-900 dark:hover:text-gray-300 transition-colors duration-200 py-2 text-base font-medium"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    Admin
+                    {t('header.admin')}
                   </a>
                 )}
+
+                {/* <div className="flex items-center justify-between py-2">
+                  <span className="text-gray-600 dark:text-white text-base font-medium">{t('language.switchLabel')}</span>
+                  {languageButtons}
+                </div> */}
                 
                 {/* Theme Toggle pour mobile */}
                 <div className="flex items-center justify-between py-2">
-                  <span className="text-gray-600 dark:text-white text-base font-medium">Mode sombre</span>
+                  <span className="text-gray-600 dark:text-white text-base font-medium">{t('theme.darkMode')}</span>
                   <ThemeToggle />
                 </div>
                 
@@ -286,7 +327,7 @@ export default function Header() {
                     }}
                     className="bg-gradient-to-r from-stone-900 to-gray-800 text-white px-6 py-3 rounded-full text-sm font-medium hover:from-red-900 hover:to-red-600 transition-all duration-200 w-full text-center"
                   >
-                    Se connecter
+                    {t('actions.signIn')}
                   </LiquidButton>
                 )}
               </nav>

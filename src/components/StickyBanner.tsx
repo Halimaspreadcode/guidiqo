@@ -1,56 +1,33 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import { motion, useMotionValueEvent, useScroll } from "framer-motion";
-import { cn } from "@/lib/utils";
-import { X } from "lucide-react";
-import { usePathname } from "next/navigation";
+"use client"
+
+import React from 'react'
+import { motion } from 'framer-motion'
+import { cn } from '@/lib/utils'
+import { usePathname } from 'next/navigation'
 
 export const StickyBanner = ({
   className,
-  hideOnScroll = false,
   hiddenPaths = [],
 }: {
-  className?: string;
-  hideOnScroll?: boolean;
-  hiddenPaths?: string[];
+  className?: string
+  hideOnScroll?: boolean
+  hiddenPaths?: string[]
 }) => {
-  const [open, setOpen] = useState(true);
-  const [isDismissed, setIsDismissed] = useState(false);
-  const { scrollY } = useScroll();
-  const pathname = usePathname();
-  
-  // Vérifier si le banner a été fermé dans localStorage
-  useEffect(() => {
-    const dismissed = localStorage.getItem('stickyBannerDismissed');
-    if (dismissed === 'true') {
-      setIsDismissed(true);
-      setOpen(false);
-    }
-  }, []);
+  const pathname = usePathname()
 
-  // Vérifier si on est sur une page où le banner doit être caché
-  const shouldHide = hiddenPaths.some(path => pathname.startsWith(path));
+  // Message fixe avec lien "ici" - l'annonce ne peut pas être fermée
+  const fixedMessage = "🎉 Du nouveau : Votre assistant IA pour créer des contenus engageants en quelques clics"
+  const linkText = "ici"
+  const linkHref = "https://create.guidiqo.com"
 
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    if (hideOnScroll && latest > 40 && !isDismissed) {
-      setOpen(false);
-    } else if (!isDismissed) {
-      setOpen(true);
-    }
-  });
+  const shouldHide = hiddenPaths.some((path) => pathname.startsWith(path))
 
-  const handleDismiss = () => {
-    setOpen(false);
-    setIsDismissed(true);
-    localStorage.setItem('stickyBannerDismissed', 'true');
-  };
-  
-  if (shouldHide || isDismissed) return null;
+  if (shouldHide) return null
 
   return (
     <motion.div
       className={cn(
-        "fixed inset-x-0 top-0 z-[60] flex min-h-14 w-full items-center bg-gradient-to-r from-gray-400 via-red-800 to-gray-200  overflow-hidden",
+        'fixed inset-x-0 top-0 z-[60] flex min-h-14 w-full items-center bg-gradient-to-r from-gray-400 via-red-800 to-gray-200 overflow-hidden',
         className,
       )}
       initial={{
@@ -58,40 +35,29 @@ export const StickyBanner = ({
         opacity: 0,
       }}
       animate={{
-        y: open ? 0 : -100,
-        opacity: open ? 1 : 0,
+        y: 0,
+        opacity: 1,
       }}
       transition={{
         duration: 0.3,
-        ease: "easeInOut",
+        ease: 'easeInOut',
       }}
     >
-      {/* Texte défilant */}
       <div className="relative flex overflow-hidden w-full justify-center">
-        <motion.div
-          className="flex whitespace-nowrap"
-         
-        >
-          <span className="text-white text-sm font-medium px-4 text-center w-full">
-            Nouveauté : Mode sombre disponible ! Découvrez toutes les fonctionnalités
+        <motion.div className="flex whitespace-nowrap">
+          <span className="text-white text-sm font-medium px-4 text-center w-full flex items-center justify-center gap-1">
+            {fixedMessage}{' '}
+            <a
+              href={linkHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:no-underline font-semibold transition-all"
+            >
+              {linkText}
+            </a>
           </span>
         </motion.div>
       </div>
-
-      <motion.button
-        initial={{
-          scale: 0,
-        }}
-        animate={{
-          scale: 1,
-        }}
-        className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer hover:opacity-70 transition-opacity p-1.5 bg-black/10 rounded-full"
-        onClick={handleDismiss}
-        aria-label="Fermer la bannière"
-      >
-        <X className="h-4 w-4 text-black" />
-      </motion.button>
     </motion.div>
-  );
-};
-
+  )
+}

@@ -4,6 +4,7 @@ import HeroSection from '@/components/HeroSection';
 import ExploreSection from '@/components/ExploreSection';
 import SpotlightedCreators from '@/components/SpotlightedCreators';
 import Footer from '@/components/Footer';
+import PromoPopup from '@/components/PromoPopup';
 
 function LoadingFallback() {
   return (
@@ -17,6 +18,7 @@ export default function Home() {
   return (
     <Suspense fallback={<LoadingFallback />}>
       <main className="min-h-screen bg-white dark:bg-black">
+        <PromoPopup />
         <Header />
         <HeroSection />
         <SpotlightedCreators />

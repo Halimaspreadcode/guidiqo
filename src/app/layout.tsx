@@ -15,6 +15,16 @@ export const metadata: Metadata = {
   authors: [{ name: "Guidiqo" }],
   creator: "Guidiqo",
   publisher: "Guidiqo",
+  icons: {
+    icon: [
+      { url: '/icon.webp', type: 'image/webp' },
+      { url: '/icon.png', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/icon.webp', type: 'image/webp' },
+    ],
+    shortcut: '/icon.webp',
+  },
   formatDetection: {
     email: false,
     address: false,

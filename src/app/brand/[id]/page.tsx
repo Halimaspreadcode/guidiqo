@@ -85,47 +85,237 @@ export default function BrandPage() {
   }, [params.id])
 
   const generateImages = async (brandData: Brand) => {
-    const searchTerms = [
-      brandData.description || brandData.name,
-      brandData.brandPersonality,
-      brandData.targetAudience
-    ].filter(Boolean).join(' ')
+    const stopWords = [
+      'avec', 'pour', 'dans', 'sont', 'être', 'vous', 'dont', 'cette', 'tout', 'tous', 'une', 'des', 'les', 'qui',
+      'que', 'par', 'sur', 'sous', 'plus', 'comme', 'aussi', 'très', 'bien', 'peut', 'fait', 'faites', 'notre',
+      'votre', 'leur', 'chaque', 'toutes', 'lalliance', 'dune', 'expertise', 'mission', 'techniques', 'avec', 'cela',
+      'entre', 'depuis', 'leurs', 'leurs', 'leurs', 'vers', 'ainsi', 'dans', 'afin'
+    ]
 
-    // Définir les requêtes pour chaque catégorie avec diversité
-    const queries = {
-      hero: `${searchTerms} business brand black professional`,
-      typography: 'typography design text black professional',
-      personality: `${brandData.brandPersonality || 'modern'} lifestyle black professional`,
-      accent: `abstract ${brandData.brandPersonality || 'modern'} pattern black`,
-      application: `${searchTerms} office workspace black professional`
+    const sectorKeywords: Record<string, string[]> = {
+      coiffure: ['hair salon', 'hairdressing', 'haircut', 'styling', 'hair care', 'barbershop'],
+      salon: ['hair salon', 'beauty salon', 'spa salon', 'hairdresser'],
+      restaurant: ['restaurant', 'dining', 'culinary', 'gastronomy', 'chef table'],
+      café: ['cafe', 'coffee shop', 'roastery', 'espresso bar'],
+      tech: ['technology', 'software', 'digital product', 'innovation', 'startup'],
+      finance: ['fintech', 'financial services', 'investment', 'banking'],
+      fashion: ['fashion', 'editorial', 'apparel', 'style', 'lookbook'],
+      fitness: ['fitness', 'gym', 'wellness', 'training', 'athletic'],
+      beauty: ['skincare', 'cosmetics', 'aesthetic', 'beauty studio', 'makeup'],
+      hospitality: ['hotel', 'hospitality', 'experience', 'luxury interior'],
+      education: ['education', 'learning', 'academy', 'workshop'],
+      music: ['music studio', 'concert', 'artist', 'sound design'],
+      art: ['gallery', 'art director', 'creative studio', 'visual art']
     }
 
-    const newImages: {[key: string]: string} = {}
+    const personalityDictionary: Record<string, string[]> = {
+      modern: ['minimal', 'sleek', 'contemporary'],
+      luxueux: ['luxury', 'premium', 'high-end'],
+      luxe: ['luxury', 'premium', 'high-end'],
+      énergique: ['vibrant', 'dynamic', 'bold'],
+      vibrant: ['vibrant', 'energetic', 'colorful'],
+      naturel: ['organic', 'natural', 'soft light'],
+      chaleureux: ['warm', 'cozy', 'human'],
+      futuriste: ['futuristic', 'innovative', 'digital'],
+      artistique: ['artistic', 'creative', 'experimental'],
+      authentique: ['authentic', 'documentary', 'lifestyle']
+    }
 
-    // Récupérer les images en parallèle avec un seed unique pour chaque
-    await Promise.all(
-      Object.entries(queries).map(async ([key, query]) => {
+    const extractKeywords = (text: string | null, limit: number = 8): string[] => {
+      if (!text) return []
+      return text
+        .toLowerCase()
+        .replace(/[^\w\séèêëàâäôöùûüîïç-]/g, ' ')
+        .split(/\s+/)
+        .filter((word) => word.length > 3 && !stopWords.includes(word))
+        .filter((word, index, arr) => arr.indexOf(word) === index)
+        .slice(0, limit)
+    }
+
+    const detectSector = (text: string): string[] => {
+      const lowerText = text.toLowerCase()
+      const detected: string[] = []
+
+      for (const keywords of Object.values(sectorKeywords)) {
+        if (keywords.some((keyword) => lowerText.includes(keyword.split(' ')[0]))) {
+          detected.push(...keywords.slice(0, 3))
+        }
+      }
+
+      if (lowerText.includes('salon') && (lowerText.includes('coiff') || lowerText.includes('capillaire') || lowerText.includes('cheveu'))) {
+        detected.push('hair salon', 'hairdressing')
+      }
+      if (lowerText.includes('restaurant') || lowerText.includes('cuisine')) {
+        detected.push('restaurant', 'culinary')
+      }
+      if (lowerText.includes('café') || lowerText.includes('coffee')) {
+        detected.push('cafe', 'espresso bar')
+      }
+
+      return [...new Set(detected)]
+    }
+
+    const combinedText = [brandData.prompt, brandData.description, brandData.name, brandData.targetAudience]
+      .filter(Boolean)
+      .join(' ')
+
+    const sectorTerms = detectSector(combinedText)
+    const promptKeywords = extractKeywords(brandData.prompt, 10)
+    const descriptionKeywords = extractKeywords(brandData.description, 6)
+    const nameKeywords = extractKeywords(brandData.name, 3)
+    const audienceKeywords = extractKeywords(brandData.targetAudience, 5)
+
+    const personalityKey =
+      brandData.brandPersonality?.toLowerCase().split(/\s+/)[0] ||
+      (promptKeywords[0] ?? 'modern')
+    const personalityTags = personalityDictionary[personalityKey] ?? [personalityKey]
+
+    const baseKeywords = [
+      ...new Set([
+        ...sectorTerms,
+        ...promptKeywords,
+        ...descriptionKeywords,
+        ...nameKeywords,
+        ...audienceKeywords,
+        ...personalityTags
+      ])
+    ]
+
+    const palette = [brandData.primaryColor, brandData.secondaryColor, brandData.accentColor].filter(
+      (color): color is string => Boolean(color)
+    )
+    const fallbackPalette = palette.length ? palette : ['#0f172a', '#1f2937', '#6366f1']
+
+    const createGradientFallback = (label: string) => {
+      const stops = fallbackPalette.map((color, idx) => {
+        const offset =
+          fallbackPalette.length === 1 ? 0 : Math.round((idx / (fallbackPalette.length - 1)) * 100)
+        return `<stop offset="${offset}%" stop-color="${color}" />`
+      })
+
+      const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900">
+          <defs>
+            <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              ${stops.join('')}
+            </linearGradient>
+          </defs>
+          <rect width="1600" height="900" fill="url(#grad)" rx="64" />
+          <rect x="80" y="80" width="480" height="120" fill="rgba(0,0,0,0.28)" rx="32" />
+          <text x="120" y="148" font-size="40" fill="rgba(255,255,255,0.85)" font-family="Arial" font-weight="600">
+            ${brandData.name}
+          </text>
+          <text x="120" y="196" font-size="26" fill="rgba(255,255,255,0.65)" font-family="Arial" letter-spacing="4">
+            ${label.toUpperCase()}
+          </text>
+        </svg>
+      `
+      return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`
+    }
+
+    const fallbackImages: Record<string, string> = {
+      hero: createGradientFallback('Moodboard'),
+      typography: createGradientFallback('Typographie'),
+      personality: createGradientFallback('Identité'),
+      accent: createGradientFallback('Texturing'),
+      application: createGradientFallback('Applications')
+    }
+
+    const assembledQueries = {
+      hero: [
+        brandData.name,
+        ...personalityTags,
+        ...audienceKeywords,
+        ...baseKeywords,
+        'brand identity',
+        'editorial photoshoot',
+        'moodboard'
+      ]
+        .filter(Boolean)
+        .join(' '),
+      typography: [
+        brandData.name,
+        brandData.primaryFont,
+        brandData.secondaryFont,
+        ...baseKeywords,
+        'typography poster',
+        'font pairing',
+        'brand guidelines layout'
+      ]
+        .filter(Boolean)
+        .join(' '),
+      personality: [
+        brandData.name,
+        ...baseKeywords,
+        'storytelling portrait',
+        'lifestyle',
+        ...audienceKeywords,
+        'editorial'
+      ]
+        .filter(Boolean)
+        .join(' '),
+      accent: [
+        brandData.name,
+        ...baseKeywords,
+        'abstract texture',
+        'brand assets',
+        brandData.accentColor,
+        'pattern design'
+      ]
+        .filter(Boolean)
+        .join(' '),
+      application: [
+        brandData.name,
+        ...baseKeywords,
+        ...audienceKeywords,
+        'product mockup',
+        'digital experience',
+        'brand presentation'
+      ]
+        .filter(Boolean)
+        .join(' ')
+    }
+
+    const newImages: Record<string, string> = { ...fallbackImages }
+
+    const fetchImage = async (key: string, query: string) => {
+      const providers: Array<'unsplash' | 'pexels'> = ['unsplash', 'pexels']
+      for (const provider of providers) {
         try {
           const response = await fetch('/api/get-image', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-              query,
-              seed: `${brandData.id}-${key}`,  // Seed unique pour chaque image
-              provider: 'pexels'  // Forcer l'utilisation de Pexels
+            body: JSON.stringify({
+              query: query.trim(),
+              seed: `${brandData.id}-${key}-${provider}`,
+              provider,
+              orientation: 'landscape'
             })
           })
 
-          if (response.ok) {
-            const data = await response.json()
-            newImages[key] = data.image?.url || data.imageUrl || 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&h=900&fit=crop'
+          if (!response.ok) {
+            continue
+          }
+
+          const data = await response.json()
+          const url =
+            data.image?.url ||
+            data.image?.srcSet?.full ||
+            data.image?.srcSet?.regular ||
+            data.imageUrl
+
+          if (url) {
+            newImages[key] = url
+            return
           }
         } catch (error) {
-          console.error(`Error fetching ${key} image:`, error)
-          // Fallback vers une image par défaut
-          newImages[key] = 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&h=900&fit=crop'
+          console.error(`Error fetching ${key} image with ${provider}:`, error)
         }
-      })
+      }
+    }
+
+    await Promise.all(
+      Object.entries(assembledQueries).map(async ([key, query]) => fetchImage(key, query))
     )
 
     setImages(newImages)
@@ -176,9 +366,287 @@ export default function BrandPage() {
     return null
   }
 
-  const gradient1 = `linear-gradient(135deg, ${brand.primaryColor || '#000'}, ${brand.secondaryColor || '#333'})`
-  const gradient2 = `linear-gradient(135deg, ${brand.secondaryColor || '#333'}, ${brand.accentColor || '#666'})`
-  const gradient3 = `linear-gradient(135deg, ${brand.accentColor || '#666'}, ${brand.primaryColor || '#000'})`
+  const paletteColors = [brand.primaryColor, brand.secondaryColor, brand.accentColor].filter(
+    (color): color is string => Boolean(color)
+  )
+  const displayPalette = paletteColors.length ? paletteColors : ['#111827', '#6366F1', '#F97316']
+  const primaryFont = brand.primaryFont || 'Space Grotesk'
+  const secondaryFont = brand.secondaryFont || primaryFont
+  const personalityLabel = brand.brandPersonality || 'Modern & Visionary'
+  const audienceLabel = brand.targetAudience || 'Audience polyvalent'
+  const accentOverlay = brand.accentColor || 'rgba(17,17,17,0.45)'
+  const promptKeywords = brand.prompt
+    ? brand.prompt
+        .split(/[,;\n]/)
+        .map((piece) => piece.trim())
+        .filter(Boolean)
+        .slice(0, 4)
+    : []
+  const highlightKeywords = promptKeywords.length
+    ? promptKeywords
+    : ['Logotype', 'Palette', 'Typographie', 'Visuels']
+  const keywordPills = Array.from(new Set(highlightKeywords))
+  const previewPalette = displayPalette.slice(0, 3)
+  const previewPages = [
+    {
+      key: 'cover',
+      title: 'Cover',
+      render: () => (
+        <div className="relative aspect-video w-full overflow-hidden rounded-3xl">
+          {images.hero ? (
+            <img
+              src={images.hero}
+              alt="Hero preview"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          ) : (
+            <div
+              className="absolute inset-0"
+              style={{
+                background: `linear-gradient(135deg, ${brand.primaryColor || '#0f172a'}, ${
+                  brand.secondaryColor || '#1f2937'
+                })`
+              }}
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-tr from-black/80 via-black/60 to-transparent" />
+          <div className="relative z-10 flex h-full flex-col justify-between p-6">
+            <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.5rem] text-white/70">
+              Guidiqo
+              <span className="inline-flex h-px w-6 bg-white/60" />
+              Brand
+            </div>
+            <div>
+              <h4
+                className="text-2xl font-semibold text-white sm:text-3xl"
+                style={{ fontFamily: primaryFont }}
+              >
+                {brand.name}
+              </h4>
+              <div className="mt-2 flex gap-2">
+                {previewPalette.map((color, idx) => (
+                  <span
+                    key={`cover-color-${color}-${idx}`}
+                    className="h-7 w-7 rounded-xl border border-white/40"
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
+      key: 'colors',
+      title: 'Palette',
+      render: () => (
+        <div className="aspect-video w-full overflow-hidden rounded-3xl bg-white">
+          <div className="h-full w-full bg-gradient-to-br from-slate-100 to-white p-4">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.45rem] text-slate-500">
+              Palette
+            </p>
+            <div className="mt-4 grid grid-cols-3 gap-3">
+              {displayPalette.map((color, idx) => (
+                <div
+                  key={`preview-color-${color}-${idx}`}
+                  className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-2"
+                >
+                  <div
+                    className="h-16 w-full rounded-xl border border-slate-100"
+                    style={{ backgroundColor: color }}
+                  />
+                  <p className="mt-2 truncate text-xs font-mono text-slate-600">{color}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
+      key: 'typography',
+      title: 'Typographie',
+      render: () => (
+        <div className="relative aspect-video w-full overflow-hidden rounded-3xl bg-slate-900">
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700" />
+          <div className="relative z-10 flex h-full flex-col justify-between p-5">
+            <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.45rem] text-slate-300">
+              Type
+              <span className="inline-flex h-px w-5 bg-slate-500" />
+              System
+            </div>
+            <div className="flex items-end justify-between">
+              <div>
+                <p
+                  className="text-5xl font-semibold text-white"
+                  style={{ fontFamily: primaryFont }}
+                >
+                  Aa
+                </p>
+                <p className="text-xs uppercase tracking-[0.3rem] text-slate-300">
+                  {primaryFont}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-[0.3rem] text-slate-400">
+                  {secondaryFont !== primaryFont ? secondaryFont : 'Baseline'}
+                </p>
+                <p
+                  className="mt-2 max-w-[120px] text-right text-xs text-slate-300"
+                  style={{ fontFamily: secondaryFont }}
+                >
+                  The quick brown fox jumps over the lazy dog.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
+      key: 'personality',
+      title: 'Identité',
+      render: () => (
+        <div className="relative aspect-video w-full overflow-hidden rounded-3xl">
+          {images.personality ? (
+            <img
+              src={images.personality}
+              alt="Mood preview"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-600" />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
+          <div className="relative z-10 flex h-full flex-col justify-end p-5">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.45rem] text-white/70">
+              Audience
+            </p>
+            <h4 className="mt-2 text-lg font-semibold text-white" style={{ fontFamily: primaryFont }}>
+              {brand.brandPersonality || 'Identité Affirmée'}
+            </h4>
+            <p className="mt-1 text-xs text-white/70">
+              {brand.targetAudience || 'Communauté créative et engagée'}
+            </p>
+          </div>
+        </div>
+      )
+    },
+    {
+      key: 'applications',
+      title: 'Applications',
+      render: () => (
+        <div className="aspect-video w-full overflow-hidden rounded-3xl bg-slate-900">
+          <div className="grid h-full w-full grid-cols-3 grid-rows-2 gap-2 p-2">
+            <div className="relative col-span-2 row-span-2 overflow-hidden rounded-2xl">
+              {images.application ? (
+                <img
+                  src={images.application}
+                  alt="Application"
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+              ) : (
+                <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-black" />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+              <div className="relative z-10 p-3 text-white">
+                <p className="text-[9px] uppercase tracking-[0.4rem] text-white/60">Hero</p>
+                <p className="text-sm font-semibold">{brand.name}</p>
+              </div>
+            </div>
+            <div className="rounded-2xl bg-white p-3">
+              <p className="text-[9px] uppercase tracking-[0.4rem] text-slate-500">CTA</p>
+              <p className="mt-2 text-sm font-semibold text-slate-800">
+                {brand.accentColor ? 'Accent visuel' : 'Call to action'}
+              </p>
+            </div>
+            <div className="relative overflow-hidden rounded-2xl bg-slate-800">
+              {images.accent && (
+                <img
+                  src={images.accent}
+                  alt="Accent preview"
+                  className="absolute inset-0 h-full w-full object-cover opacity-40"
+                />
+              )}
+              <div className="relative z-10 flex h-full flex-col justify-between p-3 text-white">
+                <p className="text-[9px] uppercase tracking-[0.35rem] text-white/60">Stories</p>
+                <p className="text-xs">
+                  {new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
+      key: 'guidelines',
+      title: 'Usage',
+      render: () => (
+        <div className="aspect-video w-full overflow-hidden rounded-3xl bg-white">
+          <div className="flex h-full w-full flex-col justify-between bg-gradient-to-br from-slate-100 via-white to-white p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="h-12 w-16 overflow-hidden rounded-xl border border-slate-200 bg-slate-200/60">
+                  {images.application ? (
+                    <img
+                      src={images.application}
+                      alt="Aperçu guideline"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div
+                      className="h-full w-full"
+                      style={{
+                        background: `linear-gradient(135deg, ${brand.primaryColor || '#0f172a'} 0%, ${
+                          brand.secondaryColor || '#1f2937'
+                        } 100%)`
+                      }}
+                    />
+                  )}
+                </div>
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.45rem] text-slate-500">
+                    Ratios
+                  </p>
+                  <p className="mt-1 text-base font-semibold text-slate-700 leading-snug">
+                    Palette équilibrée 60 / 30 / 10
+                  </p>
+                </div>
+              </div>
+              <p className="text-[9px] uppercase tracking-[0.35rem] text-slate-400">
+                {brand.name}
+              </p>
+            </div>
+            <div className="grid grid-cols-3 gap-2 text-[10px] font-semibold uppercase tracking-[0.3rem] text-slate-500">
+              <div className="rounded-2xl border border-slate-200 bg-white p-3">
+                <p className="text-xs text-slate-700">Primaire</p>
+                <div
+                  className="mt-2 h-2 rounded-full"
+                  style={{ backgroundColor: brand.primaryColor || '#0f172a' }}
+                />
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-white p-3">
+                <p className="text-xs text-slate-700">Secondaire</p>
+                <div
+                  className="mt-2 h-2 rounded-full"
+                  style={{ backgroundColor: brand.secondaryColor || '#1f2937' }}
+                />
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-white p-3">
+                <p className="text-xs text-slate-700">Accent</p>
+                <div
+                  className="mt-2 h-2 rounded-full"
+                  style={{ backgroundColor: brand.accentColor || '#fbbf24' }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    }
+  ]
 
   return (
     <div className="min-h-screen bg-white dark:bg-black relative overflow-hidden">
@@ -279,362 +747,259 @@ export default function BrandPage() {
             </div>
           </motion.div>
 
-          {/* Le même Bento Grid que dans preview */}
-          <div className="grid grid-cols-4 md:grid-cols-12 gap-3 md:gap-4">
-            
-            {/* Card 1: Primary Brand */}
+          {/* Moodboard inspiré */}
+          <div className="grid grid-cols-12 gap-3 md:gap-4 auto-rows-[160px] md:auto-rows-[200px] lg:auto-rows-[240px]">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="col-span-4 md:col-span-6 h-[300px] md:h-[400px] rounded-3xl relative overflow-hidden group"
-              style={{ background: gradient1 }}
-              whileHover={{ scale: 1.02 }}
+              className="relative col-span-12 md:col-span-7 md:row-span-3 rounded-3xl overflow-hidden group"
+              whileHover={{ scale: 1.01 }}
             >
-              <div className="absolute inset-0 flex items-center justify-center p-8">
-                <h2
-                  className="text-7xl md:text-8xl font-bold text-white dark:text-black text-center"
-                  style={{ fontFamily: brand.primaryFont || 'sans-serif' }}
-                >
-                  {brand.name}
-                </h2>
-              </div>
-
-              {brand.primaryColor && (
-                <div className="absolute bottom-6 right-6 px-4 py-2 rounded-full bg-white/90 backdrop-blur-xl">
-                  <p className="text-gray-800 text-sm font-mono">
-                    {brand.primaryColor}
-                  </p>
-                </div>
+              {images.hero ? (
+                <img
+                  src={images.hero}
+                  alt={`${brand.name} hero`}
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+              ) : (
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background: `linear-gradient(135deg, ${brand.primaryColor || '#111827'}, ${brand.secondaryColor || '#1f2937'})`
+                  }}
+                />
               )}
+              <div
+                className="absolute inset-0 mix-blend-multiply"
+                style={{
+                  background: `linear-gradient(135deg, ${brand.primaryColor || '#111827'} 0%, ${brand.accentColor || '#1f2937'} 100%)`
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
+              <div className="relative z-10 flex h-full flex-col justify-between p-6 md:p-10">
+                <div className="flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-white/80">
+                  <span className="h-px w-8 bg-white/60" />
+                  Moodboard
+                </div>
+                <div>
+                  <motion.h2
+                    className="mb-6 text-5xl font-semibold tracking-tight text-white sm:text-6xl lg:text-7xl"
+                    style={{ fontFamily: primaryFont }}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                  >
+                    {brand.name}
+                  </motion.h2>
+                  {brand.description && (
+                    <p className="max-w-xl text-sm leading-relaxed text-white/80 sm:text-base md:text-lg">
+                      {showFullDescription || brand.description.length <= 160
+                        ? brand.description
+                        : `${brand.description.substring(0, 160)}...`}
+                    </p>
+                  )}
+                </div>
+              </div>
             </motion.div>
 
-            {/* Card 2: Color Palette */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="col-span-4 md:col-span-6 h-[300px] md:h-[400px] rounded-3xl bg-white border border-gray-200 p-6 md:p-8"
-              whileHover={{ scale: 1.02 }}
+              className="col-span-12 md:col-span-5 md:row-span-1 flex flex-col justify-between rounded-3xl border border-black/5 bg-white p-6 shadow-sm transition-colors dark:border-white/10 dark:bg-black md:p-8"
+              whileHover={{ scale: 1.01 }}
             >
-              <p className="text-xs font-bold text-gray-400 mb-6 md:mb-8 uppercase tracking-widest">
-                Palette Chromatique
-              </p>
-
-              <div className="space-y-4 md:space-y-5">
-                {[
-                  { color: brand.primaryColor, label: 'Primary' },
-                  { color: brand.secondaryColor, label: 'Secondary' },
-                  { color: brand.accentColor, label: 'Accent' }
-                ]
-                  .filter(item => item.color)
-                  .map((item, idx) => (
-                    <motion.div
-                      key={idx}
-                      className="flex items-center gap-4"
-                      initial={{ x: -30, opacity: 0 }}
-                      whileInView={{ x: 0, opacity: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: idx * 0.1, duration: 0.5 }}
-                    >
-                      <motion.div
-                        className="w-16 h-16 md:w-20 md:h-20 rounded-xl border border-gray-200"
-                        style={{ backgroundColor: item.color! }}
-                        whileHover={{
-                          scale: 1.1,
-                          rotate: 5,
-                          transition: { duration: 0.3 }
-                        }}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-gray-400 text-xs md:text-sm mb-1">
-                          {item.label}
-                        </p>
-                        <p className="text-black font-mono text-sm md:text-base truncate">
-                          {item.color}
-                        </p>
-                        <motion.div
-                          className="h-1 rounded-full mt-2"
-                          style={{ backgroundColor: item.color! }}
-                          initial={{ width: 0 }}
-                          whileInView={{ width: '100%' }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 0.8, delay: 0.3 + idx * 0.1 }}
-                        />
-                      </div>
-                    </motion.div>
-                  ))}
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gray-500 dark:text-gray-400">
+                  Brand Guidelines
+                </p>
+                <h3
+                  className="mt-4 text-2xl font-semibold text-black dark:text-white md:text-3xl"
+                  style={{ fontFamily: secondaryFont }}
+                >
+                  Identité {brand.name}
+                </h3>
+              </div>
+              <div className="mt-6 flex flex-wrap gap-2">
+                {keywordPills.map((keyword) => (
+                  <span
+                    key={keyword}
+                    className="rounded-full bg-black/5 px-3 py-1 text-xs font-semibold text-black/80 dark:bg-white/10 dark:text-white/80"
+                  >
+                    {keyword}
+                  </span>
+                ))}
               </div>
             </motion.div>
 
-              {/* Card 3: Typography */}
-            {brand.primaryFont && (
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-50px' }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="col-span-4 md:col-span-4 h-[280px] md:h-[350px] rounded-2xl md:rounded-3xl relative overflow-hidden group"
-                style={{ background: gradient2 }}
-                whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
-              >
-                {images.typography && (
-                  <img
-                    src={images.typography}
-                    alt="Typography"
-                    className="absolute inset-0 w-full h-full object-cover opacity-20"
-                  />
-                )}
-
-                <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-between">
-                  <p className="text-xs font-bold text-white/80 uppercase tracking-widest">
-                    Typographie
-                  </p>
-
-                  <div>
-                    <motion.p
-                      className="text-7xl md:text-8xl font-bold text-white mb-3 md:mb-4"
-                      style={{ fontFamily: brand.primaryFont }}
-                      whileHover={{ rotate: 5, transition: { duration: 0.4 } }}
-                    >
-                      Aa
-                    </motion.p>
-                    <div className="px-3 md:px-4 py-2 rounded-full bg-white/90 backdrop-blur-xl inline-block">
-                      <p className="text-gray-800 text-xs md:text-sm">
-                        {brand.primaryFont}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
-            {/* Card 4: Personality */}
-            {brand.brandPersonality && (
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-50px' }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className="col-span-4 md:col-span-8 h-[280px] md:h-[350px] rounded-2xl md:rounded-3xl relative overflow-hidden group"
-                whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
-              >
-                {images.personality ? (
-                  <img
-                    src={images.personality}
-                    alt="Brand Personality"
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/40" />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/40" />
-
-                <div className="absolute inset-0 p-6 md:p-10 flex flex-col justify-end">
-                  <p className="text-xs font-bold text-white/60 mb-4 md:mb-6 uppercase tracking-widest">
-                    Personnalité de Marque
-                  </p>
-                  <motion.h3
-                    className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 md:mb-6 capitalize"
-                    style={{ fontFamily: brand.primaryFont || 'sans-serif' }}
-                    initial={{ x: -30, opacity: 0 }}
-                    whileInView={{ x: 0, opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
-                  >
-                    {brand.brandPersonality}
-                  </motion.h3>
-                  {brand.targetAudience && (
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-                      <motion.div
-                        className="h-px w-full sm:flex-1 bg-white/30"
-                        initial={{ width: 0 }}
-                        whileInView={{ width: '100%' }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 1, delay: 0.3 }}
-                      />
-                      <div className="px-4 md:px-6 py-2 md:py-3 rounded-full bg-white/90 backdrop-blur-xl">
-                        <p className="text-black text-sm md:text-base lg:text-lg capitalize whitespace-nowrap">
-                          {brand.targetAudience}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            )}
-
-            {/* Card 5: Secondary Typography */}
-            {brand.secondaryFont && (
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-50px' }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                className="col-span-4 md:col-span-7 h-[280px] md:h-[350px] rounded-2xl md:rounded-3xl relative overflow-hidden"
-                style={{ background: gradient3 }}
-                whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
-              >
-                <div className="absolute inset-0 p-6 md:p-10 flex flex-col justify-between">
-                  <p className="text-xs font-bold text-white/80 uppercase tracking-widest">
-                    Typographie Secondaire
-                  </p>
-
-                  <div>
-                    <motion.p
-                      className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-white mb-4 md:mb-6"
-                      style={{ fontFamily: brand.secondaryFont }}
-                      initial={{ y: 30, opacity: 0 }}
-                      whileInView={{ y: 0, opacity: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.6 }}
-                    >
-                      {brand.name}
-                    </motion.p>
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-                      <div className="px-4 md:px-6 py-2 md:py-3 rounded-full bg-white/90 backdrop-blur-xl">
-                        <p className="text-black text-xs md:text-sm">{brand.secondaryFont}</p>
-                      </div>
-                      <motion.div
-                        className="h-px w-full sm:flex-1 bg-white/30"
-                        initial={{ width: 0 }}
-                        whileInView={{ width: '100%' }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 1 }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
-            {/* Card 6: Accent Showcase */}
-            {brand.accentColor && (
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-50px' }}
-                transition={{ duration: 0.6, delay: 0.5 }}
-                className="col-span-4 md:col-span-5 h-[280px] md:h-[350px] rounded-2xl md:rounded-3xl relative overflow-hidden group"
-                style={{ backgroundColor: brand.accentColor }}
-                whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
-              >
-                {images.accent && (
-                  <img
-                    src={images.accent}
-                    alt="Accent Color"
-                    className="absolute inset-0 w-full h-full object-cover opacity-20"
-                  />
-                )}
-
-                <div className="absolute inset-0 p-6 md:p-8 flex flex-col items-center justify-center text-center">
-                  <p className="text-xs font-bold mt-7 text-white/80 mb-6 md:mb-8 uppercase tracking-widest">
-                    Couleur d&apos;Accent
-                  </p>
-
-                  <div className="px-4 md:px-6 py-2 md:py-3 rounded-full bg-white/90 backdrop-blur-xl">
-                    <p className="text-gray-800 font-mono text-xs md:text-sm">
-                      {brand.accentColor}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
-            {/* Card 7: Full Application */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-50px' }}
-              transition={{ duration: 0.6, delay: 0.6 }}
-              className="col-span-4 md:col-span-12 h-[400px] md:h-[500px] rounded-2xl md:rounded-3xl relative overflow-hidden group"
-              whileHover={{ scale: 1.01, transition: { duration: 0.3 } }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="relative col-span-12 md:col-span-5 md:row-span-2 overflow-hidden rounded-3xl"
+              whileHover={{ scale: 1.01 }}
+            >
+              {images.accent && (
+                <img
+                  src={images.accent}
+                  alt="Motif accent"
+                  className="absolute inset-0 h-full w-full object-cover opacity-30"
+                />
+              )}
+              <div
+                className="absolute inset-0"
+                style={{
+                  background: `linear-gradient(160deg, ${accentOverlay} 0%, rgba(15,15,15,0.85) 100%)`
+                }}
+              />
+              <div className="relative z-10 flex h-full flex-col p-6 md:p-8">
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/70">
+                  Palette & Accents
+                </p>
+                <div className="mt-auto grid grid-cols-3 gap-3">
+                  {displayPalette.map((color, idx) => (
+                    <div
+                      key={`${color}-${idx}`}
+                      className="flex flex-col gap-3 rounded-2xl bg-white/15 p-3 backdrop-blur-lg"
+                    >
+                      <div
+                        className="h-16 rounded-xl border border-white/20"
+                        style={{ backgroundColor: color }}
+                      />
+                      <p className="text-xs font-mono uppercase text-white">{color}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.15 }}
+              className="col-span-12 md:col-span-7 md:row-span-2 flex flex-col justify-between rounded-3xl border border-black/5 bg-white p-6 transition-colors dark:border-white/10 dark:bg-black md:p-10"
+              whileHover={{ scale: 1.01 }}
+            >
+              <div className="flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-gray-500 dark:text-gray-400">
+                <span className="h-px w-8 bg-gray-400/60 dark:bg-white/30" />
+                Typographie
+              </div>
+              <div className="flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-end">
+                <div>
+                  <p
+                    className="text-7xl font-bold text-black dark:text-white sm:text-8xl"
+                    style={{ fontFamily: primaryFont }}
+                  >
+                    Aa
+                  </p>
+                  <p className="mt-3 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                    {primaryFont}
+                  </p>
+                </div>
+                <div className="flex-1 max-w-xl">
+                  <p
+                    className="text-lg leading-relaxed text-gray-700 dark:text-gray-200 md:text-xl"
+                    style={{ fontFamily: secondaryFont }}
+                  >
+                    {brand.description ||
+                      'Un système typographique équilibré pour renforcer la personnalité de la marque.'}
+                  </p>
+                  {secondaryFont !== primaryFont && (
+                    <p className="mt-3 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                      {secondaryFont}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.25 }}
+              className="relative col-span-12 md:col-span-5 md:row-span-2 overflow-hidden rounded-3xl"
+              whileHover={{ scale: 1.01 }}
+            >
+              {images.personality ? (
+                <img
+                  src={images.personality}
+                  alt="Mood"
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+              ) : (
+                <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-700 to-gray-900" />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/20" />
+              <div className="relative z-10 flex h-full flex-col justify-end gap-4 p-6 md:p-8">
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/70">
+                  Ton & Audience
+                </p>
+                <h3
+                  className="text-3xl font-semibold text-white md:text-4xl"
+                  style={{ fontFamily: primaryFont }}
+                >
+                  {personalityLabel}
+                </h3>
+                <p className="text-sm text-white/80 md:text-base">{audienceLabel}</p>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="relative col-span-12 md:col-span-12 md:row-span-3 overflow-hidden rounded-3xl"
+              whileHover={{ scale: 1.005 }}
             >
               {images.application ? (
                 <img
                   src={images.application}
-                  alt="Brand Application"
-                  className="absolute inset-0 w-full h-full object-cover"
+                  alt="Brand application"
+                  className="absolute inset-0 h-full w-full object-cover"
                 />
               ) : (
                 <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-gray-700" />
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/30" />
-
-              <div className="absolute inset-0 p-6 md:p-12 lg:p-16 flex flex-col justify-between">
-                <div />
-
-                <div>
-                  <motion.h2
-                    className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-white mb-6 md:mb-8"
-                    style={{ fontFamily: brand.primaryFont || 'sans-serif' }}
-                    initial={{ y: 30, opacity: 0 }}
-                    whileInView={{ y: 0, opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
-                  >
-                    {brand.name}
-                  </motion.h2>
-
-                  <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 md:gap-8">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/55 to-transparent" />
+              <div className="relative z-10 flex h-full flex-col justify-between p-6 md:p-12">
+                <div className="flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-white/70">
+                  <Eye className="h-4 w-4" />
+                  Expressions de marque
+                </div>
+                <div className="flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
+                  <div>
+                    <h3
+                      className="mb-4 text-4xl font-semibold text-white sm:text-5xl md:text-6xl"
+                      style={{ fontFamily: primaryFont }}
+                    >
+                      {brand.name}
+                    </h3>
                     {brand.description && (
-                      <div className="max-w-2xl">
-                        <motion.p
-                          className="text-base md:text-xl lg:text-2xl text-white/90"
-                          initial={{ y: 20, opacity: 0 }}
-                          whileInView={{ y: 0, opacity: 1 }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 0.6, delay: 0.2 }}
-                        >
-                          {showFullDescription || brand.description.length <= 120
-                            ? brand.description
-                            : `${brand.description.substring(0, 120)}...`}
-                        </motion.p>
-                        {brand.description.length > 120 && (
-                          <motion.button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              setShowFullDescription(!showFullDescription)
-                            }}
-                            className="mt-2 text-sm font-semibold text-white/90 hover:text-white transition-colors underline"
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.6, delay: 0.4 }}
-                          >
-                            {showFullDescription ? 'Voir moins' : 'Voir plus'}
-                          </motion.button>
-                        )}
-                      </div>
+                      <p className="max-w-2xl text-base leading-relaxed text-white/80 sm:text-lg md:text-xl">
+                        {brand.description}
+                      </p>
                     )}
-
-                    <div className="flex gap-3 md:gap-4">
-                      {[brand.primaryColor, brand.secondaryColor, brand.accentColor]
-                        .filter(Boolean)
-                        .map((color, idx) => (
-                          <motion.div
-                            key={idx}
-                            className="w-12 h-24 md:w-16 md:h-32 lg:w-20 lg:h-40 rounded-xl md:rounded-2xl"
-                            style={{ backgroundColor: color! }}
-                            initial={{ y: 30, opacity: 0 }}
-                            whileInView={{ y: 0, opacity: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.5, delay: idx * 0.1 }}
-                            whileHover={{
-                              y: -10,
-                              scale: 1.05,
-                              transition: { duration: 0.3 }
-                            }}
-                          />
-                        ))}
-                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    {displayPalette.slice(0, 3).map((color, idx) => (
+                      <div
+                        key={`application-color-${color}-${idx}`}
+                        className="h-24 w-12 rounded-xl border border-white/20 md:h-32 md:w-14"
+                        style={{ backgroundColor: color }}
+                      />
+                    ))}
                   </div>
                 </div>
               </div>
             </motion.div>
-            
           </div>
         </div>
       </section>
@@ -691,89 +1056,35 @@ export default function BrandPage() {
                 </div>
 
                 {/* Preview Cards */}
-                <div className="grid grid-cols-2 gap-4 mb-8">
-                  {/* Page 1 */}
-                  <div className="border border-gray-200 rounded-xl overflow-hidden">
-                    <div 
-                      className="w-full aspect-video flex items-center justify-center text-white relative"
-                      style={{ 
-                        background: `linear-gradient(135deg, ${brand.primaryColor || '#000'}, ${brand.secondaryColor || '#333'})`
-                      }}
+                <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  {previewPages.map((page, idx) => (
+                    <div
+                      key={page.key}
+                      className="overflow-hidden rounded-3xl border border-gray-200 bg-white p-4 shadow-sm"
                     >
-                      <div className="text-center">
-                        <h4 className="text-4xl font-light tracking-tight">{brand.name}</h4>
-                        <p className="text-xs mt-2 tracking-[0.3em] uppercase">Brand Guidelines</p>
+                      <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.35rem] text-gray-500">
+                        <span>{page.title}</span>
+                        <span className="rounded-full bg-gray-100 px-2 py-[3px] text-[10px] text-gray-600">
+                          Page {idx + 1}
+                        </span>
                       </div>
-                      <div className="absolute bottom-2 right-2 bg-white/20 backdrop-blur-sm px-2 py-1 rounded text-[10px]">
-                        Page 1
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Page 2 - Colors */}
-                  <div className="border border-gray-200 rounded-xl overflow-hidden">
-                    <div className="w-full aspect-video bg-gray-50 p-4 relative">
-                      <p className="text-xs font-semibold mb-2">Palette de Couleurs</p>
-                      <div className="flex gap-2">
-                        {[brand.primaryColor, brand.secondaryColor, brand.accentColor]
-                          .filter(Boolean)
-                          .map((color, idx) => (
-                            <div 
-                              key={idx}
-                              className="w-12 h-12 rounded-lg"
-                              style={{ backgroundColor: color! }}
-                            />
-                          ))}
-                      </div>
-                      <div className="absolute bottom-2 right-2 bg-black/10 backdrop-blur-sm px-2 py-1 rounded text-[10px]">
-                        Page 2
+                      <div className="mt-3 overflow-hidden rounded-2xl border border-gray-100 bg-white">
+                        {page.render()}
                       </div>
                     </div>
-                  </div>
-
-                  {/* Page 3 - Typography */}
-                  <div className="border border-gray-200 rounded-xl overflow-hidden">
-                    <div className="w-full aspect-video bg-white p-4 flex items-center justify-center relative">
-                      <div className="text-center">
-                        <p className="text-6xl font-light" style={{ fontFamily: brand.primaryFont || 'sans-serif' }}>
-                          Aa
-                        </p>
-                        <p className="text-xs mt-2 text-gray-500">{brand.primaryFont || 'Default'}</p>
-                      </div>
-                      <div className="absolute bottom-2 right-2 bg-black/10 backdrop-blur-sm px-2 py-1 rounded text-[10px]">
-                        Page 3
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Page 4 - Personality */}
-                  <div className="border border-gray-200 rounded-xl overflow-hidden">
-                    <div 
-                      className="w-full aspect-video flex items-center justify-center text-white relative"
-                      style={{ 
-                        background: `linear-gradient(135deg, ${brand.secondaryColor || brand.primaryColor || '#000'}, ${brand.primaryColor || '#333'})`
-                      }}
-                    >
-                      <div className="text-center">
-                        <p className="text-xs tracking-[0.2em] uppercase mb-2">Personnalité</p>
-                        <p className="text-2xl font-light capitalize">{brand.brandPersonality || 'Moderne'}</p>
-                      </div>
-                      <div className="absolute bottom-2 right-2 bg-white/20 backdrop-blur-sm px-2 py-1 rounded text-[10px]">
-                        Page 4
-                      </div>
-                    </div>
-                  </div>
+                  ))}
                 </div>
 
                 {/* Info */}
                 <div className="bg-gray-50 rounded-2xl p-6 mb-6">
                   <h4 className="font-semibold text-black mb-3">Contenu du PDF</h4>
                   <ul className="space-y-2 text-sm text-gray-600">
-                    <li>  Page de couverture personnalisée</li>
-                    <li>  Palette de couleurs complète avec codes hex</li>
-                    <li>  Typographie primaire et secondaire</li>
-                    <li>  Personnalité de marque et audience cible</li>
-                    <li>  Règles d&apos;application et guidelines</li>
+                    <li>  Page de couverture immersive avec mood visuel</li>
+                    <li>  Palette chromatique détaillée avec codes HEX / RGB</li>
+                    <li>  Système typographique complet (titres & corps)</li>
+                    <li>  Identité de marque & audience avec inspirations</li>
+                    <li>  Collage d&apos;applications visuelles et bonnes pratiques</li>
+                    <li>  Guidelines d&apos;usage des couleurs et ratios recommandés</li>
                   </ul>
                 </div>
 
@@ -901,4 +1212,3 @@ export default function BrandPage() {
     </div>
   )
 }
-

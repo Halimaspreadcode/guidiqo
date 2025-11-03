@@ -3,17 +3,22 @@
 import { Instagram, Linkedin } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function Footer() {
+interface FooterProps {
+  hideLinks?: boolean;
+}
+
+export default function Footer({ hideLinks = false }: FooterProps) {
   return (
-    <footer className="py-12 sm:py-16 px-3 sm:px-4 md:px-6 border-t border-gray-200 dark:border-white/10 bg-white dark:bg-black">
+    <footer className="relative w-full py-12 sm:py-16 px-3 sm:px-4 md:px-6 border-t border-gray-200 dark:border-white/10 bg-white dark:bg-black z-50">
       <div className="max-w-7xl mx-auto">
-        <motion.div 
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 sm:gap-12 mb-8 sm:mb-12"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          viewport={{ once: true }}
-        >
+        {!hideLinks && (
+          <motion.div 
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 sm:gap-12 mb-8 sm:mb-12"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            viewport={{ once: true }}
+          >
           <div className="sm:col-span-2 md:col-span-1">
             <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-black dark:text-white">Guidiqo</h3>
             <p className="text-gray-600 dark:text-white/70 text-sm sm:text-base max-w-sm">
@@ -61,9 +66,10 @@ export default function Footer() {
             </div>
           </div>
         </motion.div>
+        )}
         
         <motion.div 
-          className="pt-6 sm:pt-8 border-t border-gray-200 dark:border-white/10 flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4 text-xs sm:text-sm text-gray-600 dark:text-white/70"
+          className={`${hideLinks ? 'pt-0' : 'pt-6 sm:pt-8 border-t border-gray-200 dark:border-white/10'}  flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4 text-xs sm:text-sm text-gray-600 dark:text-white/70`}
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.2 }}

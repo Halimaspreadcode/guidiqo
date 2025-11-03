@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Users, Palette, Eye, Check, X, Crown, TrendingUp, Calendar, Download, Trash2, AlertTriangle, Share2 } from 'lucide-react'
+import { Users, Palette, Eye, Check, X, Crown, TrendingUp, Calendar, Download, Trash2, AlertTriangle, Share2, Send, Megaphone, Loader2 } from 'lucide-react'
 import { useUser } from '@stackframe/stack'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -62,6 +62,16 @@ interface DeletionRequest {
   }
 }
 
+interface AnnouncementConfig {
+  message: string
+  ctaLabel?: string | null
+  ctaHref?: string | null
+  enabled: boolean
+  version?: string
+}
+
+const DEFAULT_BANNER_MESSAGE = 'Nouveauté : Mode sombre disponible ! Découvrez toutes les fonctionnalités'
+
 export default function SuperAdminPage() {
   const router = useRouter()
   const user = useUser({ or: 'return-null' })
@@ -69,10 +79,64 @@ export default function SuperAdminPage() {
   const [brands, setBrands] = useState<Brand[]>([])
   const [deletionRequests, setDeletionRequests] = useState<DeletionRequest[]>([])
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'users' | 'brands' | 'deletions' | 'spotlighted'>('users')
+  const [activeTab, setActiveTab] = useState<'users' | 'brands' | 'deletions' | 'spotlighted' | 'communications'>('users')
   const [isAdmin, setIsAdmin] = useState(false)
   const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null)
   const [showBrandModal, setShowBrandModal] = useState(false)
+  const [newsletterForm, setNewsletterForm] = useState({
+    subject: '',
+    previewText: '',
+    recipients: '',
+    content: '',
+  })
+  const [sendingNewsletter, setSendingNewsletter] = useState(false)
+  const [newsletterFeedback, setNewsletterFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
+  const [bannerForm, setBannerForm] = useState({
+    message: DEFAULT_BANNER_MESSAGE,
+    ctaLabel: '',
+    ctaHref: '',
+    enabled: true,
+  })
+  const [bannerFeedback, setBannerFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
+  const [savingBanner, setSavingBanner] = useState(false)
+  const [announcementConfig, setAnnouncementConfig] = useState<AnnouncementConfig | null>(null)
+  const bannerLastUpdated = (() => {
+    if (!announcementConfig?.version || announcementConfig.version === 'default') {
+      return null
+    }
+    const date = new Date(announcementConfig.version)
+    if (Number.isNaN(date.getTime())) {
+      return null
+    }
+    return date.toLocaleString('fr-FR')
+  })()
+
+  const updateNewsletterField = (
+    field: 'subject' | 'previewText' | 'recipients' | 'content',
+    value: string,
+  ) => {
+    setNewsletterForm((prev) => ({ ...prev, [field]: value }))
+    if (newsletterFeedback) {
+      setNewsletterFeedback(null)
+    }
+  }
+
+  const updateBannerField = (
+    field: 'message' | 'ctaLabel' | 'ctaHref',
+    value: string,
+  ) => {
+    setBannerForm((prev) => ({ ...prev, [field]: value }))
+    if (bannerFeedback) {
+      setBannerFeedback(null)
+    }
+  }
+
+  const updateBannerEnabled = (value: boolean) => {
+    setBannerForm((prev) => ({ ...prev, enabled: value }))
+    if (bannerFeedback) {
+      setBannerFeedback(null)
+    }
+  }
 
   // Vérifier si l'utilisateur est admin
   useEffect(() => {
@@ -120,10 +184,11 @@ export default function SuperAdminPage() {
 
   const fetchData = async () => {
     try {
-      const [usersResponse, brandsResponse, deletionsResponse] = await Promise.all([
+      const [usersResponse, brandsResponse, deletionsResponse, announcementResponse] = await Promise.all([
         fetch('/api/superadmin/users'),
         fetch('/api/superadmin/brands'),
-        fetch('/api/superadmin/deletion-requests')
+        fetch('/api/superadmin/deletion-requests'),
+        fetch('/api/superadmin/announcement')
       ])
 
       if (usersResponse.ok) {
@@ -139,6 +204,25 @@ export default function SuperAdminPage() {
       if (deletionsResponse.ok) {
         const deletionsData = await deletionsResponse.json()
         setDeletionRequests(deletionsData)
+      }
+
+      if (announcementResponse.ok) {
+        const announcementData = await announcementResponse.json()
+        setAnnouncementConfig(announcementData)
+        setBannerForm({
+          message: announcementData.message ?? '',
+          ctaLabel: announcementData.ctaLabel ?? '',
+          ctaHref: announcementData.ctaHref ?? '',
+          enabled: typeof announcementData.enabled === 'boolean' ? announcementData.enabled : true,
+        })
+      } else {
+        setAnnouncementConfig(null)
+        setBannerForm({
+          message: DEFAULT_BANNER_MESSAGE,
+          ctaLabel: '',
+          ctaHref: '',
+          enabled: true,
+        })
       }
     } catch (error) {
       console.error('Error fetching admin data:', error)
@@ -227,6 +311,109 @@ export default function SuperAdminPage() {
     } catch (error) {
       console.error('Error updating user verified status:', error)
       alert('Erreur lors de la mise à jour')
+    }
+  }
+
+  const handleNewsletterSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setNewsletterFeedback(null)
+    setSendingNewsletter(true)
+
+    try {
+      const response = await fetch('/api/superadmin/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subject: newsletterForm.subject.trim(),
+          previewText: newsletterForm.previewText.trim(),
+          recipients: newsletterForm.recipients,
+          content: newsletterForm.content,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null)
+        setNewsletterFeedback({
+          type: 'error',
+          message: errorData?.error ?? 'Erreur lors de l’envoi de la newsletter.',
+        })
+        return
+      }
+
+      const data = await response.json()
+      setNewsletterFeedback({
+        type: 'success',
+        message:
+          data?.sentTo != null
+            ? `Newsletter envoyée à ${data.sentTo} destinataire(s).`
+            : 'Newsletter envoyée avec succès.',
+      })
+    } catch (error) {
+      console.error('❌ Newsletter send error:', error)
+      setNewsletterFeedback({
+        type: 'error',
+        message: 'Erreur réseau lors de l’envoi de la newsletter.',
+      })
+    } finally {
+      setSendingNewsletter(false)
+    }
+  }
+
+  const handleBannerSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setBannerFeedback(null)
+    setSavingBanner(true)
+
+    try {
+      const response = await fetch('/api/superadmin/announcement', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: bannerForm.message.trim(),
+          ctaLabel: bannerForm.ctaLabel.trim() ? bannerForm.ctaLabel.trim() : undefined,
+          ctaHref: bannerForm.ctaHref.trim() ? bannerForm.ctaHref.trim() : undefined,
+          enabled: bannerForm.enabled,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null)
+        setBannerFeedback({
+          type: 'error',
+          message: errorData?.error ?? 'Erreur lors de l’enregistrement.',
+        })
+        return
+      }
+
+      const data = await response.json()
+      setAnnouncementConfig(data)
+      setBannerForm({
+        message: data.message ?? '',
+        ctaLabel: data.ctaLabel ?? '',
+        ctaHref: data.ctaHref ?? '',
+        enabled: typeof data.enabled === 'boolean' ? data.enabled : true,
+      })
+      setBannerFeedback({
+        type: 'success',
+        message: 'Bannière mise à jour avec succès.',
+      })
+
+      if (typeof window !== 'undefined') {
+        if (data.version) {
+          localStorage.setItem('stickyBannerVersion', data.version)
+          localStorage.removeItem('stickyBannerDismissed')
+        }
+        localStorage.setItem('stickyBannerEnabled', data.enabled ? 'true' : 'false')
+        window.dispatchEvent(new Event('sticky-banner-change'))
+      }
+    } catch (error) {
+      console.error('❌ Banner update error:', error)
+      setBannerFeedback({
+        type: 'error',
+        message: 'Erreur réseau lors de la mise à jour.',
+      })
+    } finally {
+      setSavingBanner(false)
     }
   }
 
@@ -358,6 +545,19 @@ export default function SuperAdminPage() {
               >
                 <Trash2 className="w-4 h-4" />
                 Suppressions ({deletionRequests.filter(r => r.status === 'PENDING').length})
+              </motion.button>
+              <motion.button
+                onClick={() => setActiveTab('communications')}
+                className={`px-6 py-3 rounded-full font-semibold transition-all flex items-center gap-2 ${
+                  activeTab === 'communications'
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100'
+                }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Send className="w-4 h-4" />
+                Communications
               </motion.button>
             </div>
           </motion.div>
@@ -634,6 +834,203 @@ export default function SuperAdminPage() {
                     )
                   })}
               </div>
+            </div>
+          )}
+
+          {activeTab === 'communications' && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="bg-white border border-gray-100 dark:bg-stone-900 dark:border-white/10 rounded-3xl p-6 lg:p-8 shadow-sm"
+              >
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-3 rounded-2xl bg-indigo-600 text-white">
+                    <Send className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-black dark:text-white">Envoyer une newsletter</h3>
+                    <p className="text-sm text-gray-500">Diffusez une actualité à vos abonnés via Resend.</p>
+                  </div>
+                </div>
+
+                <form onSubmit={handleNewsletterSubmit} className="space-y-5">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 block mb-2">Sujet</label>
+                    <input
+                      type="text"
+                      value={newsletterForm.subject}
+                      onChange={(event) => updateNewsletterField('subject', event.target.value)}
+                      placeholder="Nouvelle mise à jour Guidiqo"
+                      className="w-full rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-stone-950 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 block mb-2">Texte d&apos;aperçu (optionnel)</label>
+                    <input
+                      type="text"
+                      value={newsletterForm.previewText}
+                      onChange={(event) => updateNewsletterField('previewText', event.target.value)}
+                      placeholder="Une minute pour découvrir nos nouveautés"
+                      className="w-full rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-stone-950 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 block mb-2">Destinataires</label>
+                    <textarea
+                      value={newsletterForm.recipients}
+                      onChange={(event) => updateNewsletterField('recipients', event.target.value)}
+                      placeholder="contact@example.com\nhello@example.com"
+                      rows={4}
+                      className="w-full rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-stone-950 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      required
+                    />
+                    <p className="text-xs text-gray-400 mt-1">Un email par ligne ou séparé par des virgules.</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 block mb-2">Contenu</label>
+                    <textarea
+                      value={newsletterForm.content}
+                      onChange={(event) => updateNewsletterField('content', event.target.value)}
+                      placeholder="Bonjour !\n\nDécouvrez les nouveautés de cette semaine..."
+                      rows={8}
+                      className="w-full rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-stone-950 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      required
+                    />
+                  </div>
+
+                  {newsletterFeedback && (
+                    <div
+                      className={`rounded-2xl border px-4 py-3 text-sm ${
+                        newsletterFeedback.type === 'success'
+                          ? 'border-green-200 bg-green-50 text-green-700'
+                          : 'border-red-200 bg-red-50 text-red-700'
+                      }`}
+                    >
+                      {newsletterFeedback.message}
+                    </div>
+                  )}
+
+                  <div className="flex justify-end">
+                    <button
+                      type="submit"
+                      disabled={sendingNewsletter || !newsletterForm.subject.trim() || !newsletterForm.content.trim() || !newsletterForm.recipients.trim()}
+                      className={`inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-colors ${
+                        sendingNewsletter
+                          ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                          : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                      }`}
+                    >
+                      {sendingNewsletter ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Send className="w-4 h-4" />
+                      )}
+                      {sendingNewsletter ? 'Envoi en cours...' : 'Envoyer la newsletter'}
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.1 }}
+                className="bg-white border border-gray-100 dark:bg-stone-900 dark:border-white/10 rounded-3xl p-6 lg:p-8 shadow-sm"
+              >
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-3 rounded-2xl bg-amber-500 text-white">
+                    <Megaphone className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-black dark:text-white">Bannière d&apos;actualité</h3>
+                    <p className="text-sm text-gray-500">Modifiez le message affiché en haut du site.</p>
+                  </div>
+                </div>
+
+                <form onSubmit={handleBannerSubmit} className="space-y-5">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 block mb-2">Message</label>
+                    <textarea
+                      value={bannerForm.message}
+                      onChange={(event) => updateBannerField('message', event.target.value)}
+                      rows={4}
+                      placeholder="Nouveauté : Mode sombre disponible ! Découvrez toutes les fonctionnalités"
+                      className="w-full rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-stone-950 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      required
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 block mb-2">Texte du bouton (optionnel)</label>
+                      <input
+                        type="text"
+                        value={bannerForm.ctaLabel}
+                        onChange={(event) => updateBannerField('ctaLabel', event.target.value)}
+                        placeholder="Découvrir"
+                        className="w-full rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-stone-950 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 block mb-2">Lien du bouton (optionnel)</label>
+                      <input
+                        type="url"
+                        value={bannerForm.ctaHref}
+                        onChange={(event) => updateBannerField('ctaHref', event.target.value)}
+                        placeholder="https://guidiqo.com/nouveautes"
+                        className="w-full rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-stone-950 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={bannerForm.enabled}
+                        onChange={(event) => updateBannerEnabled(event.target.checked)}
+                        className="h-4 w-4 rounded border-gray-300 text-amber-500 focus:ring-amber-400"
+                      />
+                      Afficher la bannière
+                    </label>
+                    {bannerLastUpdated && (
+                      <span className="text-xs text-gray-400">Dernière mise à jour : {bannerLastUpdated}</span>
+                    )}
+                  </div>
+
+                  {bannerFeedback && (
+                    <div
+                      className={`rounded-2xl border px-4 py-3 text-sm ${
+                        bannerFeedback.type === 'success'
+                          ? 'border-green-200 bg-green-50 text-green-700'
+                          : 'border-red-200 bg-red-50 text-red-700'
+                      }`}
+                    >
+                      {bannerFeedback.message}
+                    </div>
+                  )}
+
+                  <div className="flex justify-end">
+                    <button
+                      type="submit"
+                      disabled={savingBanner || !bannerForm.message.trim()}
+                      className={`inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-colors ${
+                        savingBanner
+                          ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                          : 'bg-amber-500 text-white hover:bg-amber-600'
+                      }`}
+                    >
+                      {savingBanner ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Megaphone className="w-4 h-4" />
+                      )}
+                      {savingBanner ? 'Enregistrement...' : 'Enregistrer la bannière'}
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
             </div>
           )}
 
