@@ -232,7 +232,7 @@ export async function POST(req: NextRequest) {
     if (error) {
       console.error('❌ Resend newsletter error:', error)
       return NextResponse.json(
-        { error: 'Impossible d'envoyer la newsletter.' },
+        { error: 'Impossible d\'envoyer la newsletter.' },
         { status: 500 },
       )
     } finally {
