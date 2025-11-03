@@ -221,6 +221,8 @@ export async function POST(req: NextRequest) {
 
     const html = htmlContent ?? renderHtml(subject, textContent ?? '', previewText)
 
+    console.log(`📧 Starting newsletter send to ${recipientsToSend.length} recipients`)
+
     // Resend limite à 50 destinataires par envoi
     // Diviser en batches si nécessaire
     const BATCH_SIZE = 50
@@ -228,10 +230,14 @@ export async function POST(req: NextRequest) {
     let totalErrors = 0
     const errors: string[] = []
 
+    // Envoyer les emails par batches avec gestion d'erreur robuste
     for (let i = 0; i < recipientsToSend.length; i += BATCH_SIZE) {
       const batch = recipientsToSend.slice(i, i + BATCH_SIZE)
+      const batchNumber = Math.floor(i / BATCH_SIZE) + 1
       
       try {
+        console.log(`📤 Sending batch ${batchNumber}/${Math.ceil(recipientsToSend.length / BATCH_SIZE)} to ${batch.length} recipients`)
+        
         const { data, error } = await resend.emails.send({
           from: FROM_EMAIL,
           to: batch,
@@ -240,26 +246,59 @@ export async function POST(req: NextRequest) {
           text: plainText,
         })
 
+        console.log(`📥 Batch ${batchNumber} response:`, { 
+          hasData: !!data, 
+          dataId: data?.id, 
+          hasError: !!error,
+          errorType: error ? typeof error : 'none'
+        })
+
         if (error) {
-          console.error(`❌ Resend newsletter error (batch ${i / BATCH_SIZE + 1}):`, error)
+          console.error(`❌ Resend newsletter error (batch ${batchNumber}):`, error)
+          let errorMsg = 'Erreur inconnue'
+          
+          if (typeof error === 'string') {
+            errorMsg = error
+          } else if (error && typeof error === 'object') {
+            // Resend retourne souvent { message: string, name?: string }
+            errorMsg = (error as any).message || (error as any).name || JSON.stringify(error)
+          }
+          
           totalErrors += batch.length
-          errors.push(`Batch ${i / BATCH_SIZE + 1}: ${error.message || JSON.stringify(error)}`)
+          errors.push(`Batch ${batchNumber}: ${errorMsg}`)
           continue
         }
 
+        // Vérifier que l'envoi a réussi
         if (data?.id) {
           totalSent += batch.length
-          console.log(`✅ Newsletter batch ${i / BATCH_SIZE + 1} sent successfully (${batch.length} recipients)`)
+          console.log(`✅ Newsletter batch ${batchNumber} sent successfully (${batch.length} recipients) - ID: ${data.id}`)
+        } else {
+          // Pas d'erreur mais pas de data.id non plus - cas suspect
+          console.warn(`⚠️ Newsletter batch ${batchNumber}: No data.id returned from Resend`)
+          console.warn(`📋 Response data:`, JSON.stringify(data).substring(0, 200))
+          // En production, considérer comme échec si pas de data.id
+          totalErrors += batch.length
+          errors.push(`Batch ${batchNumber}: Aucun ID retourné par Resend`)
         }
       } catch (batchError: any) {
-        console.error(`❌ Newsletter batch ${i / BATCH_SIZE + 1} error:`, batchError)
+        console.error(`❌ Newsletter batch ${batchNumber} exception:`, batchError)
+        const errorMsg = batchError?.message || batchError?.toString() || 'Erreur inconnue'
         totalErrors += batch.length
-        errors.push(`Batch ${i / BATCH_SIZE + 1}: ${batchError.message || 'Erreur inconnue'}`)
+        errors.push(`Batch ${batchNumber}: ${errorMsg}`)
+      }
+      
+      // Petit délai entre les batches pour éviter de surcharger l'API
+      if (i + BATCH_SIZE < recipientsToSend.length) {
+        await new Promise(resolve => setTimeout(resolve, 100))
       }
     }
 
+    console.log(`📊 Newsletter send summary: ${totalSent} sent, ${totalErrors} failed, ${validRecipients.length - recipientsToSend.length} skipped`)
+
     // Si tous les envois ont échoué
     if (totalSent === 0 && totalErrors > 0) {
+      console.error(`❌ All newsletter batches failed. Errors:`, errors)
       return NextResponse.json(
         { 
           error: 'Impossible d\'envoyer la newsletter.', 
@@ -270,13 +309,16 @@ export async function POST(req: NextRequest) {
     }
 
     // Si certains envois ont réussi
-    return NextResponse.json({
+    const result = {
       success: true,
       sentTo: totalSent,
       failed: totalErrors,
       skipped: validRecipients.length - recipientsToSend.length,
       warnings: errors.length > 0 ? errors : undefined,
-    })
+    }
+    
+    console.log(`✅ Newsletter send completed:`, result)
+    return NextResponse.json(result)
   } catch (error) {
     if (error instanceof AdminAuthError) {
       if (error.message === 'UNAUTHENTICATED') {
