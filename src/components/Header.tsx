@@ -18,7 +18,6 @@ export default function Header() {
   const { profile } = useUserProfile();
   const [isAdmin, setIsAdmin] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [bannerDismissed, setBannerDismissed] = useState(false);
   const { locale, setLocale, availableLocales, t } = useLanguage();
 
   useEffect(() => {
@@ -43,37 +42,6 @@ export default function Header() {
     checkAdmin();
   }, [user]);
 
-  // Vérifier si la banner a été fermée
-  useEffect(() => {
-    const updateBannerStatus = () => {
-      const enabled = localStorage.getItem('stickyBannerEnabled') !== 'false';
-      if (!enabled) {
-        setBannerDismissed(true);
-        return;
-      }
-
-      const version = localStorage.getItem('stickyBannerVersion');
-      const dismissedVersion = localStorage.getItem('stickyBannerDismissed');
-      const isDismissed = Boolean(version && dismissedVersion && version === dismissedVersion);
-      setBannerDismissed(isDismissed);
-    };
-
-    updateBannerStatus();
-
-    const handleStorageChange = () => updateBannerStatus();
-    const handleCustomEvent = () => updateBannerStatus();
-
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('sticky-banner-change', handleCustomEvent as EventListener);
-
-    const interval = setInterval(updateBannerStatus, 500);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('sticky-banner-change', handleCustomEvent as EventListener);
-      clearInterval(interval);
-    };
-  }, []);
 
   const handleSignIn = () => {
     router.push('/auth/signin');
@@ -135,9 +103,7 @@ export default function Header() {
   return (
     <>
       <motion.header 
-        className={`fixed left-0 right-0 z-[55] flex justify-center px-3 sm:px-4 md:px-6 py-3 sm:py-4 transition-all duration-300 ${
-          bannerDismissed ? 'top-0' : 'top-12'
-        }`}
+        className="fixed left-0 right-0 top-0 z-[55] flex justify-center px-3 sm:px-4 md:px-6 py-3 sm:py-4 transition-all duration-300"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
@@ -271,9 +237,7 @@ export default function Header() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className={`fixed left-3 right-3 z-40 sm:hidden transition-all duration-300 ${
-              bannerDismissed ? 'top-20' : 'top-32'
-            }`}
+            className="fixed left-3 right-3 top-20 z-40 sm:hidden transition-all duration-300"
           >
             <motion.div 
               className="bg-white/95 dark:bg-black/95 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg rounded-3xl p-6"

@@ -15,24 +15,6 @@ export default function FeaturesPage() {
   const router = useRouter();
   const [activeFeature, setActiveFeature] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [bannerDismissed, setBannerDismissed] = useState(false);
-
-  // Vérifier si la banner a été fermée
-  useEffect(() => {
-    const checkBannerStatus = () => {
-      const dismissed = localStorage.getItem('stickyBannerDismissed');
-      setBannerDismissed(dismissed === 'true');
-    };
-
-    checkBannerStatus();
-    
-    // Vérifier périodiquement
-    const interval = setInterval(checkBannerStatus, 100);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
 
   const features = [
     {
@@ -286,9 +268,7 @@ downloadPDF({
     <div className="min-h-screen bg-white dark:bg-black">
       <Header />
       
-      <main className={`pb-20 transition-all duration-300 ${
-        bannerDismissed ? 'pt-20 sm:pt-24' : 'pt-32 sm:pt-36'
-      }`}>
+      <main className="pb-20 pt-20 sm:pt-24 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
           {/* Hero Section */}
           <motion.div
@@ -337,9 +317,7 @@ downloadPDF({
                 }}
               >
                   <div 
-                    className={`lg:sticky bg-white dark:bg-black lg:bg-transparent h-full lg:h-auto overflow-y-auto lg:overflow-visible max-w-sm lg:max-w-none ml-auto lg:ml-0 transition-all duration-300 ${
-                      bannerDismissed ? 'lg:top-20' : 'lg:top-32'
-                    }`}
+                    className="lg:sticky bg-white dark:bg-black lg:bg-transparent h-full lg:h-auto overflow-y-auto lg:overflow-visible max-w-sm lg:max-w-none ml-auto lg:ml-0 lg:top-20 transition-all duration-300"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <div className="p-6 lg:p-0">
