@@ -221,26 +221,61 @@ export async function POST(req: NextRequest) {
 
     const html = htmlContent ?? renderHtml(subject, textContent ?? '', previewText)
 
-    const { error } = await resend.emails.send({
-      from: FROM_EMAIL,
-      to: recipientsToSend,
-      subject,
-      html,
-      text: plainText,
-    })
+    // Resend limite à 50 destinataires par envoi
+    // Diviser en batches si nécessaire
+    const BATCH_SIZE = 50
+    let totalSent = 0
+    let totalErrors = 0
+    const errors: string[] = []
 
-    if (error) {
-      console.error('❌ Resend newsletter error:', error)
+    for (let i = 0; i < recipientsToSend.length; i += BATCH_SIZE) {
+      const batch = recipientsToSend.slice(i, i + BATCH_SIZE)
+      
+      try {
+        const { data, error } = await resend.emails.send({
+          from: FROM_EMAIL,
+          to: batch,
+          subject,
+          html,
+          text: plainText,
+        })
+
+        if (error) {
+          console.error(`❌ Resend newsletter error (batch ${i / BATCH_SIZE + 1}):`, error)
+          totalErrors += batch.length
+          errors.push(`Batch ${i / BATCH_SIZE + 1}: ${error.message || JSON.stringify(error)}`)
+          continue
+        }
+
+        if (data?.id) {
+          totalSent += batch.length
+          console.log(`✅ Newsletter batch ${i / BATCH_SIZE + 1} sent successfully (${batch.length} recipients)`)
+        }
+      } catch (batchError: any) {
+        console.error(`❌ Newsletter batch ${i / BATCH_SIZE + 1} error:`, batchError)
+        totalErrors += batch.length
+        errors.push(`Batch ${i / BATCH_SIZE + 1}: ${batchError.message || 'Erreur inconnue'}`)
+      }
+    }
+
+    // Si tous les envois ont échoué
+    if (totalSent === 0 && totalErrors > 0) {
       return NextResponse.json(
-        { error: 'Impossible d\'envoyer la newsletter.' },
+        { 
+          error: 'Impossible d\'envoyer la newsletter.', 
+          details: errors.length > 0 ? errors.join('; ') : undefined 
+        },
         { status: 500 },
       )
     }
 
+    // Si certains envois ont réussi
     return NextResponse.json({
       success: true,
-      sentTo: recipientsToSend.length,
+      sentTo: totalSent,
+      failed: totalErrors,
       skipped: validRecipients.length - recipientsToSend.length,
+      warnings: errors.length > 0 ? errors : undefined,
     })
   } catch (error) {
     if (error instanceof AdminAuthError) {

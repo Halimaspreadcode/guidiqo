@@ -583,21 +583,42 @@ export default function SuperAdminPage() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null)
+        const errorMessage = errorData?.error ?? 'Erreur lors de l\'envoi de la newsletter.'
+        const errorDetails = errorData?.details ? `\n\nDétails: ${errorData.details}` : ''
         setNewsletterFeedback({
           type: 'error',
-          message: errorData?.error ?? 'Erreur lors de l’envoi de la newsletter.',
+          message: `${errorMessage}${errorDetails}`,
         })
+        console.error('❌ Newsletter API error:', errorData)
         return
       }
 
       const data = await response.json()
-      setNewsletterFeedback({
-        type: 'success',
-        message:
-          data?.sentTo != null
-            ? `Newsletter envoyée à ${data.sentTo} destinataire(s).`
-            : 'Newsletter envoyée avec succès.',
-      })
+      
+      let successMessage = ''
+      if (data.failed && data.failed > 0) {
+        successMessage = `Newsletter partiellement envoyée : ${data.sentTo} réussi, ${data.failed} échec(s).`
+        if (data.warnings && data.warnings.length > 0) {
+          successMessage += `\n\nAvertissements: ${data.warnings.join('; ')}`
+        }
+        setNewsletterFeedback({
+          type: 'error',
+          message: successMessage,
+        })
+      } else {
+        successMessage = data?.sentTo != null
+          ? `Newsletter envoyée à ${data.sentTo} destinataire(s).`
+          : 'Newsletter envoyée avec succès.'
+        if (data?.skipped && data.skipped > 0) {
+          successMessage += ` ${data.skipped} email(s) ignoré(s) (désabonnés).`
+        }
+        setNewsletterFeedback({
+          type: 'success',
+          message: successMessage,
+        })
+      }
+      
+      console.log('✅ Newsletter sent:', data)
     } catch (error) {
       console.error('❌ Newsletter send error:', error)
       setNewsletterFeedback({
