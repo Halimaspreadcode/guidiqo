@@ -3,7 +3,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import DeletionBanner from "@/components/DeletionBanner";
-import { StickyBanner } from "@/components/StickyBanner";
+// import { StickyBanner } from "@/components/StickyBanner";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Link from "next/link";
@@ -80,7 +80,7 @@ export default function RootLayout({
       <body>
         <ThemeProvider>
           <Providers>
-            <StickyBanner hiddenPaths={['/dashboard', '/modifier', '/onboarding']} />
+            {/* <StickyBanner hiddenPaths={['/dashboard', '/modifier', '/onboarding']} /> */}
             <DeletionBanner />
             {children}
           </Providers>

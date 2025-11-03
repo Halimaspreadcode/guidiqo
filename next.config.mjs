@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['images.unsplash.com', 'images.pexels.com', 'e7msojy1cjnzyvsj.public.blob.vercel-storage.com'],
+    domains: ['images.unsplash.com', 'images.pexels.com', 'e7msojy1cjnzyvsj.public.blob.vercel-storage.com', 'hoirqrkdgbmvpwutwuwj-all.supabase.co'],
     remotePatterns: [
       {
         protocol: 'https',
@@ -14,6 +14,10 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: '**.vercel-storage.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.supabase.co',
       },
     ],
   },

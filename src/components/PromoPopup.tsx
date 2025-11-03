@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Sparkles, ExternalLink } from 'lucide-react';
+import { X, ExternalLink } from 'lucide-react';
+import Image from 'next/image';
 
 export default function PromoPopup() {
   const [isOpen, setIsOpen] = useState(false);
@@ -59,14 +60,20 @@ export default function PromoPopup() {
 
               {/* Contenu */}
               <div className="text-center space-y-6">
-                {/* Icône */}
+                {/* Logo */}
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                  className="mx-auto w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center"
+                  className="mx-auto w-16 h-16 rounded-full flex items-center justify-center overflow-hidden"
                 >
-                  <Sparkles className="w-8 h-8 text-white" />
+                  <Image
+                    src="https://hoirqrkdgbmvpwutwuwj-all.supabase.co/storage/v1/object/public/assets/assets/72b8bb91-83fe-4d08-9fc1-7a3c0f3b31e1_320w.png"
+                    alt="Guidiqo Logo"
+                    width={64}
+                    height={64}
+                    className="w-full h-full object-cover"
+                  />
                 </motion.div>
 
                 {/* Titre */}

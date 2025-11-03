@@ -16,8 +16,8 @@ export const StickyBanner = ({
   const pathname = usePathname()
 
   // Message fixe avec lien "ici" - l'annonce ne peut pas être fermée
-  const fixedMessage = "🎉 Du nouveau : Votre assistant IA pour créer des contenus engageants en quelques clics"
-  const linkText = "ici"
+  const fixedMessage = "Utilisé dans +20 Pays dans le monde "
+  const linkText = " "
   const linkHref = "https://create.guidiqo.com"
 
   const shouldHide = hiddenPaths.some((path) => pathname.startsWith(path))

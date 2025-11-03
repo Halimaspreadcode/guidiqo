@@ -2,8 +2,8 @@
 
 import { useEffect, useState, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
-import { Users, Palette, Eye, Check, X, Crown, TrendingUp, Calendar, Download, Trash2, AlertTriangle, Share2, Send, Megaphone, Loader2 } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Users, Palette, Eye, Check, X, Crown, TrendingUp, Calendar, Download, Trash2, AlertTriangle, Share2, Send, Megaphone, Loader2, Upload, FileText, FileSpreadsheet } from 'lucide-react'
 import { useUser } from '@stackframe/stack'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -88,9 +88,12 @@ export default function SuperAdminPage() {
     previewText: '',
     recipients: '',
     content: '',
+    htmlContent: '',
   })
   const [sendingNewsletter, setSendingNewsletter] = useState(false)
   const [newsletterFeedback, setNewsletterFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
+  const [showNewsletterPreview, setShowNewsletterPreview] = useState(false)
+  const [useHtmlUpload, setUseHtmlUpload] = useState(false)
   const [bannerForm, setBannerForm] = useState({
     message: DEFAULT_BANNER_MESSAGE,
     ctaLabel: '',
@@ -112,12 +115,119 @@ export default function SuperAdminPage() {
   })()
 
   const updateNewsletterField = (
-    field: 'subject' | 'previewText' | 'recipients' | 'content',
+    field: 'subject' | 'previewText' | 'recipients' | 'content' | 'htmlContent',
     value: string,
   ) => {
     setNewsletterForm((prev) => ({ ...prev, [field]: value }))
     if (newsletterFeedback) {
       setNewsletterFeedback(null)
+    }
+  }
+
+  const handleHtmlFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    if (!file.name.endsWith('.html')) {
+      setNewsletterFeedback({
+        type: 'error',
+        message: 'Veuillez sélectionner un fichier HTML (.html)',
+      })
+      return
+    }
+
+    try {
+      const text = await file.text()
+      setNewsletterForm((prev) => ({ ...prev, htmlContent: text }))
+      setUseHtmlUpload(true)
+      setNewsletterFeedback({
+        type: 'success',
+        message: `Fichier HTML "${file.name}" chargé avec succès`,
+      })
+    } catch (error) {
+      console.error('Error reading HTML file:', error)
+      setNewsletterFeedback({
+        type: 'error',
+        message: 'Erreur lors de la lecture du fichier HTML',
+      })
+    }
+  }
+
+  const handleCsvUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    if (!file.name.endsWith('.csv')) {
+      setNewsletterFeedback({
+        type: 'error',
+        message: 'Veuillez sélectionner un fichier CSV (.csv)',
+      })
+      return
+    }
+
+    try {
+      const text = await file.text()
+      
+      // Parser le CSV : séparer les lignes, puis les colonnes
+      const lines = text.split(/\r?\n/).filter(line => line.trim())
+      if (lines.length === 0) {
+        setNewsletterFeedback({
+          type: 'error',
+          message: 'Le fichier CSV est vide',
+        })
+        return
+      }
+
+      // Extraire les emails de la première colonne
+      const emails: string[] = []
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim()
+        if (!line) continue
+
+        // Parser la ligne CSV (gérer les guillemets et virgules)
+        const columns = line.split(',').map(col => col.trim().replace(/^"|"$/g, ''))
+        const firstColumn = columns[0] || line
+
+        // Vérifier si c'est un email valide
+        if (emailRegex.test(firstColumn)) {
+          emails.push(firstColumn.toLowerCase())
+        } else if (i === 0) {
+          // La première ligne pourrait être un header, on l'ignore
+          continue
+        }
+      }
+
+      if (emails.length === 0) {
+        setNewsletterFeedback({
+          type: 'error',
+          message: 'Aucun email valide trouvé dans le CSV',
+        })
+        return
+      }
+
+      // Ajouter les emails au champ destinataires
+      const existingRecipients = newsletterForm.recipients.trim()
+      const newRecipients = emails.join('\n')
+      const combinedRecipients = existingRecipients 
+        ? `${existingRecipients}\n${newRecipients}`
+        : newRecipients
+
+      setNewsletterForm((prev) => ({ ...prev, recipients: combinedRecipients }))
+      setNewsletterFeedback({
+        type: 'success',
+        message: `${emails.length} email(s) extrait(s) du CSV "${file.name}"`,
+      })
+
+      // Réinitialiser l'input file pour permettre de ré-uploader le même fichier
+      event.target.value = ''
+    } catch (error) {
+      console.error('Error reading CSV file:', error)
+      setNewsletterFeedback({
+        type: 'error',
+        message: 'Erreur lors de la lecture du fichier CSV',
+      })
     }
   }
 
@@ -314,6 +424,145 @@ export default function SuperAdminPage() {
     }
   }
 
+  // Fonction pour générer l'aperçu HTML de la newsletter
+  const generateNewsletterPreview = () => {
+    // Si on utilise HTML upload, retourner directement le HTML
+    if (useHtmlUpload && newsletterForm.htmlContent.trim()) {
+      return newsletterForm.htmlContent.trim()
+    }
+    
+    const subject = newsletterForm.subject.trim() || 'Sujet de la newsletter'
+    const previewText = newsletterForm.previewText.trim() || subject
+    const content = newsletterForm.content.trim() || 'Contenu de la newsletter'
+    
+    // Convertir le body en HTML formaté avec support pour les paragraphes
+    const formattedBody = content
+      .split(/\n{2,}/)
+      .map((paragraph) => {
+        const trimmed = paragraph.trim()
+        if (!trimmed) return ''
+        // Échapper les caractères HTML
+        const escaped = trimmed
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;')
+        // Convertir les retours à la ligne en <br />
+        return `<p class="text-[15px] text-neutral-700 leading-7 mb-4">${escaped.split('\n').join('<br />')}</p>`
+      })
+      .filter(Boolean)
+      .join('')
+
+    return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${subject}</title>
+  <meta name="theme-color" content="#c9ff00">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600&family=Playfair+Display:wght@600;700&family=Shadows+Into+Light&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --lime: #c9ff00;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Raleway', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .handwrite {
+      font-family: 'Shadows Into Light', cursive;
+    }
+    .signature {
+      font-family: 'Shadows Into Light', cursive;
+      font-size: 1.6rem;
+      color: #111;
+      letter-spacing: 0.04em;
+    }
+    /* Force le chargement des styles Tailwind */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #fafafa;
+      }
+    }
+  </style>
+  <script>
+    // Attendre que Tailwind soit chargé avant d'afficher le contenu
+    window.addEventListener('load', function() {
+      if (window.tailwind) {
+        document.body.style.opacity = '1';
+      }
+    });
+  </script>
+</head>
+<body class="antialiased bg-neutral-50 text-neutral-900 selection:bg-lime-200 selection:text-black" style="opacity: 0; transition: opacity 0.3s;">
+  <div class="sm:px-6 w-full pt-12 pr-4 pb-12 pl-4">
+    <div class="mx-auto w-full max-w-[780px] rounded-3xl bg-white shadow-lg ring-1 ring-neutral-200 overflow-hidden">
+      <!-- Header -->
+      <div class="px-6 py-5 border-b border-neutral-200 flex items-center justify-between bg-gradient-to-r from-lime-100 to-lime-50">
+        <div class="flex items-center gap-3">
+          <div class="flex font-semibold text-black tracking-tight w-8 h-8 bg-[url(https://hoirqrkdgbmvpwutwuwj-all.supabase.co/storage/v1/object/public/assets/assets/72b8bb91-83fe-4d08-9fc1-7a3c0f3b31e1_320w.png)] bg-cover bg-center rounded-md items-center justify-center"></div>
+          <div class="text-[13px] text-neutral-600">Guidiqo — Newsletter</div>
+        </div>
+      </div>
+
+      <!-- Hero Section -->
+      <div class="px-6 pt-8">
+        <div class="overflow-hidden rounded-3xl border border-lime-200">
+          <img src="https://hoirqrkdgbmvpwutwuwj-all.supabase.co/storage/v1/object/public/assets/assets/179d3ea0-e462-47e0-9f85-454f2f86f830_1600w.png" alt="Guidiqo Hero" class="w-full h-72 object-cover" style="display: block; max-width: 100%; height: auto;">
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="px-8 pt-10">
+        <h1 class="text-4xl sm:text-5xl font-[Playfair Display] tracking-tight text-neutral-900 leading-snug">${subject}</h1>
+        <div class="mt-5">
+          ${formattedBody}
+        </div>
+      </div>
+
+      <!-- CTA Section -->
+      <div class="px-8 mt-16 text-center">
+        <a href="https://guidiqo.com" class="inline-flex items-center gap-2 px-10 py-4 rounded-full bg-lime-500 text-black text-[16px] font-semibold hover:bg-lime-400 shadow-lg transition">
+          Découvrir Guidiqo
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+        </a>
+      </div>
+
+      <!-- Signature -->
+      <div class="px-8 mt-14 text-right">
+        <p class="text-neutral-500 text-[14px]">Avec créativité,</p>
+        <p class="signature mt-1">L'équipe Guidiqo</p>
+      </div>
+
+      <!-- Footer -->
+      <div class="px-6 py-10 mt-14 border-t border-neutral-200 text-center">
+        <p class="text-[12.5px] text-neutral-500">
+          © 2025 Guidiqo — Tous droits réservés · <a href="https://guidiqo.com/unsubscribe" class="underline underline-offset-2 text-lime-600 hover:text-lime-700">Se désabonner</a>
+        </p>
+      </div>
+    </div>
+  </div>
+  <span style="display:none;visibility:hidden;mso-hide:all;font-size:1px;color:#f3f4f6;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">${previewText}</span>
+  <script>
+    // S'assurer que le contenu est visible après le chargement
+    setTimeout(function() {
+      document.body.style.opacity = '1';
+    }, 100);
+  </script>
+</body>
+</html>`
+  }
+
   const handleNewsletterSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setNewsletterFeedback(null)
@@ -327,7 +576,8 @@ export default function SuperAdminPage() {
           subject: newsletterForm.subject.trim(),
           previewText: newsletterForm.previewText.trim(),
           recipients: newsletterForm.recipients,
-          content: newsletterForm.content,
+          content: useHtmlUpload ? undefined : newsletterForm.content,
+          htmlContent: useHtmlUpload ? newsletterForm.htmlContent : undefined,
         }),
       })
 
@@ -369,9 +619,9 @@ export default function SuperAdminPage() {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: bannerForm.message.trim(),
-          ctaLabel: bannerForm.ctaLabel.trim() ? bannerForm.ctaLabel.trim() : undefined,
-          ctaHref: bannerForm.ctaHref.trim() ? bannerForm.ctaHref.trim() : undefined,
+          message: String(bannerForm.message || '').trim(),
+          ctaLabel: bannerForm.ctaLabel ? String(bannerForm.ctaLabel).trim() : undefined,
+          ctaHref: bannerForm.ctaHref ? String(bannerForm.ctaHref).trim() : undefined,
           enabled: bannerForm.enabled,
         }),
       })
@@ -878,7 +1128,37 @@ export default function SuperAdminPage() {
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700 block mb-2">Destinataires</label>
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-2">Destinataires</label>
+                    
+                    {/* Upload CSV */}
+                    <div className="mb-3">
+                      <div className="border-2 border-dashed border-gray-300 dark:border-white/20 rounded-2xl p-4">
+                        <input
+                          type="file"
+                          accept=".csv"
+                          onChange={handleCsvUpload}
+                          className="hidden"
+                          id="csv-upload"
+                        />
+                        <label
+                          htmlFor="csv-upload"
+                          className="cursor-pointer flex flex-col items-center gap-2"
+                        >
+                          <div className="p-3 rounded-full bg-indigo-100 dark:bg-indigo-900/30">
+                            <FileSpreadsheet className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                          </div>
+                          <div className="text-center">
+                            <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                              Cliquez pour uploader un fichier CSV
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              Les emails seront extraits de la première colonne
+                            </p>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+
                     <textarea
                       value={newsletterForm.recipients}
                       onChange={(event) => updateNewsletterField('recipients', event.target.value)}
@@ -887,19 +1167,100 @@ export default function SuperAdminPage() {
                       className="w-full rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-stone-950 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       required
                     />
-                    <p className="text-xs text-gray-400 mt-1">Un email par ligne ou séparé par des virgules.</p>
+                    <p className="text-xs text-gray-400 mt-1">Un email par ligne ou séparé par des virgules. Vous pouvez aussi uploader un CSV.</p>
                   </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-700 block mb-2">Contenu</label>
-                    <textarea
-                      value={newsletterForm.content}
-                      onChange={(event) => updateNewsletterField('content', event.target.value)}
-                      placeholder="Bonjour !\n\nDécouvrez les nouveautés de cette semaine..."
-                      rows={8}
-                      className="w-full rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-stone-950 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      required
-                    />
+                  {/* Toggle entre texte et HTML upload */}
+                  <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-white/5 rounded-2xl mb-4">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Mode d'envoi</span>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setUseHtmlUpload(false)
+                          setNewsletterForm(prev => ({ ...prev, htmlContent: '' }))
+                        }}
+                        className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
+                          !useHtmlUpload
+                            ? 'bg-indigo-600 text-white'
+                            : 'bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-gray-400'
+                        }`}
+                      >
+                        <FileText className="w-4 h-4 inline mr-1" />
+                        Texte
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setUseHtmlUpload(true)
+                          setNewsletterForm(prev => ({ ...prev, content: '' }))
+                        }}
+                        className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
+                          useHtmlUpload
+                            ? 'bg-indigo-600 text-white'
+                            : 'bg-gray-200 dark:bg-white/10 text-gray-600 dark:text-gray-400'
+                        }`}
+                      >
+                        <Upload className="w-4 h-4 inline mr-1" />
+                        HTML
+                      </button>
+                    </div>
                   </div>
+
+                  {!useHtmlUpload ? (
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-2">Contenu (texte)</label>
+                      <textarea
+                        value={newsletterForm.content}
+                        onChange={(event) => updateNewsletterField('content', event.target.value)}
+                        placeholder="Bonjour !\n\nDécouvrez les nouveautés de cette semaine..."
+                        rows={8}
+                        className="w-full rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-stone-950 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        required={!useHtmlUpload}
+                      />
+                    </div>
+                  ) : (
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block mb-2">Fichier HTML</label>
+                      <div className="border-2 border-dashed border-gray-300 dark:border-white/20 rounded-2xl p-6 text-center">
+                        <input
+                          type="file"
+                          accept=".html"
+                          onChange={handleHtmlFileUpload}
+                          className="hidden"
+                          id="html-upload"
+                        />
+                        <label
+                          htmlFor="html-upload"
+                          className="cursor-pointer flex flex-col items-center gap-3"
+                        >
+                          <div className="p-4 rounded-full bg-indigo-100 dark:bg-indigo-900/30">
+                            <Upload className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                              {newsletterForm.htmlContent ? 'Fichier HTML chargé' : 'Cliquez pour uploader un fichier HTML'}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              {newsletterForm.htmlContent ? 'Vous pouvez en uploader un autre pour le remplacer' : 'Le HTML sera envoyé tel quel'}
+                            </p>
+                          </div>
+                        </label>
+                        {newsletterForm.htmlContent && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setNewsletterForm(prev => ({ ...prev, htmlContent: '' }))
+                              setNewsletterFeedback(null)
+                            }}
+                            className="mt-3 text-sm text-red-600 dark:text-red-400 hover:underline"
+                          >
+                            Retirer le fichier
+                          </button>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-400 mt-2">Le fichier HTML sera envoyé tel quel, sans modification.</p>
+                    </div>
+                  )}
 
                   {newsletterFeedback && (
                     <div
@@ -913,10 +1274,23 @@ export default function SuperAdminPage() {
                     </div>
                   )}
 
-                  <div className="flex justify-end">
+                  <div className="flex justify-end gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setShowNewsletterPreview(true)}
+                      disabled={!newsletterForm.subject.trim() || (!useHtmlUpload && !newsletterForm.content.trim()) || (useHtmlUpload && !newsletterForm.htmlContent.trim())}
+                      className={`inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-colors ${
+                        !newsletterForm.subject.trim() || (!useHtmlUpload && !newsletterForm.content.trim()) || (useHtmlUpload && !newsletterForm.htmlContent.trim())
+                          ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                          : 'bg-gray-600 text-white hover:bg-gray-700'
+                      }`}
+                    >
+                      <Eye className="w-4 h-4" />
+                      Aperçu
+                    </button>
                     <button
                       type="submit"
-                      disabled={sendingNewsletter || !newsletterForm.subject.trim() || !newsletterForm.content.trim() || !newsletterForm.recipients.trim()}
+                      disabled={sendingNewsletter || !newsletterForm.subject.trim() || (!useHtmlUpload && !newsletterForm.content.trim()) || (useHtmlUpload && !newsletterForm.htmlContent.trim()) || !newsletterForm.recipients.trim()}
                       className={`inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-colors ${
                         sendingNewsletter
                           ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
@@ -1014,7 +1388,7 @@ export default function SuperAdminPage() {
                   <div className="flex justify-end">
                     <button
                       type="submit"
-                      disabled={savingBanner || !bannerForm.message.trim()}
+                      disabled={savingBanner || !bannerForm.message || !String(bannerForm.message).trim()}
                       className={`inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-colors ${
                         savingBanner
                           ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
@@ -1139,6 +1513,108 @@ export default function SuperAdminPage() {
         isOpen={showBrandModal}
         onClose={() => setShowBrandModal(false)}
       />
+
+      {/* Newsletter Preview Modal */}
+      <AnimatePresence>
+        {showNewsletterPreview && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/70 backdrop-blur-md z-[100]"
+              onClick={() => setShowNewsletterPreview(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="fixed inset-0 z-[101] flex items-center justify-center p-4"
+              onClick={(e) => e.target === e.currentTarget && setShowNewsletterPreview(false)}
+            >
+              <div className="bg-white dark:bg-stone-900 rounded-3xl shadow-2xl max-w-5xl w-full p-8 relative max-h-[90vh] flex flex-col">
+                {/* Close button */}
+                <button
+                  onClick={() => setShowNewsletterPreview(false)}
+                  className="absolute top-6 right-6 p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors z-10"
+                >
+                  <X className="w-6 h-6 text-gray-600 dark:text-gray-400" />
+                </button>
+
+                {/* Header */}
+                <div className="mb-6">
+                  <h3 className="text-2xl font-bold text-black dark:text-white mb-2">
+                    Aperçu de la newsletter
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">
+                    Voici à quoi ressemblera votre newsletter
+                  </p>
+                </div>
+
+                {/* Preview iframe */}
+                <div className="flex-1 overflow-hidden border border-gray-200 dark:border-white/10 rounded-2xl bg-white">
+                  <iframe
+                    srcDoc={generateNewsletterPreview()}
+                    className="w-full h-full min-h-[600px] border-0"
+                    title="Newsletter Preview"
+                    sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    style={{ 
+                      width: '100%',
+                      height: '100%',
+                      minHeight: '600px',
+                      border: 'none',
+                      background: '#fafafa',
+                      display: 'block'
+                    }}
+                    onLoad={(e) => {
+                      // S'assurer que les styles se chargent correctement
+                      const iframe = e.target as HTMLIFrameElement
+                      if (iframe.contentWindow && iframe.contentWindow.document) {
+                        const doc = iframe.contentWindow.document
+                        
+                        // Vérifier si Tailwind est chargé et rendre visible
+                        const checkTailwind = setInterval(() => {
+                          const tailwindLoaded = doc.querySelector('script[src*="tailwind"]')?.nextElementSibling || 
+                                                 doc.querySelector('style[data-tailwind]') ||
+                                                 window.getComputedStyle(doc.body).getPropertyValue('font-family')
+                          
+                          if (tailwindLoaded) {
+                            const body = doc.body
+                            if (body) {
+                              body.style.opacity = '1'
+                            }
+                            clearInterval(checkTailwind)
+                          }
+                        }, 100)
+                        
+                        // Timeout après 2 secondes maximum
+                        setTimeout(() => {
+                          clearInterval(checkTailwind)
+                          if (doc.body) {
+                            doc.body.style.opacity = '1'
+                          }
+                        }, 2000)
+                      }
+                    }}
+                  />
+                </div>
+
+                {/* Footer */}
+                <div className="mt-6 flex justify-end">
+                  <button
+                    onClick={() => setShowNewsletterPreview(false)}
+                    className="px-6 py-3 rounded-full bg-gray-600 text-white font-semibold hover:bg-gray-700 transition-colors"
+                  >
+                    Fermer
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       <Footer />
     </div>

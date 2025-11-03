@@ -85,237 +85,140 @@ export default function BrandPage() {
   }, [params.id])
 
   const generateImages = async (brandData: Brand) => {
-    const stopWords = [
-      'avec', 'pour', 'dans', 'sont', 'être', 'vous', 'dont', 'cette', 'tout', 'tous', 'une', 'des', 'les', 'qui',
-      'que', 'par', 'sur', 'sous', 'plus', 'comme', 'aussi', 'très', 'bien', 'peut', 'fait', 'faites', 'notre',
-      'votre', 'leur', 'chaque', 'toutes', 'lalliance', 'dune', 'expertise', 'mission', 'techniques', 'avec', 'cela',
-      'entre', 'depuis', 'leurs', 'leurs', 'leurs', 'vers', 'ainsi', 'dans', 'afin'
-    ]
-
+    // Stop words étendus
+    const stopWords = ['avec', 'pour', 'dans', 'sont', 'être', 'vous', 'dont', 'cette', 'tout', 'tous', 'une', 'des', 'les', 'qui', 'que', 'par', 'sur', 'sous', 'plus', 'comme', 'aussi', 'très', 'bien', 'peut', 'fait', 'faites', 'notre', 'votre', 'leur', 'chaque', 'toutes', 'lalliance', 'dune', 'expertise', 'mission', 'techniques']
+    
+    // Mots-clés de secteurs pour affiner les recherches
     const sectorKeywords: Record<string, string[]> = {
-      coiffure: ['hair salon', 'hairdressing', 'haircut', 'styling', 'hair care', 'barbershop'],
-      salon: ['hair salon', 'beauty salon', 'spa salon', 'hairdresser'],
-      restaurant: ['restaurant', 'dining', 'culinary', 'gastronomy', 'chef table'],
-      café: ['cafe', 'coffee shop', 'roastery', 'espresso bar'],
-      tech: ['technology', 'software', 'digital product', 'innovation', 'startup'],
-      finance: ['fintech', 'financial services', 'investment', 'banking'],
-      fashion: ['fashion', 'editorial', 'apparel', 'style', 'lookbook'],
-      fitness: ['fitness', 'gym', 'wellness', 'training', 'athletic'],
-      beauty: ['skincare', 'cosmetics', 'aesthetic', 'beauty studio', 'makeup'],
-      hospitality: ['hotel', 'hospitality', 'experience', 'luxury interior'],
-      education: ['education', 'learning', 'academy', 'workshop'],
-      music: ['music studio', 'concert', 'artist', 'sound design'],
-      art: ['gallery', 'art director', 'creative studio', 'visual art']
+      'coiffure': ['hair salon', 'hairdressing', 'haircut', 'styling', 'hair care', 'barbershop'],
+      'salon': ['hair salon', 'beauty salon', 'spa salon', 'hairdressing'],
+      'restaurant': ['restaurant', 'dining', 'culinary', 'food service', 'gastronomy'],
+      'café': ['cafe', 'coffee shop', 'coffee house', 'espresso'],
+      'tech': ['technology', 'software', 'digital', 'innovation', 'startup'],
+      'fashion': ['fashion', 'clothing', 'apparel', 'style', 'wear'],
+      'fitness': ['fitness', 'gym', 'workout', 'exercise', 'training'],
+      'beauty': ['beauty', 'cosmetics', 'skincare', 'makeup', 'aesthetic']
     }
-
-    const personalityDictionary: Record<string, string[]> = {
-      modern: ['minimal', 'sleek', 'contemporary'],
-      luxueux: ['luxury', 'premium', 'high-end'],
-      luxe: ['luxury', 'premium', 'high-end'],
-      énergique: ['vibrant', 'dynamic', 'bold'],
-      vibrant: ['vibrant', 'energetic', 'colorful'],
-      naturel: ['organic', 'natural', 'soft light'],
-      chaleureux: ['warm', 'cozy', 'human'],
-      futuriste: ['futuristic', 'innovative', 'digital'],
-      artistique: ['artistic', 'creative', 'experimental'],
-      authentique: ['authentic', 'documentary', 'lifestyle']
-    }
-
-    const extractKeywords = (text: string | null, limit: number = 8): string[] => {
-      if (!text) return []
+    
+    // Fonction pour extraire les mots-clés pertinents
+    const extractKeywords = (text: string | null, limit: number = 8): string => {
+      if (!text) return ''
+      
       return text
         .toLowerCase()
-        .replace(/[^\w\séèêëàâäôöùûüîïç-]/g, ' ')
+        .replace(/[^\w\séèêëàâäôöùûüîïç]/g, ' ')
         .split(/\s+/)
-        .filter((word) => word.length > 3 && !stopWords.includes(word))
-        .filter((word, index, arr) => arr.indexOf(word) === index)
+        .filter(word => word.length > 3 && !stopWords.includes(word))
+        .filter((word, index, arr) => arr.indexOf(word) === index) // Supprimer les doublons
         .slice(0, limit)
-    }
-
-    const detectSector = (text: string): string[] => {
-      const lowerText = text.toLowerCase()
-      const detected: string[] = []
-
-      for (const keywords of Object.values(sectorKeywords)) {
-        if (keywords.some((keyword) => lowerText.includes(keyword.split(' ')[0]))) {
-          detected.push(...keywords.slice(0, 3))
-        }
-      }
-
-      if (lowerText.includes('salon') && (lowerText.includes('coiff') || lowerText.includes('capillaire') || lowerText.includes('cheveu'))) {
-        detected.push('hair salon', 'hairdressing')
-      }
-      if (lowerText.includes('restaurant') || lowerText.includes('cuisine')) {
-        detected.push('restaurant', 'culinary')
-      }
-      if (lowerText.includes('café') || lowerText.includes('coffee')) {
-        detected.push('cafe', 'espresso bar')
-      }
-
-      return [...new Set(detected)]
-    }
-
-    const combinedText = [brandData.prompt, brandData.description, brandData.name, brandData.targetAudience]
-      .filter(Boolean)
-      .join(' ')
-
-    const sectorTerms = detectSector(combinedText)
-    const promptKeywords = extractKeywords(brandData.prompt, 10)
-    const descriptionKeywords = extractKeywords(brandData.description, 6)
-    const nameKeywords = extractKeywords(brandData.name, 3)
-    const audienceKeywords = extractKeywords(brandData.targetAudience, 5)
-
-    const personalityKey =
-      brandData.brandPersonality?.toLowerCase().split(/\s+/)[0] ||
-      (promptKeywords[0] ?? 'modern')
-    const personalityTags = personalityDictionary[personalityKey] ?? [personalityKey]
-
-    const baseKeywords = [
-      ...new Set([
-        ...sectorTerms,
-        ...promptKeywords,
-        ...descriptionKeywords,
-        ...nameKeywords,
-        ...audienceKeywords,
-        ...personalityTags
-      ])
-    ]
-
-    const palette = [brandData.primaryColor, brandData.secondaryColor, brandData.accentColor].filter(
-      (color): color is string => Boolean(color)
-    )
-    const fallbackPalette = palette.length ? palette : ['#0f172a', '#1f2937', '#6366f1']
-
-    const createGradientFallback = (label: string) => {
-      const stops = fallbackPalette.map((color, idx) => {
-        const offset =
-          fallbackPalette.length === 1 ? 0 : Math.round((idx / (fallbackPalette.length - 1)) * 100)
-        return `<stop offset="${offset}%" stop-color="${color}" />`
-      })
-
-      const svg = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900">
-          <defs>
-            <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-              ${stops.join('')}
-            </linearGradient>
-          </defs>
-          <rect width="1600" height="900" fill="url(#grad)" rx="64" />
-          <rect x="80" y="80" width="480" height="120" fill="rgba(0,0,0,0.28)" rx="32" />
-          <text x="120" y="148" font-size="40" fill="rgba(255,255,255,0.85)" font-family="Arial" font-weight="600">
-            ${brandData.name}
-          </text>
-          <text x="120" y="196" font-size="26" fill="rgba(255,255,255,0.65)" font-family="Arial" letter-spacing="4">
-            ${label.toUpperCase()}
-          </text>
-        </svg>
-      `
-      return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`
-    }
-
-    const fallbackImages: Record<string, string> = {
-      hero: createGradientFallback('Moodboard'),
-      typography: createGradientFallback('Typographie'),
-      personality: createGradientFallback('Identité'),
-      accent: createGradientFallback('Texturing'),
-      application: createGradientFallback('Applications')
-    }
-
-    const assembledQueries = {
-      hero: [
-        brandData.name,
-        ...personalityTags,
-        ...audienceKeywords,
-        ...baseKeywords,
-        'brand identity',
-        'editorial photoshoot',
-        'moodboard'
-      ]
-        .filter(Boolean)
-        .join(' '),
-      typography: [
-        brandData.name,
-        brandData.primaryFont,
-        brandData.secondaryFont,
-        ...baseKeywords,
-        'typography poster',
-        'font pairing',
-        'brand guidelines layout'
-      ]
-        .filter(Boolean)
-        .join(' '),
-      personality: [
-        brandData.name,
-        ...baseKeywords,
-        'storytelling portrait',
-        'lifestyle',
-        ...audienceKeywords,
-        'editorial'
-      ]
-        .filter(Boolean)
-        .join(' '),
-      accent: [
-        brandData.name,
-        ...baseKeywords,
-        'abstract texture',
-        'brand assets',
-        brandData.accentColor,
-        'pattern design'
-      ]
-        .filter(Boolean)
-        .join(' '),
-      application: [
-        brandData.name,
-        ...baseKeywords,
-        ...audienceKeywords,
-        'product mockup',
-        'digital experience',
-        'brand presentation'
-      ]
-        .filter(Boolean)
         .join(' ')
     }
 
-    const newImages: Record<string, string> = { ...fallbackImages }
+    // Détecter le secteur d'activité à partir du texte
+    const detectSector = (text: string): string[] => {
+      const lowerText = text.toLowerCase()
+      const detectedSectors: string[] = []
+      
+      for (const [sector, keywords] of Object.entries(sectorKeywords)) {
+        if (keywords.some(keyword => lowerText.includes(keyword))) {
+          detectedSectors.push(...keywords.slice(0, 2)) // Prendre les 2 premiers mots-clés du secteur
+        }
+      }
+      
+      // Détection basée sur des mots français courants
+      if (lowerText.includes('salon') && (lowerText.includes('coiff') || lowerText.includes('capillaire') || lowerText.includes('cheveu'))) {
+        detectedSectors.push('hair salon', 'hairdressing')
+      }
+      if (lowerText.includes('restaurant') || lowerText.includes('cuisine')) {
+        detectedSectors.push('restaurant', 'dining')
+      }
+      if (lowerText.includes('café') || lowerText.includes('coffee')) {
+        detectedSectors.push('cafe', 'coffee shop')
+      }
+      
+      return [...new Set(detectedSectors)] // Supprimer les doublons
+    }
 
-    const fetchImage = async (key: string, query: string) => {
-      const providers: Array<'unsplash' | 'pexels'> = ['unsplash', 'pexels']
-      for (const provider of providers) {
+    // Combiner prompt, description et nom pour détecter le secteur
+    const combinedText = [
+      brandData.prompt,
+      brandData.description,
+      brandData.name
+    ].filter(Boolean).join(' ')
+
+    const sectorTerms = detectSector(combinedText)
+    
+    // Extraire les mots-clés du prompt (idée initiale) - priorité absolue
+    const promptKeywords = extractKeywords(brandData.prompt, 8)
+    
+    // Extraire les mots-clés de la description
+    const descriptionKeywords = extractKeywords(brandData.description, 5)
+    
+    // Extraire les mots-clés du nom du projet
+    const nameKeywords = extractKeywords(brandData.name, 2)
+    
+    // Combiner tous les mots-clés avec les termes de secteur en priorité
+    const allKeywords = [
+      ...sectorTerms,
+      promptKeywords,
+      descriptionKeywords,
+      nameKeywords
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .trim()
+    
+    const projectName = brandData.name?.toLowerCase() || ''
+    const personalityContext = brandData.brandPersonality?.toLowerCase() || 'modern'
+    const audienceContext = brandData.targetAudience?.toLowerCase() || ''
+    
+    // Créer des requêtes très spécifiques basées sur le secteur et le contexte réel
+    const baseQuery = allKeywords || projectName
+    
+    const queries = {
+      hero: `${baseQuery} professional branding visual identity environment`,
+      typography: `${baseQuery} typography lettering design elegant`,
+      personality: `${baseQuery} ${personalityContext} aesthetic lifestyle interior`,
+      accent: `${baseQuery} abstract ${personalityContext} pattern geometric texture`,
+      application: [
+        baseQuery,
+        personalityContext,
+        audienceContext,
+        'professional workspace interior environment'
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .trim()
+    }
+
+    const newImages: {[key: string]: string} = {}
+
+    // Récupérer les images en parallèle avec un seed unique pour chaque via Unsplash
+    await Promise.all(
+      Object.entries(queries).map(async ([key, query]) => {
         try {
           const response = await fetch('/api/get-image', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              query: query.trim(),
-              seed: `${brandData.id}-${key}-${provider}`,
-              provider,
-              orientation: 'landscape'
+            body: JSON.stringify({ 
+              query,
+              seed: `${brandData.id}-${key}`,  // Seed unique pour chaque image
+              provider: 'unsplash',  // Utiliser Unsplash
+              orientation: 'landscape'  // Orientation paysage pour le moodboard
             })
           })
 
-          if (!response.ok) {
-            continue
-          }
-
-          const data = await response.json()
-          const url =
-            data.image?.url ||
-            data.image?.srcSet?.full ||
-            data.image?.srcSet?.regular ||
-            data.imageUrl
-
-          if (url) {
-            newImages[key] = url
-            return
+          if (response.ok) {
+            const data = await response.json()
+            // Utiliser l'URL de l'image Unsplash (regular ou full pour meilleure qualité)
+            newImages[key] = data.image?.url || data.image?.srcSet?.regular || data.image?.srcSet?.full || data.imageUrl || 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&h=900&fit=crop'
           }
         } catch (error) {
-          console.error(`Error fetching ${key} image with ${provider}:`, error)
+          console.error(`Error fetching ${key} image from Unsplash:`, error)
+          // Fallback vers une image par défaut Unsplash
+          newImages[key] = 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&h=900&fit=crop'
         }
-      }
-    }
-
-    await Promise.all(
-      Object.entries(assembledQueries).map(async ([key, query]) => fetchImage(key, query))
+      })
     )
 
     setImages(newImages)
@@ -586,38 +489,11 @@ export default function BrandPage() {
       render: () => (
         <div className="aspect-video w-full overflow-hidden rounded-3xl bg-white">
           <div className="flex h-full w-full flex-col justify-between bg-gradient-to-br from-slate-100 via-white to-white p-4">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <div className="h-12 w-16 overflow-hidden rounded-xl border border-slate-200 bg-slate-200/60">
-                  {images.application ? (
-                    <img
-                      src={images.application}
-                      alt="Aperçu guideline"
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <div
-                      className="h-full w-full"
-                      style={{
-                        background: `linear-gradient(135deg, ${brand.primaryColor || '#0f172a'} 0%, ${
-                          brand.secondaryColor || '#1f2937'
-                        } 100%)`
-                      }}
-                    />
-                  )}
-                </div>
-                <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.45rem] text-slate-500">
-                    Ratios
-                  </p>
-                  <p className="mt-1 text-base font-semibold text-slate-700 leading-snug">
-                    Palette équilibrée 60 / 30 / 10
-                  </p>
-                </div>
-              </div>
-              <p className="text-[9px] uppercase tracking-[0.35rem] text-slate-400">
-                {brand.name}
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.45rem] text-slate-500">
+                Ratios
               </p>
+              <p className="mt-2 text-lg font-semibold text-slate-800">60 / 30 / 10</p>
             </div>
             <div className="grid grid-cols-3 gap-2 text-[10px] font-semibold uppercase tracking-[0.3rem] text-slate-500">
               <div className="rounded-2xl border border-slate-200 bg-white p-3">
@@ -1056,35 +932,89 @@ export default function BrandPage() {
                 </div>
 
                 {/* Preview Cards */}
-                <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  {previewPages.map((page, idx) => (
-                    <div
-                      key={page.key}
-                      className="overflow-hidden rounded-3xl border border-gray-200 bg-white p-4 shadow-sm"
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                  {/* Page 1 */}
+                  <div className="border border-gray-200 rounded-xl overflow-hidden">
+                    <div 
+                      className="w-full aspect-video flex items-center justify-center text-white relative"
+                      style={{ 
+                        background: `linear-gradient(135deg, ${brand.primaryColor || '#000'}, ${brand.secondaryColor || '#333'})`
+                      }}
                     >
-                      <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.35rem] text-gray-500">
-                        <span>{page.title}</span>
-                        <span className="rounded-full bg-gray-100 px-2 py-[3px] text-[10px] text-gray-600">
-                          Page {idx + 1}
-                        </span>
+                      <div className="text-center">
+                        <h4 className="text-4xl font-light tracking-tight">{brand.name}</h4>
+                        <p className="text-xs mt-2 tracking-[0.3em] uppercase">Brand Guidelines</p>
                       </div>
-                      <div className="mt-3 overflow-hidden rounded-2xl border border-gray-100 bg-white">
-                        {page.render()}
+                      <div className="absolute bottom-2 right-2 bg-white/20 backdrop-blur-sm px-2 py-1 rounded text-[10px]">
+                        Page 1
                       </div>
                     </div>
-                  ))}
+                  </div>
+
+                  {/* Page 2 - Colors */}
+                  <div className="border border-gray-200 rounded-xl overflow-hidden">
+                    <div className="w-full aspect-video bg-gray-50 p-4 relative">
+                      <p className="text-xs font-semibold mb-2">Palette de Couleurs</p>
+                      <div className="flex gap-2">
+                        {[brand.primaryColor, brand.secondaryColor, brand.accentColor]
+                          .filter(Boolean)
+                          .map((color, idx) => (
+                            <div 
+                              key={idx}
+                              className="w-12 h-12 rounded-lg"
+                              style={{ backgroundColor: color! }}
+                            />
+                          ))}
+                      </div>
+                      <div className="absolute bottom-2 right-2 bg-black/10 backdrop-blur-sm px-2 py-1 rounded text-[10px]">
+                        Page 2
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Page 3 - Typography */}
+                  <div className="border border-gray-200 rounded-xl overflow-hidden">
+                    <div className="w-full aspect-video bg-white p-4 flex items-center justify-center relative">
+                      <div className="text-center">
+                        <p className="text-6xl font-light" style={{ fontFamily: brand.primaryFont || 'sans-serif' }}>
+                          Aa
+                        </p>
+                        <p className="text-xs mt-2 text-gray-500">{brand.primaryFont || 'Default'}</p>
+                      </div>
+                      <div className="absolute bottom-2 right-2 bg-black/10 backdrop-blur-sm px-2 py-1 rounded text-[10px]">
+                        Page 3
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Page 4 - Personality */}
+                  <div className="border border-gray-200 rounded-xl overflow-hidden">
+                    <div 
+                      className="w-full aspect-video flex items-center justify-center text-white relative"
+                      style={{ 
+                        background: `linear-gradient(135deg, ${brand.secondaryColor || brand.primaryColor || '#000'}, ${brand.primaryColor || '#333'})`
+                      }}
+                    >
+                      <div className="text-center">
+                        <p className="text-xs tracking-[0.2em] uppercase mb-2">Personnalité</p>
+                        <p className="text-2xl font-light capitalize">{brand.brandPersonality || 'Moderne'}</p>
+                      </div>
+                      <div className="absolute bottom-2 right-2 bg-white/20 backdrop-blur-sm px-2 py-1 rounded text-[10px]">
+                        Page 4
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Info */}
                 <div className="bg-gray-50 rounded-2xl p-6 mb-6">
                   <h4 className="font-semibold text-black mb-3">Contenu du PDF</h4>
                   <ul className="space-y-2 text-sm text-gray-600">
-                    <li>  Page de couverture immersive avec mood visuel</li>
-                    <li>  Palette chromatique détaillée avec codes HEX / RGB</li>
-                    <li>  Système typographique complet (titres & corps)</li>
-                    <li>  Identité de marque & audience avec inspirations</li>
-                    <li>  Collage d&apos;applications visuelles et bonnes pratiques</li>
-                    <li>  Guidelines d&apos;usage des couleurs et ratios recommandés</li>
+                    <li>  Page de couverture personnalisée</li>
+                    <li>  Palette de couleurs complète avec codes hex</li>
+                    <li>  Typographie primaire et secondaire</li>
+                    <li>  Personnalité de marque et audience cible</li>
+                    <li>  Règles d&apos;application et guidelines</li>
                   </ul>
                 </div>
 

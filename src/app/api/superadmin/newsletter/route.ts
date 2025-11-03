@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
+import { PrismaClient } from '@prisma/client'
 import { AdminAuthError, DatabaseUnavailableError, assertAdmin } from '@/lib/adminAuth'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
+
+const prisma = new PrismaClient()
 
 type NewsletterPayload = {
   subject?: string
@@ -17,49 +20,119 @@ const FROM_EMAIL = 'Guidiqo Newsletter <newsletter@guidiqo.com>'
 
 const renderHtml = (subject: string, body: string, previewText?: string) => {
   const safePreview = previewText ?? subject
-  const paragraphs = body
+  
+  // Convertir le body en HTML formaté avec support pour les paragraphes
+  const formattedBody = body
     .split(/\n{2,}/)
-    .map(
-      (paragraph) =>
-        `<p style="margin: 0 0 16px; color: #1f2937; line-height: 1.6;">${paragraph
-          .split('\n')
-          .map((line) => line.trim())
-          .join('<br />')}</p>`,
-    )
+    .map((paragraph) => {
+      const trimmed = paragraph.trim()
+      if (!trimmed) return ''
+      // Échapper les caractères HTML
+      const escaped = trimmed
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;')
+      // Convertir les retours à la ligne en <br />
+      return `<p class="text-[15px] text-neutral-700 leading-7 mb-4">${escaped.split('\n').join('<br />')}</p>`
+    })
+    .filter(Boolean)
     .join('')
 
   return `<!DOCTYPE html>
-  <html lang="fr">
-    <head>
-      <meta charset="utf-8" />
-      <title>${subject}</title>
-    </head>
-    <body style="margin:0;padding:0;background-color:#f3f4f6;font-family:'Raleway',Arial,sans-serif;">
-      <span style="display:none;visibility:hidden;mso-hide:all;font-size:1px;color:#f3f4f6;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">${safePreview}</span>
-      <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
-        <tr>
-          <td align="center" style="padding:40px 16px;">
-            <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:620px;background:#ffffff;border-radius:24px;box-shadow:0 10px 45px rgba(15,23,42,0.08);overflow:hidden;">
-              <tr>
-                <td style="padding:32px 32px 0;text-align:left;">
-                  <p style="margin:0 0 8px;font-size:14px;letter-spacing:1px;text-transform:uppercase;color:#6b7280;">Guidiqo</p>
-                  <h1 style="margin:0 0 24px;font-size:28px;color:#111827;">${subject}</h1>
-                </td>
-              </tr>
-              <tr>
-                <td style="padding:0 32px 32px;text-align:left;">${paragraphs}</td>
-              </tr>
-              <tr>
-                <td style="padding:24px 32px;border-top:1px solid #e5e7eb;background:#f9fafb;text-align:center;color:#6b7280;font-size:12px;">
-                  Vous recevez cet email car vous êtes inscrit à la newsletter Guidiqo.
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-      </table>
-    </body>
-  </html>`
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${subject}</title>
+  <meta name="theme-color" content="#c9ff00">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600&family=Playfair+Display:wght@600;700&family=Shadows+Into+Light&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --lime: #c9ff00;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Raleway', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .handwrite {
+      font-family: 'Shadows Into Light', cursive;
+    }
+    .signature {
+      font-family: 'Shadows Into Light', cursive;
+      font-size: 1.6rem;
+      color: #111;
+      letter-spacing: 0.04em;
+    }
+    /* Styles inline pour compatibilité email */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #fafafa;
+      }
+    }
+  </style>
+</head>
+<body class="antialiased bg-neutral-50 text-neutral-900 selection:bg-lime-200 selection:text-black" style="margin: 0; padding: 0; font-family: 'Raleway', sans-serif; background-color: #fafafa;">
+  <div class="sm:px-6 w-full pt-12 pr-4 pb-12 pl-4" style="padding: 48px 16px;">
+    <div class="mx-auto w-full max-w-[780px] rounded-3xl bg-white shadow-lg ring-1 ring-neutral-200 overflow-hidden" style="max-width: 780px; margin: 0 auto; background: white; border-radius: 24px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); border: 1px solid #e5e7eb; overflow: hidden;">
+      <!-- Header -->
+      <div class="px-6 py-5 border-b border-neutral-200 flex items-center justify-between bg-gradient-to-r from-lime-100 to-lime-50" style="padding: 20px 24px; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between; background: linear-gradient(to right, #f7fee7, #fefce8);">
+        <div class="flex items-center gap-3" style="display: flex; align-items: center; gap: 12px;">
+          <div class="flex font-semibold text-black tracking-tight w-8 h-8 bg-[url(https://hoirqrkdgbmvpwutwuwj-all.supabase.co/storage/v1/object/public/assets/assets/72b8bb91-83fe-4d08-9fc1-7a3c0f3b31e1_320w.png)] bg-cover bg-center rounded-md items-center justify-center" style="width: 32px; height: 32px; background-image: url('https://hoirqrkdgbmvpwutwuwj-all.supabase.co/storage/v1/object/public/assets/assets/72b8bb91-83fe-4d08-9fc1-7a3c0f3b31e1_320w.png'); background-size: cover; background-position: center; border-radius: 6px;"></div>
+          <div class="text-[13px] text-neutral-600" style="font-size: 13px; color: #525252;">Guidiqo — Newsletter</div>
+        </div>
+      </div>
+
+      <!-- Hero Section -->
+      <div class="px-6 pt-8" style="padding: 32px 24px 0;">
+        <div class="overflow-hidden rounded-3xl border border-lime-200" style="overflow: hidden; border-radius: 24px; border: 1px solid #e9e7e1;">
+          <img src="https://hoirqrkdgbmvpwutwuwj-all.supabase.co/storage/v1/object/public/assets/assets/179d3ea0-e462-47e0-9f85-454f2f86f830_1600w.png" alt="Guidiqo Hero" class="w-full h-72 object-cover" style="width: 100%; height: 288px; object-fit: cover; display: block;">
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="px-8 pt-10" style="padding: 40px 32px 0;">
+        <h1 class="text-4xl sm:text-5xl font-[Playfair Display] tracking-tight text-neutral-900 leading-snug" style="font-family: 'Playfair Display', serif; font-size: 36px; line-height: 1.2; color: #171717; font-weight: 700; letter-spacing: -0.02em; margin: 0;">${subject}</h1>
+        <div class="mt-5" style="margin-top: 20px;">
+          ${formattedBody}
+        </div>
+      </div>
+
+      <!-- CTA Section -->
+      <div class="px-8 mt-16 text-center" style="padding: 0 32px; margin-top: 64px; text-align: center;">
+        <a href="https://guidiqo.com" class="inline-flex items-center gap-2 px-10 py-4 rounded-full bg-lime-500 text-black text-[16px] font-semibold hover:bg-lime-400 shadow-lg transition" style="display: inline-flex; align-items: center; gap: 8px; padding: 16px 40px; border-radius: 9999px; background-color: #c9ff00; color: #000; font-size: 16px; font-weight: 600; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); text-decoration: none;">
+          Découvrir Guidiqo
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="width: 20px; height: 20px;"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+        </a>
+      </div>
+
+      <!-- Signature -->
+      <div class="px-8 mt-14 text-right" style="padding: 0 32px; margin-top: 56px; text-align: right;">
+        <p class="text-neutral-500 text-[14px]" style="color: #737373; font-size: 14px; margin: 0;">Avec créativité,</p>
+        <p class="signature mt-1" style="font-family: 'Shadows Into Light', cursive; font-size: 1.6rem; color: #111; letter-spacing: 0.04em; margin-top: 4px; margin-bottom: 0;">L'équipe Guidiqo</p>
+      </div>
+
+      <!-- Footer -->
+      <div class="px-6 py-10 mt-14 border-t border-neutral-200 text-center" style="padding: 40px 24px; margin-top: 56px; border-top: 1px solid #e5e7eb; text-align: center;">
+        <p class="text-[12.5px] text-neutral-500" style="font-size: 12.5px; color: #737373; margin: 0;">
+          © 2025 Guidiqo — Tous droits réservés · <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://guidiqo.com'}/unsubscribe" class="underline underline-offset-2 text-lime-600 hover:text-lime-700" style="text-decoration: underline; text-underline-offset: 2px; color: #16a34a;">Se désabonner</a>
+        </p>
+      </div>
+    </div>
+  </div>
+  <span style="display:none;visibility:hidden;mso-hide:all;font-size:1px;color:#f3f4f6;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">${safePreview}</span>
+</body>
+</html>`
 }
 
 export async function POST(req: NextRequest) {
@@ -105,6 +178,24 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Filtrer les emails désabonnés
+    const unsubscribedEmails = await prisma.newsletterUnsubscribe.findMany({
+      where: {
+        email: { in: validRecipients },
+      },
+      select: { email: true },
+    })
+
+    const unsubscribedEmailSet = new Set(unsubscribedEmails.map((u) => u.email))
+    const recipientsToSend = validRecipients.filter((email) => !unsubscribedEmailSet.has(email))
+
+    if (!recipientsToSend.length) {
+      return NextResponse.json(
+        { error: 'Tous les destinataires sont désabonnés de la newsletter.' },
+        { status: 400 },
+      )
+    }
+
     if (validRecipients.length > 1000) {
       return NextResponse.json(
         { error: 'Le nombre de destinataires ne peut pas dépasser 1000 adresses.' },
@@ -132,7 +223,7 @@ export async function POST(req: NextRequest) {
 
     const { error } = await resend.emails.send({
       from: FROM_EMAIL,
-      to: validRecipients,
+      to: recipientsToSend,
       subject,
       html,
       text: plainText,
@@ -141,14 +232,17 @@ export async function POST(req: NextRequest) {
     if (error) {
       console.error('❌ Resend newsletter error:', error)
       return NextResponse.json(
-        { error: 'Impossible d’envoyer la newsletter.' },
+        { error: 'Impossible d'envoyer la newsletter.' },
         { status: 500 },
       )
+    } finally {
+      await prisma.$disconnect()
     }
 
     return NextResponse.json({
       success: true,
-      sentTo: validRecipients.length,
+      sentTo: recipientsToSend.length,
+      skipped: validRecipients.length - recipientsToSend.length,
     })
   } catch (error) {
     if (error instanceof AdminAuthError) {
